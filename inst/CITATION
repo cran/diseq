@@ -1,0 +1,11 @@
+citHeader("To cite 'diseq' in publications use:")
+
+year <- sub("-.*", "", meta$Date)
+version <- sprintf("R package version %s", meta$Version)
+
+citEntry(entry = "misc",
+  title        = paste0(meta$Title, " {diseq}"),
+  author       = personList(as.person("Pantelis Karapanagiotis")),
+  year         = year,
+  textVersion  = paste0("Pantelis Karapanagiotis (", year, "). ", meta$Title, ". ", version, "."),
+  note = version)
