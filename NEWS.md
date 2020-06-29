@@ -1,3 +1,19 @@
+# diseq 0.0.12
+
+* Fixed 'noLD' issues.
+
+# diseq 0.0.11.9002
+
+* Renamed assessment vignette.
+
+# diseq 0.0.11.9001
+
+* Enabled BFGS-based estimation with numerical gradient. Added CRAN installation instructions in README.
+
+# diseq 0.0.11.9000
+
+* Corrected punctuation errors in documentation.
+
 # diseq 0.0.11
 
 * Removed "get_correlation_variable" from exported functions. Improved the documentation of "minus_log_likelihood". Reintroduced references in description.
