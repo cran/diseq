@@ -1,3 +1,15 @@
+# diseq 0.0.13
+
+* Corrections of non-canonical web-links in README. Adjustments before CRAN submission.
+
+# diseq 0.0.12.9002
+
+* Added sections `A quick model tour`, `Alternative packages`, and `Planned extensions` in README.
+
+# diseq 0.0.12.9001
+
+* Added noLD in word exceptions list.
+
 # diseq 0.0.12
 
 * Fixed 'noLD' issues.
