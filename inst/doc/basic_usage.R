@@ -121,28 +121,30 @@ samdl <- new(
 ## ----estimation.parameters.method---------------------------------------------
 optimization_method <- "BFGS"
 optimization_controls <- list(REPORT = 10, maxit = 10000, reltol = 1e-6)
+use_heteroscedasticity_consistent_errors <- TRUE
+cluster_errors_by <- c("id")
 
 ## ----estimation.execution-----------------------------------------------------
 eq2sls <- estimate(eq2sls)
 eqfiml_est <- estimate(eqfiml,
-  control = optimization_controls,
-  method = optimization_method
+  control = optimization_controls, method = optimization_method,
+  cluster_errors_by = cluster_errors_by
 )
 bsmdl_est <- estimate(bsmdl,
-  control = optimization_controls,
-  method = optimization_method
+  control = optimization_controls, method = optimization_method,
+  use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
 )
 drmdl_est <- estimate(drmdl,
-  control = optimization_controls,
-  method = optimization_method
+  control = optimization_controls, method = optimization_method,
+  use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
 )
 damdl_est <- estimate(damdl,
-  control = optimization_controls,
-  method = optimization_method
+  control = optimization_controls, method = optimization_method,
+  cluster_errors_by = cluster_errors_by
 )
 samdl_est <- estimate(samdl,
-  control = optimization_controls,
-  method = optimization_method
+  control = optimization_controls, method = optimization_method,
+  cluster_errors_by = cluster_errors_by
 )
 
 ## ----analysis.effects---------------------------------------------------------

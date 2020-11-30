@@ -285,6 +285,53 @@ setGeneric("estimate", function(object, ...) {
   standardGeneric("estimate")
 })
 
+#' Likelihood scores.
+#'
+#' It calculates the gradient of the likelihood at the given parameter point for each
+#' observation in the sample. It, therefore, returns an n x k matrix, where n denotes
+#' the number of observations in the sample and k the number of estimated parameters.
+#' There order of the parameters is the same as the one that is used in the summary
+#' of the results.
+#' @param object A model object.
+#' @param parameters A vector with model parameters.
+#' @return The score matrix.
+#' @rdname scores
+#' @examples
+#' \donttest{
+#' simulated_data <- simulate_model_data(
+#'   "diseq_basic", 500, 3, # model type, observed entities, observed time points
+#'   -0.9, 8.9, c(0.3, -0.2), c(-0.03, -0.01), # demand coefficients
+#'   0.9, 4.2, c(0.03), c(-0.05, 0.02) # supply coefficients
+#' )
+#'
+#' # initialize the model
+#' model <- new(
+#'   "diseq_basic", # model type
+#'   c("id", "date"), "Q", "P", # keys, quantity, and price variables
+#'   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'   simulated_data, # data
+#'   use_correlated_shocks = TRUE # allow shocks to be correlated
+#' )
+#'
+#' # estimate the model object (by default the maximum optimization is using BFGS)
+#' est <- estimate(model)
+#'
+#' # Calculate the score matrix
+#' scores <- scores(model, est@coef)
+#' }
+#' @export
+setGeneric("scores", function(object, parameters) {
+  standardGeneric("scores")
+})
+
+setGeneric("set_heteroscedasticity_consistent_errors", function(object, ...) {
+  standardGeneric("set_heteroscedasticity_consistent_errors")
+})
+
+setGeneric("set_clustered_errors", function(object, ...) {
+  standardGeneric("set_clustered_errors")
+})
+
 #' Model description.
 #'
 #' A unique identifying string for the model.
@@ -337,6 +384,44 @@ setGeneric("get_demand_descriptives", function(object) {
 setGeneric("get_supply_descriptives", function(object) {
   standardGeneric("get_supply_descriptives")
 })
+
+setMethod(
+  "set_heteroscedasticity_consistent_errors", signature(object = "model_base"),
+  function(object, est) {
+    est@details$original_hessian <- est@details$hessian
+    scores <- scores(object, est@coef)
+    adjustment <- MASS::ginv(t(scores) %*% scores)
+    est@details$hessian <- est@details$hessian %*% adjustment %*% est@details$hessian
+    est@vcov <- MASS::ginv(est@details$hessian)
+    est
+  }
+)
+
+setMethod(
+  "set_clustered_errors", signature(object = "model_base"),
+  function(object, est, cluster_errors_by) {
+    if (!(cluster_errors_by %in% names(object@model_tibble))) {
+      print_error(
+        object@logger, "Cluster variable is not among model data variables."
+      )
+    }
+    cluster_var <- rlang::syms(cluster_errors_by)
+    est@details$original_hessian <- est@details$hessian
+    clustered_scores <- tibble::tibble(
+      object@model_tibble %>% dplyr::select(!!!cluster_var),
+      as.tibble(scores(object, est@coef))
+    ) %>%
+      dplyr::group_by(!!!cluster_var) %>%
+      dplyr::summarise_each(funs(sum)) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(!(!!!cluster_var)) %>%
+      as.matrix()
+    adjustment <- MASS::ginv(t(clustered_scores) %*% clustered_scores)
+    est@details$hessian <- est@details$hessian %*% adjustment %*% est@details$hessian
+    est@vcov <- MASS::ginv(est@details$hessian)
+    est
+  }
+)
 
 #' @rdname get_model_description
 setMethod("get_model_description", signature(object = "model_base"), function(object) {
@@ -481,7 +566,7 @@ setMethod("get_initializing_values", signature(object = "model_base"), function(
 #'
 #' # estimate the model object
 #' est <- estimate(model)
-#' 
+#'
 #' # get estimated aggregate demand
 #' get_aggregate_demand(model, est@coef)
 #' }
@@ -520,10 +605,10 @@ setMethod("get_aggregate_demand", signature(object = "model_base"), function(obj
 #'   simulated_data, # data
 #'   use_correlated_shocks = TRUE # allow shocks to be correlated
 #' )
-#' 
+#'
 #' # estimate the model object
 #' est <- estimate(model)
-#' 
+#'
 #' # get estimated demanded quantities
 #' demq <- get_demanded_quantities(model, est@coef)
 #' }
@@ -568,7 +653,7 @@ setMethod(
 #'
 #' # estimate the model object
 #' est <- estimate(model)
-#' 
+#'
 #' # get estimated aggregate supply
 #' get_aggregate_supply(model, est@coef)
 #' }
@@ -607,10 +692,10 @@ setMethod("get_aggregate_supply", signature(object = "model_base"), function(obj
 #'   simulated_data, # data
 #'   use_correlated_shocks = TRUE # allow shocks to be correlated
 #' )
-#' 
+#'
 #' # estimate the model object
 #' est <- estimate(model)
-#' 
+#'
 #' # get estimated supplied quantities
 #' supq <- get_supplied_quantities(model, est@coef)
 #' }

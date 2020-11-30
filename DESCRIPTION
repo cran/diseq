@@ -1,7 +1,7 @@
 Package: diseq
 Title: Estimation Methods for Markets in Disequilibrium
-Version: 0.0.13
-Date: 2020-09-14
+Version: 0.0.14
+Date: 2020-11-30
 Authors@R: person(
     "Pantelis", "Karapanagiotis", email = "pikappa.devel@gmail.com", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9871-1908"))
@@ -46,9 +46,9 @@ Collate: 'equation_base.R' 'system_base.R' 'equation_basic.R'
         'diseq_stochastic_adjustment.R' 'eq_base.R' 'eq_2sls.R'
         'eq_fiml.R' 'model_simulation.R'
 NeedsCompilation: no
-Packaged: 2020-09-13 22:32:37 UTC; ntelispak
+Packaged: 2020-11-30 10:12:38 UTC; ntelispak
 Author: Pantelis Karapanagiotis [aut, cre]
     (<https://orcid.org/0000-0001-9871-1908>)
 Maintainer: Pantelis Karapanagiotis <pikappa.devel@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-09-21 16:50:11 UTC
+Date/Publication: 2020-11-30 11:00:09 UTC
