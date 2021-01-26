@@ -1,10 +1,13 @@
 Package: diseq
 Title: Estimation Methods for Markets in Disequilibrium
-Version: 0.0.14
-Date: 2020-11-30
-Authors@R: person(
-    "Pantelis", "Karapanagiotis", email = "pikappa.devel@gmail.com", 
-    role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9871-1908"))
+Version: 0.1.1
+Date: 2021-01-26
+Authors@R: 
+    person(given = "Pantelis",
+           family = "Karapanagiotis",
+           role = c("aut", "cre"),
+           email = "pikappa.devel@gmail.com",
+           comment = c(ORCID = "0000-0001-9871-1908"))
 Description: Provides estimation methods for markets in equilibrium and
     disequilibrium. Specifically, it supports the estimation of an equilibrium and
     four disequilibrium models with both correlated and independent shocks.
@@ -23,7 +26,8 @@ BugReports: https://github.com/pi-kappa-devel/diseq/issues
 Depends: R (>= 3.5.0)
 Imports: bbmle (>= 1.0.20), dplyr (>= 0.7.6), magrittr (>= 1.5), MASS
         (>= 7.3-50), methods, rlang (>= 0.2.1), systemfit (>= 1.1),
-        tibble (>= 1.4.2), tidyr (>= 1.0.2)
+        tibble (>= 1.4.2), tidyr (>= 1.0.2), Rcpp, RcppGSL,
+        RcppParallel
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -41,14 +45,16 @@ Collate: 'equation_base.R' 'system_base.R' 'equation_basic.R'
         'derivatives_fiml.R' 'equation_stochastic_adjustment.R'
         'system_stochastic_adjustment.R'
         'derivatives_stochastic_adjustment.R' 'diseq.R'
-        'model_logger.R' 'model_base.R' 'diseq_base.R' 'diseq_basic.R'
-        'diseq_deterministic_adjustment.R' 'diseq_directional.R'
-        'diseq_stochastic_adjustment.R' 'eq_base.R' 'eq_2sls.R'
-        'eq_fiml.R' 'model_simulation.R'
-NeedsCompilation: no
-Packaged: 2020-11-30 10:12:38 UTC; ntelispak
+        'model_logger.R' 'market_model.R' 'disequilibrium_model.R'
+        'diseq_basic.R' 'diseq_deterministic_adjustment.R'
+        'diseq_directional.R' 'diseq_stochastic_adjustment.R'
+        'equilibrium_model.R' 'model_simulation.R'
+LinkingTo: Rcpp
+SystemRequirements: C++20
+NeedsCompilation: yes
+Packaged: 2021-01-26 17:28:59 UTC; ntelispak
 Author: Pantelis Karapanagiotis [aut, cre]
     (<https://orcid.org/0000-0001-9871-1908>)
 Maintainer: Pantelis Karapanagiotis <pikappa.devel@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-11-30 11:00:09 UTC
+Date/Publication: 2021-01-26 18:00:02 UTC

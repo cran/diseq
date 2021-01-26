@@ -68,21 +68,13 @@ verbose <- 2
 use_correlated_shocks <- TRUE
 
 ## ----model.constructor--------------------------------------------------------
-eq2sls <- new(
-  "eq_2sls",
-  key_columns,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  stochastic_adjustment_data,
-  verbose = verbose
-)
-eqfiml <- new(
-  "eq_fiml",
-  key_columns,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  stochastic_adjustment_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+eqmdl <- new(
+    "equilibrium_model",
+    key_columns,
+    quantity_column, price_column,
+    demand_specification, paste0(price_column, " + ", supply_specification),
+    stochastic_adjustment_data,
+    use_correlated_shocks = use_correlated_shocks, verbose = verbose
 )
 bsmdl <- new(
   "diseq_basic",
@@ -125,14 +117,14 @@ use_heteroscedasticity_consistent_errors <- TRUE
 cluster_errors_by <- c("id")
 
 ## ----estimation.execution-----------------------------------------------------
-eq2sls <- estimate(eq2sls)
-eqfiml_est <- estimate(eqfiml,
-  control = optimization_controls, method = optimization_method,
-  cluster_errors_by = cluster_errors_by
+eqmdl_reg <- estimate(eqmdl, method = "2SLS")
+eqmdl_est <- estimate(eqmdl,
+    control = optimization_controls, method = optimization_method,
+    cluster_errors_by = cluster_errors_by
 )
 bsmdl_est <- estimate(bsmdl,
-  control = optimization_controls, method = optimization_method,
-  use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
+    control = optimization_controls, method = optimization_method,
+    use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
 )
 drmdl_est <- estimate(drmdl,
   control = optimization_controls, method = optimization_method,
@@ -218,9 +210,9 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 }
 
 ## ----analysis.summaries-------------------------------------------------------
-summary(eq2sls@first_stage_model)
-summary(eq2sls@system_model)
-bbmle::summary(eqfiml_est)
+summary(eqmdl_reg$first_stage_model)
+summary(eqmdl_reg$system_model)
+bbmle::summary(eqmdl_est)
 bbmle::summary(bsmdl_est)
 bbmle::summary(damdl_est)
 bbmle::summary(samdl_est)

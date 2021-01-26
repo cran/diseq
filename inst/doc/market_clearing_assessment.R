@@ -28,7 +28,7 @@ rho_ds <- 0.5
 seed <- 443
 
 eq_data <- simulate_model_data(
-  "eq_fiml", nobs, tobs,
+  "equilibrium_model", nobs, tobs,
   alpha_d, beta_d0, beta_d, eta_d,
   alpha_s, beta_s0, beta_s, eta_s,
   NA, NA, c(NA),
@@ -48,16 +48,8 @@ verbose <- 2
 use_correlated_shocks <- TRUE
 
 ## ----model.constructor--------------------------------------------------------
-eq2sls <- new(
-  "eq_2sls",
-  key_columns,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  eq_data[eq_data$date != 1, ],
-  verbose = verbose
-)
-eqfiml <- new(
-  "eq_fiml",
+eqmdl <- new(
+  "equilibrium_model",
   key_columns,
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
@@ -86,8 +78,8 @@ optimization_method <- "BFGS"
 optimization_controls <- list(maxit = 10000, reltol = 1e-8)
 
 ## ----estimation.execution-----------------------------------------------------
-eq2sls <- estimate(eq2sls)
-eqfiml_est <- estimate(eqfiml,
+eqmdl_reg <- estimate(eqmdl, method = "2SLS")
+eqmdl_est <- estimate(eqmdl,
   control = optimization_controls,
   method = optimization_method
 )
@@ -101,9 +93,9 @@ damdl_est <- estimate(damdl,
 )
 
 ## ----analysis.summaries-------------------------------------------------------
-summary(eq2sls@first_stage_model)
-summary(eq2sls@system_model)
-bbmle::summary(eqfiml_est)
+summary(eqmdl_reg$first_stage_model)
+summary(eqmdl_reg$system_model)
+bbmle::summary(eqmdl_est)
 bbmle::summary(bsmdl_est)
 bbmle::summary(damdl_est)
 
@@ -117,16 +109,16 @@ sim_coef <- c(
 )
 names(sim_coef) <- names(damdl_est@coef)
 
-dm_inc <- eq2sls@system_model$coefficients[
+dm_inc <- eqmdl_reg$system_model$coefficients[
   grep(
     "demand",
-    names(eq2sls@system_model$coefficients)
+    names(eqmdl_reg$system_model$coefficients)
   )
 ]
-sp_inc <- eq2sls@system_model$coefficients[
+sp_inc <- eqmdl_reg$system_model$coefficients[
   grep(
     "supply",
-    names(eq2sls@system_model$coefficients)
+    names(eqmdl_reg$system_model$coefficients)
   )
 ]
 lm_coef <- c(
@@ -136,10 +128,10 @@ lm_coef <- c(
   NA
 )
 
-eqfiml_coef <- append(
-  eqfiml_est@coef, c(NA),
-  after = which(names(eqfiml_est@coef) ==
-    get_prefixed_variance_variable(eqfiml@system@demand)) - 1
+eqmdl_coef <- append(
+  eqmdl_est@coef, c(NA),
+  after = which(names(eqmdl_est@coef) ==
+    get_prefixed_variance_variable(eqmdl@system@demand)) - 1
 )
 
 bsmdl_coef <- append(
@@ -152,9 +144,9 @@ damdl_coef <- damdl_est@coef
 
 comp <- tibble::tibble(
   parameter = names(sim_coef),
-  sim = sim_coef, lm = lm_coef, fi = eqfiml_coef,
+  sim = sim_coef, lm = lm_coef, fi = eqmdl_coef,
   bm = bsmdl_coef, da = damdl_coef,
-  lmerr = abs(lm_coef - sim_coef), fierr = abs(eqfiml_coef - sim_coef),
+  lmerr = abs(lm_coef - sim_coef), fierr = abs(eqmdl_coef - sim_coef),
   bmerr = abs(bsmdl_coef - sim_coef), daerr = abs(damdl_coef - sim_coef)
 )
 comp
@@ -165,11 +157,11 @@ comp_means
 
 ## ----analysis.model.selection-------------------------------------------------
 model_names <- c(
-  eqfiml@model_type_string,
+  eqmdl@model_type_string,
   bsmdl@model_type_string, damdl@model_type_string
 )
 model_obs <- c(
-  get_number_of_observations(eqfiml),
+  get_number_of_observations(eqmdl),
   get_number_of_observations(bsmdl),
   get_number_of_observations(damdl)
 )
@@ -178,7 +170,7 @@ model_errors <- c(
   comp_means["bmerr"],
   comp_means["daerr"]
 )
-seltbl <- AIC(eqfiml_est, bsmdl_est, damdl_est) %>%
+seltbl <- AIC(eqmdl_est, bsmdl_est, damdl_est) %>%
   tibble::add_column(Model = model_names, .before = 1) %>%
   tibble::add_column(Obs. = model_obs, `Mean Error` = model_errors) %>%
   dplyr::rename(D.F. = df) %>%
