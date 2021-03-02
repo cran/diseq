@@ -12,7 +12,7 @@ estimate(object, ...)
   object,
   use_numerical_gradient = FALSE,
   use_numerical_hessian = TRUE,
-  use_heteroscedasticity_consistent_errors = FALSE,
+  use_heteroscedastic_errors = FALSE,
   cluster_errors_by = NA,
   ...
 )
@@ -23,9 +23,11 @@ estimate(object, ...)
 \item{object}{A model object.}
 
 \item{...}{Named parameter used in the model's estimation. These are passed further down
-to the estimation call. For the \code{\linkS4class{equilibrium_model}} model, the parameters are passed
-to \code{\link[systemfit]{systemfit}}, if the method is set to \code{2SLS}, or to \code{\link[bbmle]{mle2}} for any other method. For the rest of the models, the parameters are passed
-to \code{\link[bbmle]{mle2}}.}
+  to the estimation call. For the \code{\linkS4class{equilibrium_model}} model, the
+parameters are passed
+  to \code{\link[systemfit]{systemfit}}, if the method is set to \code{2SLS}, or to
+\code{\link[bbmle]{mle2}} for any other method. For the rest of the models, the parameters
+are passed to \code{\link[bbmle]{mle2}}.}
 
 \item{use_numerical_gradient}{If true, the gradient is calculated numerically. By default,
 all the models are estimated using the analytic expressions of their likelihoods'
@@ -35,7 +37,7 @@ gradients.}
 the numerically approximated Hessian. Calculated Hessians are only available for the basic
 and directional models.}
 
-\item{use_heteroscedasticity_consistent_errors}{If true, the variance-covariance matrix is
+\item{use_heteroscedastic_errors}{If true, the variance-covariance matrix is
 calculated using heteroscedasticity adjusted (Huber-White) standard errors.}
 
 \item{cluster_errors_by}{A vector with names of variables belonging in the data of the

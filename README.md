@@ -5,10 +5,10 @@ Models For Markets in Equilibrium and Disequilibrium
 
 <!-- badges: start -->
 
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![](https://cranlogs.r-pkg.org/badges/grand-total/diseq)
 ![](https://www.r-pkg.org/badges/version/diseq)
-![](https://www.r-pkg.org/badges/last-release/diseq) ![License:
-MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![](https://www.r-pkg.org/badges/last-release/diseq)
 <!-- badges: end -->
 
 The *diseq* package provides tools to estimate and analyze an
@@ -37,7 +37,10 @@ and supply equations of the system. For the system to be identifiable,
 at least one variable in the demand side must not be present in the
 supply side and vice versa. This model assumes that the market
 observations always represent equilibrium points in which the demanded
-and supplied quantities are equal.
+and supplied quantities are equal. The model can be estimated using
+two-stage least squares (Theil 1953) or full information maximum
+likelihood (Karapanagiotis 2020). Asymptotically, these methods are
+equivalent (Balestra and Varadharajan-Krishnakumar 1987).
 
 \[
 \begin{equation}
@@ -53,13 +56,14 @@ Q_{n t} &= D_{n t} = S_{n t}
 
 The basic model is the simplest disequilibrium model of the package as
 it basically imposes no assumption on the structure of the market
-regarding price movements. In contrast with the equilibrium model, the
-market-clearing condition is replaced by the short-side rule, which
-stipulates that the minimum between the demanded and supplied quantities
-is observed. The econometrician does not need to specify whether an
-observation belongs to the demand or the supply side since the
-estimation of the model will allocate the observations on the demand or
-supply side so that the likelihood is maximized.
+regarding price movements (Fair and Jaffee 1972; Maddala and Nelson
+1974). In contrast with the equilibrium model, the market-clearing
+condition is replaced by the short-side rule, which stipulates that the
+minimum between the demanded and supplied quantities is observed. The
+econometrician does not need to specify whether an observation belongs
+to the demand or the supply side since the estimation of the model will
+allocate the observations on the demand or supply side so that the
+likelihood is maximized.
 
 \[
 \begin{equation}
@@ -69,21 +73,22 @@ S_{n t} &= X_{s, n t}'\beta_{s} + u_{s, n t} \\
 Q_{n t} &= \min\{D_{n t},S_{n t}\}
 \end{aligned} \tag{BM} \label{basic}
 \end{equation}
-\] <img src='man/figures/diseq_basic_model.png'/>
+\] <img src='man/figures/diseq_basic.png'/>
 
 ## The directional disequilibrium model
 
 The directional model attaches an additional equation to the system of
 the basic model. The added equation is a sample separation condition
-based on the direction of the price movements. When prices increase at a
-given date, an observation is assumed to belong on the supply side. When
-prices fall, an observation is assumed to belong in the demand side. In
-short, this condition separates the sample before the estimation and
-uses this separation as additional information in the estimation
-procedure. Although, when appropriate, more information improves
-estimations, it also, when inaccurate, intensifies misspecification
-problems. Therefore, the additional structure of the directional model
-does not guarantee better estimates in comparison with the basic model.
+based on the direction of the price movements (Fair and Jaffee 1972;
+Maddala and Nelson 1974). When prices increase at a given date, an
+observation is assumed to belong on the supply side. When prices fall,
+an observation is assumed to belong in the demand side. In short, this
+condition separates the sample before the estimation and uses this
+separation as additional information in the estimation procedure.
+Although, when appropriate, more information improves estimations, it
+also, when inaccurate, intensifies misspecification problems. Therefore,
+the additional structure of the directional model does not guarantee
+better estimates in comparison with the basic model.
 
 \[
 \begin{equation}
@@ -94,7 +99,7 @@ Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
 \Delta P_{n t} &\ge 0 \implies D_{n t} \ge S_{n t}
 \end{aligned} \tag{DM} \label{directional}
 \end{equation}
-\] <img src='man/figures/diseq_directional_model.png'/>
+\] <img src='man/figures/diseq_directional.png'/>
 
 ## A disequilibrium model with deterministic price dynamics
 
@@ -103,14 +108,14 @@ the demand or supply-side based in a binary fashion, which is not always
 flexible, as observations that correspond to large shortages/surpluses
 are treated the same with observations that correspond to small
 shortages/ surpluses. The deterministic adjustment model of the package
-replaces this binary separation rule with a quantitative one. The
-magnitude of the price movements is analogous to the magnitude of
-deviations from the market-clearing condition. This model offers a
-flexible estimation alternative, with one extra degree of freedom in the
-estimation of price dynamics, that accounts for market forces that are
-in alignment with standard economic reasoning. By letting \(\gamma\)
-approach zero, the equilibrium model can be obtained as a limiting case
-of this model.
+replaces this binary separation rule with a quantitative one (Fair and
+Jaffee 1972; Maddala and Nelson 1974). The magnitude of the price
+movements is analogous to the magnitude of deviations from the
+market-clearing condition. This model offers a flexible estimation
+alternative, with one extra degree of freedom in the estimation of price
+dynamics, that accounts for market forces that are in alignment with
+standard economic reasoning. By letting \(\gamma\) approach zero, the
+equilibrium model can be obtained as a limiting case of this model.
 
 \[
 \begin{equation}
@@ -121,7 +126,7 @@ Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
 \Delta P_{n t} &= \frac{1}{\gamma} \left( D_{n t} - S_{n t} \right)
 \end{aligned} \tag{DA} \label{deterministic_adjustment}
 \end{equation}
-\] <img src='man/figures/diseq_deterministic_adjustment_model.png'/>
+\] <img src='man/figures/diseq_deterministic_adjustment.png'/>
 
 ## A disequilibrium model with stochastic price dynamics
 
@@ -130,10 +135,11 @@ deterministic adjustment model by adding additional explanatory
 variables and a stochastic term. The latter term in particular makes the
 price adjustment mechanism stochastic and, deviating from the structural
 assumptions of models \((DA)\) and \((DM)\), abstains from imposing any
-separation assumption on the sample. The estimation of this model offers
-the highest degree of freedom, accompanied, however, by a significant
-increase in estimation complexity, which can hinder the stability of the
-procedure and the numerical accuracy of the outcomes.
+separation assumption on the sample (Maddala and Nelson 1974; Quandt and
+Ramsey 1978). The estimation of this model offers the highest degree of
+freedom, accompanied, however, by a significant increase in estimation
+complexity, which can hinder the stability of the procedure and the
+numerical accuracy of the outcomes.
 
 \[
 \begin{equation}
@@ -144,9 +150,9 @@ Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
 \Delta P_{n t} &= \frac{1}{\gamma} \left( D_{n t} - S_{n t} \right) +  X_{p, n t}'\beta_{p} + u_{p, n t}
 \end{aligned} \tag{SA} \label{stochastic_adjustment}
 \end{equation}
-\] <img src='man/figures/diseq_stochastic_adjustment_model.png'/>
+\] <img src='man/figures/diseq_stochastic_adjustment.png'/>
 
-# Installation
+# Installation and documentation
 
 The released version of
 [*diseq*](https://CRAN.R-project.org/package=diseq) can be installed
@@ -166,7 +172,10 @@ To see it type the command
 vignette('basic_usage')
 ```
 
-You can find the documentation of the package by typing
+Online documentation is available for both the
+[released](https://www.diseq.pikappa.eu) and
+[in-development](https://www.diseq.pikappa.eu/dev/) versions of the
+package. The documentation files can also accessed in `R` by typing
 
 ``` r
 ?? diseq
@@ -282,38 +291,8 @@ est <- estimate(mdl)
 bbmle::summary(est)
 ```
 
-    ## Maximum likelihood estimation
-    ## 
-    ## Call:
-    ## `bbmle::mle2`(list(skip.hessian = FALSE, start = c(D_P = 2.20196877751699, 
-    ## D_CONST = 11.2388922841303, D_Xd1 = 0.270903396323925, D_Xd2 = -0.0866785170449159, 
-    ## D_X1 = 1.44062383641357, D_X2 = 4.46769000498207, S_P = 2.19994905762293, 
-    ## S_CONST = 10.2218850028638, S_Xs1 = 0.59622703822817, S_X1 = 1.43857649730766, 
-    ## S_X2 = 4.46672975897316, D_VARIANCE = 1, S_VARIANCE = 1, RHO = 0
-    ## ), method = "BFGS", minuslogl = function (...) 
-    ## minus_log_likelihood(object, ...), gr = function (...) 
-    ## gradient(object, ...)))
-    ## 
-    ## Coefficients:
-    ##              Estimate Std. Error  z value  Pr(z)    
-    ## D_P        -1.9277826  0.0643871 -29.9405 <2e-16 ***
-    ## D_CONST    12.7187450  0.1665723  76.3557 <2e-16 ***
-    ## D_Xd1       2.1041794  0.0386208  54.4831 <2e-16 ***
-    ## D_Xd2      -0.6396308  0.0293756 -21.7742 <2e-16 ***
-    ## D_X1        3.4902260  0.0398746  87.5300 <2e-16 ***
-    ## D_X2        6.2935478  0.0385864 163.1028 <2e-16 ***
-    ## S_P         2.8065335  0.0120090 233.7023 <2e-16 ***
-    ## S_CONST    10.1644425  0.0494381 205.5993 <2e-16 ***
-    ## S_Xs1       0.6782140  0.0097622  69.4737 <2e-16 ***
-    ## S_X1        1.1295126  0.0104475 108.1137 <2e-16 ***
-    ## S_X2        4.1981877  0.0103540 405.4635 <2e-16 ***
-    ## D_VARIANCE  1.0177756  0.0303119  33.5767 <2e-16 ***
-    ## S_VARIANCE  1.0026251  0.0074199 135.1273 <2e-16 ***
-    ## RHO        -0.0238756  0.0376718  -0.6338 0.5262    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## -2 log L: 138110.5
+    ## Length  Class   Mode 
+    ##      1   mle2     S4
 
 # Design and functionality
 
@@ -338,7 +317,7 @@ disequilibrium models are
 The package organizes these classes in a simple object oriented
 hierarchy.
 
-<img src='man/figures/design.png' width="100%" align="center" />
+<img src='man/figures/design.png' align="center" />
 
 Concerning post estimation analysis, the package offers functionality to
 calculate
@@ -366,24 +345,110 @@ estimation of the other three disequilibrium models of *diseq*.
 
 # Planned extensions
 
-The package is planned to be expanded in two ways.
+The package is planned to be expanded in the following ways:
 
-  - Firstly, it should become more inclusive by adding additional models
-    and methods for the estimation of markets and their forces.
-  - Secondly, the implementation is currently written directly in *R*
-    and is single-threaded using only one processor for the estimations
-    of the models. For the numerically intensive likelihood
+  - Firstly, it is planned for the package to become more inclusive by
+    adding additional market models.
+  - Secondly, the main implementation is currently written directly in
+    *R* and is single-threaded using only one processor for the
+    estimations of the models. For the numerically intensive likelihood
     optimizations that the package employs, this results to extended
     execution times when the models are estimated using large datasets.
-    The estimation of the models should be gradually re-implemented in
-    *C++* using a concurrent design.
+    Alternative likelihood optimizations are gradually implemented in
+    *C++* using a concurrent design. The equilibrium implementation is
+    already implemented. It is planned for future versions to provide
+    *C++* implementations also for the remaining models.
+  - Thirdly, it is planned to include single-command functionality for
+    the market-clearing tests (Karapanagiotis 2020; Hwang 1980; Quandt
+    1978).
+  - Fourthly, it is planned to include additional estimation methods
+    (Zilinskas and Bogle 2006; Quandt and Ramsey 1978).
 
 # Contributors
 
-Pantelis Karapanagiotis
+[Pantelis Karapanagiotis](https://www.pikappa.eu)
 
 Feel free to join, share, contribute, distribute.
 
 # License
 
 The code is distributed under the MIT License.
+
+# References
+
+<div id="refs" class="references">
+
+<div id="ref-balestra1987">
+
+Balestra, Pietro, and Jayalakshmi Varadharajan-Krishnakumar. 1987. “Full
+information estimations of a system of simultaneous equations with error
+component structure.” *Econometric Theory* 3 (2): 223–46.
+<https://doi.org/10.1017/S0266466600010318>.
+
+</div>
+
+<div id="ref-fair1972">
+
+Fair, Ray C, and Dwight M Jaffee. 1972. “Methods of Estimation for
+Markets in Disequilibrium.” *Econometrica* 40 (3): 497–514.
+<https://doi.org/10.2307/1913181>.
+
+</div>
+
+<div id="ref-hwang1980">
+
+Hwang, Hae shin. 1980. “A test of a disequilibrium model.” *Journal of
+Econometrics* 12 (3): 319–33.
+<https://doi.org/10.1016/0304-4076(80)90059-7>.
+
+</div>
+
+<div id="ref-karapanagiotis2020invisible">
+
+Karapanagiotis, Pantelis. 2020. “Invisible Market Forces with Observable
+Effects.” <https://doi.org/10.2139/ssrn.3525622>.
+
+</div>
+
+<div id="ref-maddala1974">
+
+Maddala, G. S., and Forrest D. Nelson. 1974. “Maximum Likelihood Methods
+for Models of Markets in Disequilibrium.” *Econometrica* 42 (6):
+1013–30.
+
+</div>
+
+<div id="ref-quandt1978tests">
+
+Quandt, Richard E. 1978. “Tests of the Equilibrium vs. Disequilibrium
+Hypotheses.” *International Economic Review* 19 (2): 435.
+<https://doi.org/10.2307/2526311>.
+
+</div>
+
+<div id="ref-quandt1978estimating">
+
+Quandt, Richard E., and James B. Ramsey. 1978. “Estimating mixtures of
+normal distributions and switching regressions.” *Journal of the
+American Statistical Association* 73 (364): 730–38.
+<https://doi.org/10.1080/01621459.1978.10480085>.
+
+</div>
+
+<div id="ref-theil1953">
+
+Theil, H. 1953. “Repeated least squares applied to complete equation
+systems.” *The Hague: Central Planning Bureau*, 2–5.
+
+</div>
+
+<div id="ref-zilinskas2006">
+
+Zilinskas, Julius, and Ian David Lockhart Bogle. 2006. “Balanced random
+interval arithmetic in market model estimation.” *European Journal of
+Operational Research* 175 (3): 1367–78.
+<https://doi.org/10.1016/j.ejor.2005.02.013>.
+
+</div>
+
+</div>

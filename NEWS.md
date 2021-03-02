@@ -1,3 +1,67 @@
+# diseq 0.1.5
+
+* Deployed development documentation website.
+
+# diseq 0.1.4
+
+* Cumulative patch of CRAN version.
+
+# diseq 0.1.3.9012
+
+* Updated the description entry of the `DESCRIPTION` file.
+* Shortened `use_heteroscedasticity_consistent_errors` variable of `estimate` method to `use_heteroscedastic_errors`.
+
+# diseq 0.1.3.9011
+
+* Added python script for creating the `README` figures.
+
+# diseq 0.1.3.9010
+
+* Corrected calls to `system.file`.
+
+# diseq 0.1.3.9009
+
+* Updated `README.md`.
+* Enclosed the plot example with `dontrun` instead of `donttest`.
+
+# diseq 0.1.3.9008
+
+* Added `png` and `grid` to dependencies.
+
+# diseq 0.1.3.9007
+
+* Added `plot` method for the all model classes.
+
+# diseq 0.1.3.9006
+
+* Added `plot` method for the equilibrium and basic disequilibrium model classes.
+* Patched model initialization to avoid mutate warnings.
+
+# diseq 0.1.3.9005
+
+* Added `summary` method for the front-end model classes.
+* Documentation improvements.
+* Added online documentation link in `README.Rmd`
+* Corrected link in the documentation of the summary method.
+
+# diseq 0.1.3.9004
+
+* Added `show` method for the front-end model classes.
+
+# diseq 0.1.3.9003
+
+* Removed `compile_commands.json` from source control.
+* Modified the simulation parameters of the market clearing assessment vignette.
+
+# diseq 0.1.3.9002
+
+* Included a reference section title in the README file.
+
+# diseq 0.1.3.9001
+
+* Added documentation URL in DESCRIPTION.
+* Added bibliography in the README file.
+
 # diseq 0.1.3
 
 * Patched `M1mac` additional issues: Added compilation flag for availability of `GSL`. The native code can be compiled also in systems without `GSL`, albeit offering an empty shell functionality for the moment.

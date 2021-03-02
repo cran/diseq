@@ -474,7 +474,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>optimization_method &lt;-<span class="st"> &quot;BFGS&quot;</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>optimization_controls &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">REPORT =</span> <span class="dv">10</span>, <span class="dt">maxit =</span> <span class="dv">10000</span>, <span class="dt">reltol =</span> <span class="fl">1e-6</span>)</span>
-<span id="cb11-3"><a href="#cb11-3"></a>use_heteroscedasticity_consistent_errors &lt;-<span class="st"> </span><span class="ot">TRUE</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>use_heteroscedastic_errors &lt;-<span class="st"> </span><span class="ot">TRUE</span></span>
 <span id="cb11-4"><a href="#cb11-4"></a>cluster_errors_by &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span></code></pre></div>
 <p>Then, estimate the models. See the documentation for more options.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>eqmdl_reg &lt;-<span class="st"> </span><span class="kw">estimate</span>(eqmdl, <span class="dt">method =</span> <span class="st">&quot;2SLS&quot;</span>)</span>
@@ -484,11 +484,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb12-5"><a href="#cb12-5"></a>)</span>
 <span id="cb12-6"><a href="#cb12-6"></a>bsmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(bsmdl,</span>
 <span id="cb12-7"><a href="#cb12-7"></a>    <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-8"><a href="#cb12-8"></a>    <span class="dt">use_heteroscedasticity_consistent_errors =</span> use_heteroscedasticity_consistent_errors</span>
+<span id="cb12-8"><a href="#cb12-8"></a>    <span class="dt">use_heteroscedastic_errors =</span> use_heteroscedastic_errors</span>
 <span id="cb12-9"><a href="#cb12-9"></a>)</span>
 <span id="cb12-10"><a href="#cb12-10"></a>drmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(drmdl,</span>
 <span id="cb12-11"><a href="#cb12-11"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-12"><a href="#cb12-12"></a>  <span class="dt">use_heteroscedasticity_consistent_errors =</span> use_heteroscedasticity_consistent_errors</span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="dt">use_heteroscedastic_errors =</span> use_heteroscedastic_errors</span>
 <span id="cb12-13"><a href="#cb12-13"></a>)</span>
 <span id="cb12-14"><a href="#cb12-14"></a>damdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(damdl,</span>
 <span id="cb12-15"><a href="#cb12-15"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
@@ -649,9 +649,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-46"><a href="#cb16-46"></a><span class="co">#&gt; </span></span>
 <span id="cb16-47"><a href="#cb16-47"></a><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></span>
 <span id="cb16-48"><a href="#cb16-48"></a><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></span>
-<span id="cb16-49"><a href="#cb16-49"></a><span class="co">#&gt; &lt;environment: 0x55baa990ab90&gt;</span></span>
+<span id="cb16-49"><a href="#cb16-49"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
 <span id="cb16-50"><a href="#cb16-50"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-51"><a href="#cb16-51"></a><span class="co">#&gt; &lt;environment: 0x55baa990ab90&gt;</span></span>
+<span id="cb16-51"><a href="#cb16-51"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
 <span id="cb16-52"><a href="#cb16-52"></a><span class="co">#&gt; </span></span>
 <span id="cb16-53"><a href="#cb16-53"></a><span class="co">#&gt;              Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
 <span id="cb16-54"><a href="#cb16-54"></a><span class="co">#&gt; (Intercept) 25.151899   4.501475  5.58748 2.3643e-08 ***</span></span>
@@ -671,9 +671,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-68"><a href="#cb16-68"></a><span class="co">#&gt; </span></span>
 <span id="cb16-69"><a href="#cb16-69"></a><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></span>
 <span id="cb16-70"><a href="#cb16-70"></a><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></span>
-<span id="cb16-71"><a href="#cb16-71"></a><span class="co">#&gt; &lt;environment: 0x55baa990ab90&gt;</span></span>
+<span id="cb16-71"><a href="#cb16-71"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
 <span id="cb16-72"><a href="#cb16-72"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-73"><a href="#cb16-73"></a><span class="co">#&gt; &lt;environment: 0x55baa990ab90&gt;</span></span>
+<span id="cb16-73"><a href="#cb16-73"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
 <span id="cb16-74"><a href="#cb16-74"></a><span class="co">#&gt; </span></span>
 <span id="cb16-75"><a href="#cb16-75"></a><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
 <span id="cb16-76"><a href="#cb16-76"></a><span class="co">#&gt; (Intercept) -2.7883417  3.9483795 -0.70620   0.480081    </span></span>

@@ -113,7 +113,7 @@ samdl <- new(
 ## ----estimation.parameters.method---------------------------------------------
 optimization_method <- "BFGS"
 optimization_controls <- list(REPORT = 10, maxit = 10000, reltol = 1e-6)
-use_heteroscedasticity_consistent_errors <- TRUE
+use_heteroscedastic_errors <- TRUE
 cluster_errors_by <- c("id")
 
 ## ----estimation.execution-----------------------------------------------------
@@ -124,11 +124,11 @@ eqmdl_est <- estimate(eqmdl,
 )
 bsmdl_est <- estimate(bsmdl,
     control = optimization_controls, method = optimization_method,
-    use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
+    use_heteroscedastic_errors = use_heteroscedastic_errors
 )
 drmdl_est <- estimate(drmdl,
   control = optimization_controls, method = optimization_method,
-  use_heteroscedasticity_consistent_errors = use_heteroscedasticity_consistent_errors
+  use_heteroscedastic_errors = use_heteroscedastic_errors
 )
 damdl_est <- estimate(damdl,
   control = optimization_controls, method = optimization_method,

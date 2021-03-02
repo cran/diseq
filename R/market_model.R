@@ -1,8 +1,10 @@
 #' @include model_logger.R
 #' @include system_base.R
 #' @importFrom bbmle parnames mle2
-#' @importFrom stats formula lm model.matrix na.omit median qnorm sd var
+#' @importFrom grid grid.raster
+#' @importFrom png readPNG
 #' @importFrom rlang :=
+#' @importFrom stats formula lm model.matrix na.omit median qnorm sd var
 #' @import dplyr magrittr tibble
 
 setClassUnion("characterOrNULL", c("character", "NULL"))
@@ -37,6 +39,7 @@ setClass(
         ## Model data
         model_tibble = "tbl_df",
         model_type_string = "character",
+        market_type_string = "character",
         system = "system_base"
     )
 )
@@ -144,8 +147,8 @@ setMethod(
             print_warning(.Object@logger, "Dropping ", drops, " rows due to omitted values.")
         }
 
-        .Object@model_tibble <- .Object@model_tibble %>%
-            dplyr::mutate_if(is.factor, function(x) {
+        remove_unused_levels <- function(x) {
+            if (is.factor(x)) {
                 initial_levels <- levels(x)
                 x <- factor(x)
                 remaining_levels <- levels(x)
@@ -156,8 +159,11 @@ setMethod(
                         paste0(removed_levels, collapse = ", "), "' level(s)."
                     )
                 }
-                x
-            })
+            }
+            x
+        }
+        .Object@model_tibble <- tibble::as_tibble(sapply(.Object@model_tibble,
+                                                         remove_unused_levels))
 
         ## Create primary key column
         key_columns_syms <- rlang::syms(.Object@key_columns)
@@ -177,7 +183,9 @@ setMethod(
 
             .Object@model_tibble <- .Object@model_tibble %>%
                 dplyr::group_by(!!!key_syms) %>%
-                dplyr::mutate(!!lagged_price_sym := dplyr::lag(!!price_sym, order_by = !!time_sym)) %>%
+                dplyr::mutate(
+                    !!lagged_price_sym := dplyr::lag(!!price_sym, order_by = !!time_sym)
+                ) %>%
                 dplyr::ungroup()
 
             drop_rows <- .Object@model_tibble %>%
@@ -223,6 +231,129 @@ setMethod(
     }
 )
 
+#' Prints a short description of the model.
+#'
+#' Sends basic information about the model to standard output.
+#' @param object A model object.
+#' @examples
+#' \donttest{
+#' simulated_data <- simulate_model_data(
+#'     "diseq_stochastic_adjustment", 500, 3, # model type, observed entities, observed time points
+#'     -0.1, 9.8, c(0.3, -0.2), c(0.6, -0.1), # demand coefficients
+#'     0.1, 5.1, c(0.9), c(-0.5, 0.2), # supply coefficients
+#'     1.2, 3.1, c(0.8) # price equation
+#' )
+#'
+#' # initialize the model
+#' model <- new(
+#'     "diseq_stochastic_adjustment", # model type
+#'     c("id", "date"), "date", "Q", "P", # keys, time, quantity, and price variables
+#'     "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'     "Xp1", # price dynamics specification
+#'     simulated_data, # data
+#'     use_correlated_shocks = TRUE # allow shocks to be correlated
+#' )
+#'
+#' # print the model
+#' show(model)
+#' }
+#' @rdname show
+#' @export
+setMethod("show", signature(object = "market_model"), function(object) {
+    cat(sprintf(
+        "\n%s Model for Markets in %s\n",
+        object@model_type_string, object@market_type_string
+    ))
+    show_implementation(object@system)
+    cat(sprintf(
+        "  %-18s: %s\n", "Shocks",
+        ifelse(object@system@correlated_shocks, "Correlated", "Independent")
+    ))
+})
+
+#' Summarizes the model.
+#'
+#' Prints basic information about the passed model object. In addition to the output of
+#' the \code{\link{show}} method, \code{summary} prints
+#' - the number of observations,
+#' - the number of observations in each equation for models with sample separation, and
+#' - various categories of variables.
+#' @param object A model object.
+#' @examples
+#' \donttest{
+#' simulated_data <- simulate_model_data(
+#'     "diseq_stochastic_adjustment", 500, 3, # model type, observed entities, observed time points
+#'     -0.1, 9.8, c(0.3, -0.2), c(0.6, -0.1), # demand coefficients
+#'     0.1, 5.1, c(0.9), c(-0.5, 0.2), # supply coefficients
+#'     1.2, 3.1, c(0.8) # price equation
+#' )
+#'
+#' # initialize the model
+#' model <- new(
+#'     "diseq_stochastic_adjustment", # model type
+#'     c("id", "date"), "date", "Q", "P", # keys, time, quantity, and price variables
+#'     "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'     "Xp1", # price dynamics specification
+#'     simulated_data, # data
+#'     use_correlated_shocks = TRUE # allow shocks to be correlated
+#' )
+#'
+#' # print the model
+#' summary(model)
+#' }
+#' @rdname summary
+#' @export
+setMethod("summary", signature(object = "market_model"), function(object) {
+    show(object)
+    cat(sprintf("  %-18s: %d\n", "Nobs", nrow(object@model_tibble)))
+    summary_implementation(object@system)
+    cat(sprintf(
+        "  %-18s: %s\n", "Key Var(s)",
+        paste0(object@key_columns, collapse = ", ")
+    ))
+    if (!is.null(object@time_column)) {
+        cat(sprintf(
+            "  %-18s: %s\n", "Time Var",
+            paste0(object@time_column, collapse = ", ")
+        ))
+    }
+})
+
+#' Plots the model.
+#'
+#' Displays a graphical illustration of the passed model object.
+#' @param x A model object.
+#' @examples
+#' \donttest{
+#' simulated_data <- simulate_model_data(
+#'     "diseq_basic", 500, 3, # model type, observed entities, observed time points
+#'     -0.9, 8.9, c(0.03, -0.02), c(-0.03, -0.01), # demand coefficients
+#'     0.9, 4.2, c(0.03), c(0.05, 0.02), # supply coefficients
+#' )
+#'
+#' # initialize the model
+#' model <- new(
+#'     "diseq_basic", # model type
+#'     c("id", "date"), "Q", "P", # keys, time, quantity, and price variables
+#'     "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'     simulated_data, # data
+#'     use_correlated_shocks = TRUE # allow shocks to be correlated
+#' )
+#'
+#' # print the model
+#' plot(model)
+#' }
+#' @rdname plot
+#' @export
+setMethod("plot", signature(x = "market_model"), function(x) {
+    filename <- paste0(class(x)[1], ".png")
+    path <- system.file("help", "figures", filename, package = "diseq")
+    if (path == "") {
+      path <- system.file("man", "figures", filename, package = "diseq")
+    }
+    grid::grid.raster(png::readPNG(path))
+})
+
 #' Minus log-likelihood.
 #'
 #' Returns the opposite of the log-likelihood. The likelihood functions are based on
@@ -260,9 +391,11 @@ setGeneric("hessian", function(object, parameters) {
 #' \code{\link[systemfit]{systemfit}}.
 #' @param object A model object.
 #' @param ... Named parameter used in the model's estimation. These are passed further down
-#'   to the estimation call. For the \code{\linkS4class{equilibrium_model}} model, the parameters are passed
-#'   to \code{\link[systemfit]{systemfit}}, if the method is set to \code{2SLS}, or to \code{\link[bbmle]{mle2}} for any other method. For the rest of the models, the parameters are passed
-#'   to \code{\link[bbmle]{mle2}}.
+#'   to the estimation call. For the \code{\linkS4class{equilibrium_model}} model, the
+#' parameters are passed
+#'   to \code{\link[systemfit]{systemfit}}, if the method is set to \code{2SLS}, or to
+#' \code{\link[bbmle]{mle2}} for any other method. For the rest of the models, the parameters
+#' are passed to \code{\link[bbmle]{mle2}}.
 #' @return The object that holds the estimation result.
 #' @rdname estimate
 #' @examples
@@ -300,7 +433,7 @@ setGeneric("estimate", function(object, ...) {
 #' @param use_numerical_hessian If true, the variance-covariance matrix is calculated using
 #' the numerically approximated Hessian. Calculated Hessians are only available for the basic
 #' and directional models.
-#' @param use_heteroscedasticity_consistent_errors If true, the variance-covariance matrix is
+#' @param use_heteroscedastic_errors If true, the variance-covariance matrix is
 #' calculated using heteroscedasticity adjusted (Huber-White) standard errors.
 #' @param cluster_errors_by A vector with names of variables belonging in the data of the
 #' model. If the vector is supplied, the variance-covariance matrix is calculated by
@@ -308,7 +441,7 @@ setGeneric("estimate", function(object, ...) {
 setMethod(
     "estimate", signature(object = "market_model"),
     function(object, use_numerical_gradient = FALSE, use_numerical_hessian = TRUE,
-             use_heteroscedasticity_consistent_errors = FALSE, cluster_errors_by = NA, ...) {
+             use_heteroscedastic_errors = FALSE, cluster_errors_by = NA, ...) {
         va_args <- list(...)
 
         va_args$skip.hessian <- !use_numerical_hessian
@@ -338,7 +471,7 @@ setMethod(
             )
         }
 
-        if (use_heteroscedasticity_consistent_errors) {
+        if (use_heteroscedastic_errors) {
             est <- set_heteroscedasticity_consistent_errors(object, est)
         }
 
@@ -359,7 +492,8 @@ setMethod(
 #' \code{\link{estimate}} functionality is a fast, analysis-oriented alternative. If
 #' the \href{https://www.gnu.org/software/gsl/doc/html/multimin.html}{\code{GSL}} is not
 #' available, the function returns a trivial result list with status set equal to -1. If the
-#' \href{https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t}{C++17 execution policies}
+#' \href{https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t}{C++17
+#' execution policies}
 #' are available, the implementation of the optimization is parallelized.
 #' @param object A model object.
 #' @param start Initializing vector.
@@ -557,25 +691,29 @@ setMethod("get_number_of_observations", signature(object = "market_model"), func
     nrow(object@model_tibble)
 })
 
-setMethod("get_descriptives", signature(object = "market_model"), function(object, variables = NULL) {
-    if (is.null(variables)) {
-        variables <- object@columns
-    }
-    variables <- variables[sapply(variables, function(c) !is.factor(object@model_tibble[, c]))]
-    tibble::as_tibble(apply(
-        object@model_tibble[, variables], 2,
-        function(x) {
-            c(
-                nobs = length(x), nmval = sum(is.na(x)),
-                min = min(x), max = max(x), range = max(x) - min(x),
-                sum = sum(x), median = median(x), mean = mean(x),
-                mean_se = sqrt(var(x) / length(x)),
-                mean_ce = qnorm(0.975) * sqrt(var(x) / length(x)),
-                var = var(x), sd = sd(x), coef_var = sd(x) / mean(x)
-            )
+setMethod(
+    "get_descriptives", signature(object = "market_model"),
+    function(object, variables = NULL) {
+        if (is.null(variables)) {
+            variables <- object@columns
         }
-    ), rownames = "col")
-})
+        variables <- variables[sapply(variables, function(c) !is.factor(object@model_tibble[, c]))]
+
+        tibble::as_tibble(apply(
+            object@model_tibble[, variables], 2,
+            function(x) {
+                c(
+                    nobs = length(x), nmval = sum(is.na(x)),
+                    min = min(x), max = max(x), range = max(x) - min(x),
+                    sum = sum(x), median = median(x), mean = mean(x),
+                    mean_se = sqrt(var(x) / length(x)),
+                    mean_ce = qnorm(0.975) * sqrt(var(x) / length(x)),
+                    var = var(x), sd = sd(x), coef_var = sd(x) / mean(x)
+                )
+            }
+        ), rownames = "col")
+    }
+)
 
 #' @rdname get_demand_descriptives
 setMethod("get_demand_descriptives", signature(object = "market_model"), function(object) {

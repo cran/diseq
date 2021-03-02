@@ -104,6 +104,14 @@ setMethod(
   }
 )
 
+setGeneric("show_implementation", function(object) {
+  standardGeneric("show_implementation")
+})
+
+setMethod("show_implementation", signature(object = "equation_base"), function(object) {
+    cat(sprintf("  %-18s: %s\n", object@name, deparse(object@formula)))
+})
+
 #' Constant coefficient variable name.
 #'
 #' The constant coefficient name is constructed by concatenating the equation prefix
