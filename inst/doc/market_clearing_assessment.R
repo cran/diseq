@@ -45,7 +45,7 @@ demand_specification <- paste0(price_column, " + Xd1 + Xd2 + X1 + X2")
 supply_specification <- "Xs1 + X1 + X2"
 price_specification <- "Xp1"
 verbose <- 2
-use_correlated_shocks <- TRUE
+correlated_shocks <- TRUE
 
 ## ----model.constructor--------------------------------------------------------
 eqmdl <- new(
@@ -54,7 +54,7 @@ eqmdl <- new(
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
   eq_data[eq_data$date != 1, ],
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 bsmdl <- new(
   "diseq_basic",
@@ -62,7 +62,7 @@ bsmdl <- new(
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
   eq_data[eq_data$date != 1, ],
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 damdl <- new(
   "diseq_deterministic_adjustment",
@@ -70,7 +70,7 @@ damdl <- new(
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
   eq_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 
 ## ----estimation.parameters----------------------------------------------------
@@ -131,13 +131,13 @@ lm_coef <- c(
 eqmdl_coef <- append(
   eqmdl_est@coef, c(NA),
   after = which(names(eqmdl_est@coef) ==
-    get_prefixed_variance_variable(eqmdl@system@demand)) - 1
+    prefixed_variance_variable(eqmdl@system@demand)) - 1
 )
 
 bsmdl_coef <- append(
   bsmdl_est@coef, c(NA),
   after = which(names(bsmdl_est@coef) ==
-    get_prefixed_variance_variable(bsmdl@system@demand)) - 1
+    prefixed_variance_variable(bsmdl@system@demand)) - 1
 )
 
 damdl_coef <- damdl_est@coef
@@ -161,9 +161,9 @@ model_names <- c(
   bsmdl@model_type_string, damdl@model_type_string
 )
 model_obs <- c(
-  get_number_of_observations(eqmdl),
-  get_number_of_observations(bsmdl),
-  get_number_of_observations(damdl)
+  number_of_observations(eqmdl),
+  number_of_observations(bsmdl),
+  number_of_observations(damdl)
 )
 model_errors <- c(
   comp_means["fierr"],

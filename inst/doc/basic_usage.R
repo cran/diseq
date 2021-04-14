@@ -65,16 +65,16 @@ price_specification <- "Xp1"
 verbose <- 2
 
 ## ----model.parameters.correlated_shocks---------------------------------------
-use_correlated_shocks <- TRUE
+correlated_shocks <- TRUE
 
 ## ----model.constructor--------------------------------------------------------
 eqmdl <- new(
-    "equilibrium_model",
-    key_columns,
-    quantity_column, price_column,
-    demand_specification, paste0(price_column, " + ", supply_specification),
-    stochastic_adjustment_data,
-    use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  "equilibrium_model",
+  key_columns,
+  quantity_column, price_column,
+  demand_specification, paste0(price_column, " + ", supply_specification),
+  stochastic_adjustment_data,
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 bsmdl <- new(
   "diseq_basic",
@@ -82,7 +82,7 @@ bsmdl <- new(
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
   stochastic_adjustment_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 drmdl <- new(
   "diseq_directional",
@@ -90,7 +90,7 @@ drmdl <- new(
   quantity_column, price_column,
   demand_specification, supply_specification,
   stochastic_adjustment_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 damdl <- new(
   "diseq_deterministic_adjustment",
@@ -98,7 +98,7 @@ damdl <- new(
   quantity_column, price_column,
   demand_specification, paste0(price_column, " + ", supply_specification),
   stochastic_adjustment_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 samdl <- new(
   "diseq_stochastic_adjustment",
@@ -107,71 +107,69 @@ samdl <- new(
   demand_specification, paste0(price_column, " + ", supply_specification),
   price_specification,
   stochastic_adjustment_data,
-  use_correlated_shocks = use_correlated_shocks, verbose = verbose
+  correlated_shocks = correlated_shocks, verbose = verbose
 )
 
 ## ----estimation.parameters.method---------------------------------------------
 optimization_method <- "BFGS"
 optimization_controls <- list(REPORT = 10, maxit = 10000, reltol = 1e-6)
-use_heteroscedastic_errors <- TRUE
-cluster_errors_by <- c("id")
 
 ## ----estimation.execution-----------------------------------------------------
 eqmdl_reg <- estimate(eqmdl, method = "2SLS")
 eqmdl_est <- estimate(eqmdl,
-    control = optimization_controls, method = optimization_method,
-    cluster_errors_by = cluster_errors_by
+  control = optimization_controls, method = optimization_method,
+  standard_errors = c("id")
 )
 bsmdl_est <- estimate(bsmdl,
-    control = optimization_controls, method = optimization_method,
-    use_heteroscedastic_errors = use_heteroscedastic_errors
+  control = optimization_controls, method = optimization_method,
+  standard_errors = "heteroscedastic"
 )
 drmdl_est <- estimate(drmdl,
   control = optimization_controls, method = optimization_method,
-  use_heteroscedastic_errors = use_heteroscedastic_errors
+  standard_errors = "heteroscedastic"
 )
 damdl_est <- estimate(damdl,
   control = optimization_controls, method = optimization_method,
-  cluster_errors_by = cluster_errors_by
+  standard_errors = c("id")
 )
 samdl_est <- estimate(samdl,
   control = optimization_controls, method = optimization_method,
-  cluster_errors_by = cluster_errors_by
+  standard_errors = c("id")
 )
 
 ## ----analysis.effects---------------------------------------------------------
 variables <- c(price_column, "Xd1", "Xd2", "X1", "X2", "Xs1")
 
 bsmdl_mme <- sapply(variables,
-  function(v) get_mean_marginal_effect(bsmdl, bsmdl_est, v),
+  function(v) mean_marginal_effect(bsmdl, bsmdl_est, v),
   USE.NAMES = FALSE
 )
 drmdl_mme <- sapply(variables,
-  function(v) get_mean_marginal_effect(drmdl, drmdl_est, v),
+  function(v) mean_marginal_effect(drmdl, drmdl_est, v),
   USE.NAMES = FALSE
 )
 damdl_mme <- sapply(variables,
-  function(v) get_mean_marginal_effect(damdl, damdl_est, v),
+  function(v) mean_marginal_effect(damdl, damdl_est, v),
   USE.NAMES = FALSE
 )
 samdl_mme <- sapply(variables,
-  function(v) get_mean_marginal_effect(samdl, samdl_est, v),
+  function(v) mean_marginal_effect(samdl, samdl_est, v),
   USE.NAMES = FALSE
 )
 bsmdl_mem <- sapply(variables,
-  function(v) get_marginal_effect_at_mean(bsmdl, bsmdl_est, v),
+  function(v) marginal_effect_at_mean(bsmdl, bsmdl_est, v),
   USE.NAMES = FALSE
 )
 drmdl_mem <- sapply(variables,
-  function(v) get_marginal_effect_at_mean(drmdl, drmdl_est, v),
+  function(v) marginal_effect_at_mean(drmdl, drmdl_est, v),
   USE.NAMES = FALSE
 )
 damdl_mem <- sapply(variables,
-  function(v) get_marginal_effect_at_mean(damdl, damdl_est, v),
+  function(v) marginal_effect_at_mean(damdl, damdl_est, v),
   USE.NAMES = FALSE
 )
 samdl_mem <- sapply(variables,
-  function(v) get_marginal_effect_at_mean(samdl, samdl_est, v),
+  function(v) marginal_effect_at_mean(samdl, samdl_est, v),
   USE.NAMES = FALSE
 )
 
@@ -183,9 +181,9 @@ cbind(
 ## ----analysis.estimates-------------------------------------------------------
 mdt <- tibble::add_column(
   bsmdl@model_tibble,
-  normalized_shortages = c(get_normalized_shortages(bsmdl, bsmdl_est@coef)),
-  shortage_probabilities = c(get_shortage_probabilities(bsmdl, bsmdl_est@coef)),
-  relative_shortages = c(get_relative_shortages(bsmdl, bsmdl_est@coef))
+  normalized_shortages = c(normalized_shortages(bsmdl, bsmdl_est@coef)),
+  shortage_probabilities = c(shortage_probabilities(bsmdl, bsmdl_est@coef)),
+  relative_shortages = c(relative_shortages(bsmdl, bsmdl_est@coef))
 )
 
 ## ----analysis.shortages-------------------------------------------------------
@@ -205,7 +203,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     ggplot2::geom_density() +
     ggplot2::ggtitle(paste0(
       "Normalized shortages density (",
-      get_model_description(bsmdl), ")"
+      model_description(bsmdl), ")"
     ))
 }
 
@@ -219,15 +217,15 @@ bbmle::summary(samdl_est)
 
 ## ----analysis.market_forces---------------------------------------------------
 market <- cbind(
-  demand = get_demanded_quantities(bsmdl, bsmdl_est@coef)[, 1],
-  supply = get_supplied_quantities(bsmdl, bsmdl_est@coef)[, 1]
+  demand = demanded_quantities(bsmdl, bsmdl_est@coef)[, 1],
+  supply = supplied_quantities(bsmdl, bsmdl_est@coef)[, 1]
 )
 summary(market)
 
 ## ----analysis.aggregation-----------------------------------------------------
 aggregates <- c(
-  demand = get_aggregate_demand(bsmdl, bsmdl_est@coef),
-  supply = get_aggregate_supply(bsmdl, bsmdl_est@coef)
+  demand = aggregate_demand(bsmdl, bsmdl_est@coef),
+  supply = aggregate_supply(bsmdl, bsmdl_est@coef)
 )
 aggregates
 

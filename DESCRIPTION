@@ -1,7 +1,7 @@
 Package: diseq
 Title: Estimation Methods for Markets in Equilibrium and Disequilibrium
-Version: 0.1.5
-Date: 2021-03-02
+Version: 0.2.1
+Date: 2021-04-14
 Authors@R: 
     person(given = "Pantelis",
            family = "Karapanagiotis",
@@ -19,8 +19,8 @@ Description: Provides estimation methods for markets in equilibrium and
     Karapanagiotis (2020) <doi:10.2139/ssrn.3525622>. Standard
     errors can be estimated by adjusting for heteroscedasticity or clustering.
     The equilibrium estimation constitutes a case of a system of linear,
-    simultaneous equations. The disequilibrium models,
-    instead, replace the market-clearing condition with a non-linear,
+    simultaneous equations. Instead, the disequilibrium models replace the
+    market-clearing condition with a non-linear,
     short-side rule and allow for different specifications of price dynamics. 
 Language: en-US
 URL: https://github.com/pi-kappa-devel/diseq/,
@@ -38,26 +38,28 @@ RoxygenNote: 7.1.1
 Suggests: ggplot2 (>= 3.0.0), knitr (>= 1.20), numDeriv (>=
         2016.8.1.1), rmarkdown (>= 1.10), testthat (>= 2.0.0)
 VignetteBuilder: knitr
-Collate: 'equation_base.R' 'system_base.R' 'equation_basic.R'
-        'system_basic.R' 'derivatives_basic.R'
-        'equation_deterministic_adjustment.R'
-        'system_deterministic_adjustment.R'
-        'derivatives_deterministic_adjustment.R'
-        'equation_directional.R' 'system_directional.R'
-        'derivatives_directional.R' 'system_fiml.R'
-        'derivatives_fiml.R' 'equation_stochastic_adjustment.R'
-        'system_stochastic_adjustment.R'
-        'derivatives_stochastic_adjustment.R' 'diseq.R'
+Collate: 'data.R' 'diseq.R' 'equation_base.R' 'system_base.R'
         'model_logger.R' 'market_model.R' 'disequilibrium_model.R'
         'diseq_basic.R' 'diseq_deterministic_adjustment.R'
         'diseq_directional.R' 'diseq_stochastic_adjustment.R'
-        'equilibrium_model.R' 'model_simulation.R'
+        'equation_basic.R' 'equation_deterministic_adjustment.R'
+        'equation_directional.R' 'equation_stochastic_adjustment.R'
+        'equilibrium_model.R' 'system_basic.R' 'gradient_basic.R'
+        'system_deterministic_adjustment.R'
+        'gradient_deterministic_adjustment.R' 'system_directional.R'
+        'gradient_directional.R' 'system_equilibrium.R'
+        'gradient_equilibrium.R' 'system_stochastic_adjustment.R'
+        'gradient_stochastic_adjustment.R' 'hessian_basic.R'
+        'hessian_directional.R' 'likelihood_basic.R'
+        'likelihood_deterministic_adjustment.R'
+        'likelihood_directional.R' 'likelihood_equilibrium.R'
+        'likelihood_stochastic_adjustment.R' 'model_simulation.R'
 LinkingTo: Rcpp, RcppGSL
 SystemRequirements: C++11
 NeedsCompilation: yes
-Packaged: 2021-03-02 09:02:06 UTC; ntelispak
+Packaged: 2021-04-14 10:36:59 UTC; ntelispak
 Author: Pantelis Karapanagiotis [aut, cre]
     (<https://orcid.org/0000-0001-9871-1908>)
 Maintainer: Pantelis Karapanagiotis <pikappa.devel@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-03-02 09:50:02 UTC
+Date/Publication: 2021-04-14 11:20:02 UTC

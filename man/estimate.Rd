@@ -10,10 +10,9 @@ estimate(object, ...)
 
 \S4method{estimate}{market_model}(
   object,
-  use_numerical_gradient = FALSE,
-  use_numerical_hessian = TRUE,
-  use_heteroscedastic_errors = FALSE,
-  cluster_errors_by = NA,
+  gradient = "calculated",
+  hessian = "calculated",
+  standard_errors = "homoscedastic",
   ...
 )
 
@@ -29,20 +28,22 @@ parameters are passed
 \code{\link[bbmle]{mle2}} for any other method. For the rest of the models, the parameters
 are passed to \code{\link[bbmle]{mle2}}.}
 
-\item{use_numerical_gradient}{If true, the gradient is calculated numerically. By default,
-all the models are estimated using the analytic expressions of their likelihoods'
-gradients.}
+\item{gradient}{One of two potential options: `numerical` and `calculated`. By
+default, all the models are estimated using the analytic expressions of their
+likelihoods' gradients.}
 
-\item{use_numerical_hessian}{If true, the variance-covariance matrix is calculated using
-the numerically approximated Hessian. Calculated Hessians are only available for the basic
-and directional models.}
+\item{hessian}{One of three potential options: `skip`, `numerical`, and `calculated`.
+The default is to use the `calculated` Hessian for the model that expressions are
+available and the `numerical` Hessian in other cases. Calculated Hessian expressions
+are available for the basic and directional models.}
 
-\item{use_heteroscedastic_errors}{If true, the variance-covariance matrix is
-calculated using heteroscedasticity adjusted (Huber-White) standard errors.}
-
-\item{cluster_errors_by}{A vector with names of variables belonging in the data of the
-model. If the vector is supplied, the variance-covariance matrix is calculated by
-grouping the score matrix based on the passed variables.}
+\item{standard_errors}{One of three potential options: `homoscedastic`,
+`heteroscedastic`, or a vector with variables names for which standard error
+clusters are to be created. The default value is `homoscedastic`. If the option
+`heteroscedastic` is passed, the variance-covariance matrix is calculated using
+heteroscedasticity adjusted (Huber-White) standard errors. If the vector is
+supplied, the variance-covariance matrix is calculated by grouping the score matrix
+based on the passed variables.}
 
 \item{method}{A string specifying the estimation method. When the passed value is among
 \code{Nelder-Mead}, \code{BFGS}, \code{CG}, \code{L-BFGS-B}, \code{SANN},
@@ -86,7 +87,7 @@ model <- new(
   c("id", "date"), "Q", "P", # keys, quantity, and price variables
   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
   simulated_data, # data
-  use_correlated_shocks = TRUE # allow shocks to be correlated
+  correlated_shocks = TRUE # allow shocks to be correlated
 )
 
 # estimate the model object (by default the maximum optimization is using BFGS)

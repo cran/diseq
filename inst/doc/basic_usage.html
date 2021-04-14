@@ -410,24 +410,24 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <ul>
 <li>Should the estimation allow for correlated demand and supply shocks?</li>
 </ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>use_correlated_shocks &lt;-<span class="st"> </span><span class="ot">TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>correlated_shocks &lt;-<span class="st"> </span><span class="ot">TRUE</span></span></code></pre></div>
 <p>Using the above parameterization, construct the model objects. Here, we construct an equilibrium model and four disequilibrium models, using in all cases the same data simulated by the process based on the stochastic price adjustment model. Of course, this is only done to simplify the exposition of the functionality. The constructors of the models that use price dynamics information in the estimation, i.e. <code>diseq_directional</code>, <code>diseq_deterministic_adjustment</code>, and <code>diseq_stochastic_adjustment</code>, will automatically generate lagged prices and drop one observation per entity.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>eqmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-2"><a href="#cb10-2"></a>    <span class="st">&quot;equilibrium_model&quot;</span>,</span>
-<span id="cb10-3"><a href="#cb10-3"></a>    key_columns,</span>
-<span id="cb10-4"><a href="#cb10-4"></a>    quantity_column, price_column,</span>
-<span id="cb10-5"><a href="#cb10-5"></a>    demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
-<span id="cb10-6"><a href="#cb10-6"></a>    stochastic_adjustment_data,</span>
-<span id="cb10-7"><a href="#cb10-7"></a>    <span class="dt">use_correlated_shocks =</span> use_correlated_shocks, <span class="dt">verbose =</span> verbose</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="st">&quot;equilibrium_model&quot;</span>,</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  key_columns,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>  quantity_column, price_column,</span>
+<span id="cb10-5"><a href="#cb10-5"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
+<span id="cb10-6"><a href="#cb10-6"></a>  stochastic_adjustment_data,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
 <span id="cb10-8"><a href="#cb10-8"></a>)</span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt; Info: This is &#39;Equilibrium FIML with correlated shocks&#39; model</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt; Info: This is &#39;Equilibrium with correlated shocks&#39; model</span></span>
 <span id="cb10-10"><a href="#cb10-10"></a>bsmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
 <span id="cb10-11"><a href="#cb10-11"></a>  <span class="st">&quot;diseq_basic&quot;</span>,</span>
 <span id="cb10-12"><a href="#cb10-12"></a>  key_columns,</span>
 <span id="cb10-13"><a href="#cb10-13"></a>  quantity_column, price_column,</span>
 <span id="cb10-14"><a href="#cb10-14"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
 <span id="cb10-15"><a href="#cb10-15"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-16"><a href="#cb10-16"></a>  <span class="dt">use_correlated_shocks =</span> use_correlated_shocks, <span class="dt">verbose =</span> verbose</span>
+<span id="cb10-16"><a href="#cb10-16"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
 <span id="cb10-17"><a href="#cb10-17"></a>)</span>
 <span id="cb10-18"><a href="#cb10-18"></a><span class="co">#&gt; Info: This is &#39;Basic with correlated shocks&#39; model</span></span>
 <span id="cb10-19"><a href="#cb10-19"></a>drmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
@@ -436,7 +436,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb10-22"><a href="#cb10-22"></a>  quantity_column, price_column,</span>
 <span id="cb10-23"><a href="#cb10-23"></a>  demand_specification, supply_specification,</span>
 <span id="cb10-24"><a href="#cb10-24"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-25"><a href="#cb10-25"></a>  <span class="dt">use_correlated_shocks =</span> use_correlated_shocks, <span class="dt">verbose =</span> verbose</span>
+<span id="cb10-25"><a href="#cb10-25"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
 <span id="cb10-26"><a href="#cb10-26"></a>)</span>
 <span id="cb10-27"><a href="#cb10-27"></a><span class="co">#&gt; Info: This is &#39;Directional with correlated shocks&#39; model</span></span>
 <span id="cb10-28"><a href="#cb10-28"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span>
@@ -447,7 +447,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb10-33"><a href="#cb10-33"></a>  quantity_column, price_column,</span>
 <span id="cb10-34"><a href="#cb10-34"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
 <span id="cb10-35"><a href="#cb10-35"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-36"><a href="#cb10-36"></a>  <span class="dt">use_correlated_shocks =</span> use_correlated_shocks, <span class="dt">verbose =</span> verbose</span>
+<span id="cb10-36"><a href="#cb10-36"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
 <span id="cb10-37"><a href="#cb10-37"></a>)</span>
 <span id="cb10-38"><a href="#cb10-38"></a><span class="co">#&gt; Info: This is &#39;Deterministic Adjustment with correlated shocks&#39; model</span></span>
 <span id="cb10-39"><a href="#cb10-39"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span>
@@ -459,7 +459,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb10-45"><a href="#cb10-45"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
 <span id="cb10-46"><a href="#cb10-46"></a>  price_specification,</span>
 <span id="cb10-47"><a href="#cb10-47"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-48"><a href="#cb10-48"></a>  <span class="dt">use_correlated_shocks =</span> use_correlated_shocks, <span class="dt">verbose =</span> verbose</span>
+<span id="cb10-48"><a href="#cb10-48"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
 <span id="cb10-49"><a href="#cb10-49"></a>)</span>
 <span id="cb10-50"><a href="#cb10-50"></a><span class="co">#&gt; Info: This is &#39;Stochastic Adjustment with correlated shocks&#39; model</span></span>
 <span id="cb10-51"><a href="#cb10-51"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span></code></pre></div>
@@ -473,30 +473,28 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p><code>L-BFGS-B</code>: Constrained optimization.</p></li>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>optimization_method &lt;-<span class="st"> &quot;BFGS&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>optimization_controls &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">REPORT =</span> <span class="dv">10</span>, <span class="dt">maxit =</span> <span class="dv">10000</span>, <span class="dt">reltol =</span> <span class="fl">1e-6</span>)</span>
-<span id="cb11-3"><a href="#cb11-3"></a>use_heteroscedastic_errors &lt;-<span class="st"> </span><span class="ot">TRUE</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>cluster_errors_by &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span></code></pre></div>
+<span id="cb11-2"><a href="#cb11-2"></a>optimization_controls &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">REPORT =</span> <span class="dv">10</span>, <span class="dt">maxit =</span> <span class="dv">10000</span>, <span class="dt">reltol =</span> <span class="fl">1e-6</span>)</span></code></pre></div>
 <p>Then, estimate the models. See the documentation for more options.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>eqmdl_reg &lt;-<span class="st"> </span><span class="kw">estimate</span>(eqmdl, <span class="dt">method =</span> <span class="st">&quot;2SLS&quot;</span>)</span>
 <span id="cb12-2"><a href="#cb12-2"></a>eqmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(eqmdl,</span>
-<span id="cb12-3"><a href="#cb12-3"></a>    <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-4"><a href="#cb12-4"></a>    <span class="dt">cluster_errors_by =</span> cluster_errors_by</span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
 <span id="cb12-5"><a href="#cb12-5"></a>)</span>
 <span id="cb12-6"><a href="#cb12-6"></a>bsmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(bsmdl,</span>
-<span id="cb12-7"><a href="#cb12-7"></a>    <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-8"><a href="#cb12-8"></a>    <span class="dt">use_heteroscedastic_errors =</span> use_heteroscedastic_errors</span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span></span>
 <span id="cb12-9"><a href="#cb12-9"></a>)</span>
 <span id="cb12-10"><a href="#cb12-10"></a>drmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(drmdl,</span>
 <span id="cb12-11"><a href="#cb12-11"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-12"><a href="#cb12-12"></a>  <span class="dt">use_heteroscedastic_errors =</span> use_heteroscedastic_errors</span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span></span>
 <span id="cb12-13"><a href="#cb12-13"></a>)</span>
 <span id="cb12-14"><a href="#cb12-14"></a>damdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(damdl,</span>
 <span id="cb12-15"><a href="#cb12-15"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-16"><a href="#cb12-16"></a>  <span class="dt">cluster_errors_by =</span> cluster_errors_by</span>
+<span id="cb12-16"><a href="#cb12-16"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
 <span id="cb12-17"><a href="#cb12-17"></a>)</span>
 <span id="cb12-18"><a href="#cb12-18"></a>samdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(samdl,</span>
 <span id="cb12-19"><a href="#cb12-19"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-20"><a href="#cb12-20"></a>  <span class="dt">cluster_errors_by =</span> cluster_errors_by</span>
+<span id="cb12-20"><a href="#cb12-20"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
 <span id="cb12-21"><a href="#cb12-21"></a>)</span></code></pre></div>
 </div>
 <div id="post-estimation-analysis" class="section level2">
@@ -507,35 +505,35 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>variables &lt;-<span class="st"> </span><span class="kw">c</span>(price_column, <span class="st">&quot;Xd1&quot;</span>, <span class="st">&quot;Xd2&quot;</span>, <span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;Xs1&quot;</span>)</span>
 <span id="cb13-2"><a href="#cb13-2"></a></span>
 <span id="cb13-3"><a href="#cb13-3"></a>bsmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-4"><a href="#cb13-4"></a>  <span class="cf">function</span>(v) <span class="kw">get_mean_marginal_effect</span>(bsmdl, bsmdl_est, v),</span>
+<span id="cb13-4"><a href="#cb13-4"></a>  <span class="cf">function</span>(v) <span class="kw">mean_marginal_effect</span>(bsmdl, bsmdl_est, v),</span>
 <span id="cb13-5"><a href="#cb13-5"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-6"><a href="#cb13-6"></a>)</span>
 <span id="cb13-7"><a href="#cb13-7"></a>drmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-8"><a href="#cb13-8"></a>  <span class="cf">function</span>(v) <span class="kw">get_mean_marginal_effect</span>(drmdl, drmdl_est, v),</span>
+<span id="cb13-8"><a href="#cb13-8"></a>  <span class="cf">function</span>(v) <span class="kw">mean_marginal_effect</span>(drmdl, drmdl_est, v),</span>
 <span id="cb13-9"><a href="#cb13-9"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-10"><a href="#cb13-10"></a>)</span>
 <span id="cb13-11"><a href="#cb13-11"></a>damdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-12"><a href="#cb13-12"></a>  <span class="cf">function</span>(v) <span class="kw">get_mean_marginal_effect</span>(damdl, damdl_est, v),</span>
+<span id="cb13-12"><a href="#cb13-12"></a>  <span class="cf">function</span>(v) <span class="kw">mean_marginal_effect</span>(damdl, damdl_est, v),</span>
 <span id="cb13-13"><a href="#cb13-13"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-14"><a href="#cb13-14"></a>)</span>
 <span id="cb13-15"><a href="#cb13-15"></a>samdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-16"><a href="#cb13-16"></a>  <span class="cf">function</span>(v) <span class="kw">get_mean_marginal_effect</span>(samdl, samdl_est, v),</span>
+<span id="cb13-16"><a href="#cb13-16"></a>  <span class="cf">function</span>(v) <span class="kw">mean_marginal_effect</span>(samdl, samdl_est, v),</span>
 <span id="cb13-17"><a href="#cb13-17"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-18"><a href="#cb13-18"></a>)</span>
 <span id="cb13-19"><a href="#cb13-19"></a>bsmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-20"><a href="#cb13-20"></a>  <span class="cf">function</span>(v) <span class="kw">get_marginal_effect_at_mean</span>(bsmdl, bsmdl_est, v),</span>
+<span id="cb13-20"><a href="#cb13-20"></a>  <span class="cf">function</span>(v) <span class="kw">marginal_effect_at_mean</span>(bsmdl, bsmdl_est, v),</span>
 <span id="cb13-21"><a href="#cb13-21"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-22"><a href="#cb13-22"></a>)</span>
 <span id="cb13-23"><a href="#cb13-23"></a>drmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-24"><a href="#cb13-24"></a>  <span class="cf">function</span>(v) <span class="kw">get_marginal_effect_at_mean</span>(drmdl, drmdl_est, v),</span>
+<span id="cb13-24"><a href="#cb13-24"></a>  <span class="cf">function</span>(v) <span class="kw">marginal_effect_at_mean</span>(drmdl, drmdl_est, v),</span>
 <span id="cb13-25"><a href="#cb13-25"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-26"><a href="#cb13-26"></a>)</span>
 <span id="cb13-27"><a href="#cb13-27"></a>damdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-28"><a href="#cb13-28"></a>  <span class="cf">function</span>(v) <span class="kw">get_marginal_effect_at_mean</span>(damdl, damdl_est, v),</span>
+<span id="cb13-28"><a href="#cb13-28"></a>  <span class="cf">function</span>(v) <span class="kw">marginal_effect_at_mean</span>(damdl, damdl_est, v),</span>
 <span id="cb13-29"><a href="#cb13-29"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-30"><a href="#cb13-30"></a>)</span>
 <span id="cb13-31"><a href="#cb13-31"></a>samdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-32"><a href="#cb13-32"></a>  <span class="cf">function</span>(v) <span class="kw">get_marginal_effect_at_mean</span>(samdl, samdl_est, v),</span>
+<span id="cb13-32"><a href="#cb13-32"></a>  <span class="cf">function</span>(v) <span class="kw">marginal_effect_at_mean</span>(samdl, samdl_est, v),</span>
 <span id="cb13-33"><a href="#cb13-33"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
 <span id="cb13-34"><a href="#cb13-34"></a>)</span>
 <span id="cb13-35"><a href="#cb13-35"></a></span>
@@ -544,12 +542,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb13-38"><a href="#cb13-38"></a>  samdl_mem</span>
 <span id="cb13-39"><a href="#cb13-39"></a>)</span>
 <span id="cb13-40"><a href="#cb13-40"></a><span class="co">#&gt;         bsmdl_mme     drmdl_mme     damdl_mme   samdl_mme   bsmdl_mem</span></span>
-<span id="cb13-41"><a href="#cb13-41"></a><span class="co">#&gt; B_P   -0.03116252 -0.0001311817 -0.0009663191 -0.04037366 -0.04445984</span></span>
-<span id="cb13-42"><a href="#cb13-42"></a><span class="co">#&gt; D_Xd1  0.06380171  0.0003380489  0.0014376743  0.06073446  0.09102643</span></span>
-<span id="cb13-43"><a href="#cb13-43"></a><span class="co">#&gt; D_Xd2 -0.03847228  0.0001247948 -0.0009408077 -0.03545453 -0.05488873</span></span>
-<span id="cb13-44"><a href="#cb13-44"></a><span class="co">#&gt; B_X1   0.22980175  0.0009789019  0.0053218947  0.22223228  0.32786008</span></span>
-<span id="cb13-45"><a href="#cb13-45"></a><span class="co">#&gt; B_X2  -0.07253721  0.0020569042 -0.0012012494 -0.05206977 -0.10348944</span></span>
-<span id="cb13-46"><a href="#cb13-46"></a><span class="co">#&gt; S_Xs1 -0.19442845 -0.0006311324 -0.0044621154 -0.19309798 -0.27739271</span></span>
+<span id="cb13-41"><a href="#cb13-41"></a><span class="co">#&gt; B_P   -0.03116252 -0.0001311817 -0.0009663191 -0.04037366 -0.04445983</span></span>
+<span id="cb13-42"><a href="#cb13-42"></a><span class="co">#&gt; D_Xd1  0.06380186  0.0003380489  0.0014376743  0.06073446  0.09102664</span></span>
+<span id="cb13-43"><a href="#cb13-43"></a><span class="co">#&gt; D_Xd2 -0.03847220  0.0001247948 -0.0009408077 -0.03545453 -0.05488861</span></span>
+<span id="cb13-44"><a href="#cb13-44"></a><span class="co">#&gt; B_X1   0.22980161  0.0009789019  0.0053218947  0.22223228  0.32785985</span></span>
+<span id="cb13-45"><a href="#cb13-45"></a><span class="co">#&gt; B_X2  -0.07253722  0.0020569042 -0.0012012494 -0.05206977 -0.10348945</span></span>
+<span id="cb13-46"><a href="#cb13-46"></a><span class="co">#&gt; S_Xs1 -0.19442844 -0.0006311324 -0.0044621154 -0.19309798 -0.27739266</span></span>
 <span id="cb13-47"><a href="#cb13-47"></a><span class="co">#&gt;           drmdl_mem     damdl_mem   samdl_mem</span></span>
 <span id="cb13-48"><a href="#cb13-48"></a><span class="co">#&gt; B_P   -6.251634e-05 -0.0002319415 -0.05602628</span></span>
 <span id="cb13-49"><a href="#cb13-49"></a><span class="co">#&gt; D_Xd1  1.611016e-04  0.0003450789  0.08428082</span></span>
@@ -568,9 +566,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </ul>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>mdt &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">add_column</span>(</span>
 <span id="cb14-2"><a href="#cb14-2"></a>  bsmdl<span class="op">@</span>model_tibble,</span>
-<span id="cb14-3"><a href="#cb14-3"></a>  <span class="dt">normalized_shortages =</span> <span class="kw">c</span>(<span class="kw">get_normalized_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb14-4"><a href="#cb14-4"></a>  <span class="dt">shortage_probabilities =</span> <span class="kw">c</span>(<span class="kw">get_shortage_probabilities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb14-5"><a href="#cb14-5"></a>  <span class="dt">relative_shortages =</span> <span class="kw">c</span>(<span class="kw">get_relative_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef))</span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="dt">normalized_shortages =</span> <span class="kw">c</span>(<span class="kw">normalized_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="dt">shortage_probabilities =</span> <span class="kw">c</span>(<span class="kw">shortage_probabilities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="dt">relative_shortages =</span> <span class="kw">c</span>(<span class="kw">relative_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef))</span>
 <span id="cb14-6"><a href="#cb14-6"></a>)</span></code></pre></div>
 <p>How is the sample separated post-estimation? The indices of the observations for which the estimated demand is greater than the estimated supply are easily obtained.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>abs_estsep &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
@@ -593,10 +591,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb15-18"><a href="#cb15-18"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_density</span>() <span class="op">+</span></span>
 <span id="cb15-19"><a href="#cb15-19"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(</span>
 <span id="cb15-20"><a href="#cb15-20"></a>      <span class="st">&quot;Normalized shortages density (&quot;</span>,</span>
-<span id="cb15-21"><a href="#cb15-21"></a>      <span class="kw">get_model_description</span>(bsmdl), <span class="st">&quot;)&quot;</span></span>
+<span id="cb15-21"><a href="#cb15-21"></a>      <span class="kw">model_description</span>(bsmdl), <span class="st">&quot;)&quot;</span></span>
 <span id="cb15-22"><a href="#cb15-22"></a>    ))</span>
 <span id="cb15-23"><a href="#cb15-23"></a>}</span></code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAADAFBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQVFRUWFhYXFxcYGBgZGRkaGhobGxscHBwdHR0eHh4fHx8gICAhISEiIiIjIyMkJCQlJSUmJiYnJycoKCgpKSkqKiorKyssLCwtLS0uLi4vLy8wMDAxMTEyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg5OTk6Ojo7Ozs8PDw9PT0+Pj4/Pz9AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dISEhJSUlKSkpLS0tMTExNTU1OTk5PT09QUFBRUVFSUlJTU1NUVFRVVVVWVlZXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5fX19gYGBhYWFiYmJjY2NkZGRlZWVmZmZnZ2doaGhpaWlqampra2tsbGxtbW1ubm5vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Ojo6Pj4+QkJCRkZGSkpKTk5OUlJSVlZWWlpaXl5eYmJiZmZmampqbm5ucnJydnZ2enp6fn5+goKChoaGioqKjo6OkpKSlpaWmpqanp6eoqKipqamqqqqrq6usrKytra2urq6vr6+wsLCxsbGysrKzs7O0tLS1tbW2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXGxsbHx8fIyMjJycnKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7////isF19AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAaNElEQVR4nO2dd2AURd/H5y6NBAJJCCQBQgdpD4IQCOUJBgUsVAGR8kjRRwwgxEcUUKIvKmAQRAIiaqIooLRQfBDhIZQEEBAJxSCEBA2QkHALBNLL5ebd3bttd7s7V7bcnff9425m97u/2fvc7mybmQXQI1EBtVfA2eUBhJAHEEIeQAh5ACHkAYSQPYDGgXXk9wWw2YaleoyDsNM04fkDh5tPiR4t5D34rg0FixVhJmL9zGLbBygwn/i2HdDQt4Tn2wJocQMbChYrwkzE+pnFtgtQYL0xxDcPoIfER42BbykCkJisB/RQMkD6OkuTFIBaLwO7IQXof4OC2k2/hyd6xx+MmgKjX33JO2Dw9ctPNGq1gTB/HdWw8RMnoRFQt2mwCJCKhvD8M01Cx2UTnvWPNYw5Qq+97tVW/l0+hwSgn2IC266BFoUMxAOsZIWGu6ODnjgfjk9igtJRjGKKoB3Rc5Y20LZNYnvx9SNjv+dFlLUFnLAXUE23FiUmQNu1fT99O7BVKb7uQxv/5xCMDngkZYV/q6YJm7po/4BwORj/xYI2De/RgKr24VoJXobpflGrl7UIzoHwXTD4kxn1GlOA+gfN+SQGbMd/QWSTxM97gf9ZFHJ1hv9vRazQO7TD102o74cDYoLSUUgxRTCO6JZBH23uBw6wvPj6kbEzyb/+uRYGewHBX7SvGQHVtu1dDeEJsAxfd3CU+F/qF0A4AayFcBdRSt8OeghPgjQaEKHK7h1K4WN98DmFQZNgof9IfEv/EJgA3QKrIXzQZQEeCmRAeFez2LIQcjegQ9d1HIr/ksnERkUHZaIQYhVBO4zhMe0ilpdYPzJ2y+chLPP/D7QbEJylPUMC+h1sJCb1+Se+7h2JVPTj+McagNfid0AyhNW1ePYHsI8D6BW/THgbfE0kJ0bA78EpPPHQzwRIpxmUZ0xFdyI+G8+3LIT8EXToS+SGko4DYoIyUQgxRTAOU/im8SwvDei1htVwOzjjAKCHzR6tJQDtJaPAqc2JrZ/8VcTvXAfK8P+eAATT5g/vqOEC+oHYvtKNdRHwge+DUmJqR2oXe1+r7bvoEhHqaSIbOt+yEGNFSoXeAzLxXD4OiAnKRCFD0kWwHNFPEdPC41leGtBhfMd+vg10ABBMBYkEoD3GdZ8ehq/7aB5A80FMwpZDHEA5gYTxDPj8N1JwmXHte9CHmGvLB/tqVlFHMRyQRSHkj6BDbwfn8WwhDogJykQhxBTBcpBrSgKivTSg2uDXKuovdAgQHBlAVDKXwHdEpl9/fkD3tO/h2ctsQFU9W97Hp2GAPMgdPIhvUKfxRE1DE6D7WXh9U9gnoI4BZFEI8SOY0OfATkjURitZQZkohJgiGAcDiPHSgOCUVqkkdgcA3QpsgwOqad2nBsJfwPv8gH4FX0DiUMYCNMubPDLDAZ2LIcz0egveCRhtIBYxAfoZ7ME/ZzfQM4AsCllcH7JCV7V4Bk9NIyppOigThRCrCNrBAGK8JKD6xOQd4FGytnMAEF4TE4eprZoB695tSB6BeQCVh7VctXliJHilkAL0ExhxgFBdhl/XxE9aheUTx+Aha2f5dzUBKmke8t6Gf3nHsXYxi0KWg+RrrNCbwJgNU3qDTyGkgzJRSDFFMMXSgBgvAYiIDWGpH0hwFFBdFHm2cCAmqK3xHI6vDjo7sEH7eaVTG2ymAH1kqiWr4G9DG4eNu0Ys89ljgQMPvkrVQVkjw/w7L69mAzIv5EbfeutZoeH33Ru/kEUen+igdBSjmCJoB1MH0V4CEBkbwmdAlt2AnE36DUQdvt9Yk0ulYd2M3+4ACEa1PFWW2X2AlCFveX1gTLgFoOvR+D475JZ0ASs/7OtjCucWgPA/PLNEynCl4d2pqzg3ASSfPIAQ8gBCyAMIIQ8ghDyAEPIAQsgDCCE7AGEIVepRDqwa6aipkiCIoRzluF8hNOehBxAhWQCVIFRdh3KU1CIderQF7TBUoRxl1YJz7AdUilBNHcpRqkc7aiUIYqhGOcoFHeX2A0Jttn/7XQxVqAcQQh5ACHkAIeQ4oKtfJKz/zdEgmNsCujjBBwQA0HObI0FIuSegDQ1DFl/E7m/pCZ65aHcQo9wR0J1ZYHg2RtRBunUhgR/etisIJTcEdPs5TQKZICrp7Ima1qtu2B6ElvsBKhzhvd6YMh7FDg3RNJi4z8YgjNwOkG68d7IpSR3mT89rBh7dbksQltwO0GzNWirJnAcVbeoJxv9lfRCW3A3Qx2AxnWafKOpWBXTKtDYIW24GaI/PZCbDPZNObxFx0rogHLkXoIuhfQuYnNmlxsUOocetCcKVWwG6HRV2mZU1vxa73KHpL+ggZnIrQPFee9hZi4vVrHbhZ5BBzOROgPZp3+DkLa/mL7aOOIsIYi43AnSrTY9CzgSe2x0XWjc/KxrEQm4EaK5vBncC3/2gC62anxMLYiH3AfSLT7zZFN4bZpmRLS8JB7GU+wAaGmF+Tcp/R/FsWOdcwSCWchtAP4Ekc4fALdf0hoPoukp9QFlzXvzK2JR/7/TJKyrlA/R4hyJzh9A96W1eMwWC8EhmQPrpFyvfOkqk/pyOlb79g2yA0sA6C4fgTfsEzUbeIHySGdC5NyE8/h6R+uVbCPd8Khugcc0sbxwKAtINCb7EF4RPMgP6OQnCvFnG9IMLr/+Kf1WfOXPm5gOEqutQjge17EyO77s8jhqhZXOaPFlsGYRXhkqUo7RKaI4Vz+a3fwXhnSnG9JlZcYX4V2GvXr2ShJewTyt8i2zyp4IUqVeBR7WmbxFA+9fiW9CrVG73e/iHPj8//+F9hKr0KMf9Gnam4wgeR2218NKjg7ItgvDKUIFyPKgUmkM1TBergxbitQ+BBe5Kg/DKv6npqP3axjroEPiOxyH2ZPVyo7HmQfgl91Fs6vW6dw9DmF2REX+7bNVqmQDNDirgcYg+ev4YpGJOAAhemTszxQDh6D/g1pemJNKdIVCF2gZIFzmRzyEK6M5j7QucAZCAUIXaBugw+J7PId54Ic3rnb8NoPn18/kciNYdM/zP/10APfosrwMBKCf02b8JoD80q3kdqPZBa8HWvwegdYC/CQcKkK5Pm4fIYtwB0LhH+B3IFmbHvN9FFuMGgHRNX+F3oJvgveLP87SVKzcAlAG28DvQgK6HPY2yuAGgZd5/8jusaMSZDPhbfTByA0DDHxNwWAGoqndHsQZomDsA0jWeI+CwphnwAc0ycYfrAzohVAVZ1056fEiuqMP1Aa3U5gg4rAJ0oZ7QBmiU6wMa31XIYV1L+7l+58Ucrg8ocoaQwzpAuUGTxBwuD+h3sEHIYWVfjQQv81ZDbLk8oBQgeDJsJaBbYSNEHC4PaGaYoMPa3j4faY4IO1weUK/hgg5rARW0ekLY4eqA8n2XCDqs7i/2GfivoMPVAf0E9gs6rAZU1ClK0OHqgJb48t6OJmV9j8PN4Bshh6sDGtFL2GFDl8z+bfkerBFSCVAFQrUGlKNCT342ny3sqNNbGaSi4qR2uYDDUIOKUVUrOMt+QMUIVelRjuIa4iMLpAg7amusC0LoxQZX+B2GSlSMkiqhOaX2A0JtttbuYiKnibb1es4OHsnvcPE6KK6piMOmbuFrwGZeh4sD6vOMiMMmQLqYCN4bQ64NqMBvsYjDtoEFztV/gc/h2oD+B/aIOGwceeEj8AOPw7UBLfcW7tBsM6A7A5pdt3S4NqCx3cQcto7dcdZ/uqXDtQFF8vwiRjYPbpKgPWDhcGlAl8FnYg6bAd3u1POOucOlAW0Ev4o5bB8eJxWsNXe4NKA5jXViDjvGDxra3PzmgEsD6vOUqMMOQBleH5hNcWVABX4Jog57RqAa1+Qmd4IrA/pZ5E4pIXsAnfL6kDvBlQG973tL1GHXGGZjIri3zlwZ0HDhO8mk7AJ0TLOGk3dlQE1mizvsGwUvtiPn0OjCgM6Ab8Ud9gHayW2278KAkjRXxR12jqPYNYadc2FAEzsgHHYCStKwByhwYUBt/oVw2AmooMkUVs51Ad0Qv1LF7B+q9A3/a0xGYkBdlv6lFKAtYg80SNkL6HcfVgN8iQF92E0zYP1dFglmYIFTcyYl6CQEFNcc5bB7sNvRkcwgBZLvYlmL2/uM2Eo9U2QGFrgzIbty3RIJAf1jHMphN6B9YBOdlqEOejjfCwROyyXTzMACR5dCeGuSdICuaVehLPYPl9w1lk5KDUiX8qxf2Ktpe2Oak++WZAYWqCyF8BjxTsSyjRs3/laGUE0dyrEVZKIs+lqUo0zPP3mN9ncqaahGxaioEZxjCWiQV/PX0ok65yEgX83IHlgAZky9QuxrsbGxXxgQghDleD28zvEgBgFHScM3EQ6rVGMJ6PWTpvfE60+TVTNrYIGSD+Yxb05GbbboXaw7sgpyZETyGSHUNb3Euxj56mNYPJbKMwML1MSnGBgfqlAkoFyvNQiHQ4COgq9MKSkBla5cCVYSmtWYAsEMLJC+iFVTOQ5oMxBtH0/KkTHte1IXZFIC0g0cCAYSikmmSdADC6SMwDVZMkBxoehf7wigVVrTWHAS72K9oXVCFYoE1H0kusOyI4D+9H/TmJAS0IUCeMEkuQHleiXKCwgb19J430xKQGA+NL2EGXn5iioUBWgzOC4zoO2mJwJSAqqqhVUmyQ0oLlQnM6CicOPdFKnPpE/mwd1jltbyQZESUPeRVowq4dibWeKCyVMhiQF9Avbd8B0V9I7MgHK0ibIDOmTs6ikxoFYfwzU94bbWMgP6DpyUHRDWZjzxKTEg/7Nw1GKYVU9mQK801ckPKD6QaMggMaAeC3P8TsCkdjID6jrGmrGRHAR0mNzHJAb0o4+mv2GZdo28gLK1KxUAhLUkBv6S+ih2I60CHj6C4uMgoG/AaSUAvRpSJD2gylxS8gJ6OQJTAtBe8KPkgHbUU+JMujNxfJEfUGHIbMkBtX0h+y4hWQFd0RBDR8sPCBvfQXJA9S6j0EgAKJl8IqYAoC/BWckfHKYqAGhaS+JTAUA53sulBrSr+bKDx3DJCqgdOZaEAoCwPk9KDcjbJDkBXQCfE19KAHrbP98FGy+s1WQRX0oAOgR2SA2oOPkDeFEvK6AJHckvJQDdCZktMaCbXcIA7Ns1j5eKRICavUx+KQEIG91VYkDPTtZ7w/xBY2QEdAoYX2mgCKBPNYXSAgr8FeIVdFqQjIASvYxDcikCKBNslhZQiwwC0P5IFKAahOoMgrNGRRm/hR2UDHVoC8rQfoYeZakVLIa6Nc8C9EpssTf8o8Ns+bagokamdxwpsgVh01pLuwU9iPUB4ZrnyuUD9DPYbUwoAygFZKEsNp4Hnf5m1zUUHkcALfQ3tbtQBtBVzXqUxXpAaYzkAxQ92JRQBhDW/XmUw3pADXBpAPACAd1kA/SnD9XjTSFA8eGivRoxG3exvZF7y2uPddglG6BvwQlTSiFAu4Hl62u5sglQdxLNf7vLBmg63fhXIUD3tIkIh02AGmUQnyfkO1FsRXcTUAiQoYfAuDm0bAI0dEgJhCVDh8kF6Az4mkoqBWhuKKISsglQTkTwsGHBzXLkArTcmx7DRilAqSBD3GHbeVD5V/FvJFfwMZEE0OC+dFIpQIVey8UdznTD7Ga9d+i0UoDKewqP9UnKmQB9D47SacUAvRZiMaAHR84EaEYEU2EqBmgbOCbqcCZAkay+gIoByvP5UNThRIAywEYmoxggrM9QUYcTAVrsm8dklAM0P7BQzOFEgPrGsjLKAfpRZMRhzJkAZXt9xMopB6ggYJGYw3kAred041UOEDa4v5jDeQCN6sLOKQhoCbvus5DTACpo+Do7qyCgdIFxXo1yGkA7AWcQPwUB6cJfFnE4DaB/N+Wc8isICJvURsThGCBmYAEIT9bQk1GrxQcocjInqySgFHBG2OHYu57pgQUgzJ/APC5DrRYPoHRWb39CSgLK9TEfHI8lhwAxAwvAj8aNcAjQQn/uiGVKAsIG/lPY4RAgZmABXGNJQMULFizYX4WQ3mAxqdcIbr4OFaOqzgoL0gFric8VPkWCjmq90JxKNCDOwAJGQPfi4uJ2oxoEWDZeyNN8aWZBxbCm8QLaAcnGC1fBd3YE4Wm8YC7WwAIUIDt3sRXaK9wJiu5iWGfhN0g5VgfRAws4Cii2j9kEZQG9GXBTyOHYUYweWMBBQH/6mr91WFlAx0GKkMOx8yB6YAEHASWDU2ZTlAWEdRa8de8cZ9JjLYa8UxjQ235Crxt1CkC3G801tygM6JzAS+2dBNAO8LO5RWFAWD/zowQlpwA0I8zi2ZTSgJI0p/kdzgBIFzHNwqI0oLwGFnu5Uc4A6ADPW8+VBoS9GMr/kjZnADSvkeW6KQ7oCPiS1+EMgNrxDFimOCCsdzSvwwkAHed7R6PygD7jf0jvBIAW+vNcCCkPqKDJZD6HEwDqwnearzwgbH69bB6H+oBOgy94LCoAuuz7Do9DfUBv+/3FY1EBEDY+nOdIrz6grrwvMlQDUJqxPzFXqgM6xX/+oQYgLLqnpUN1QG/58z4ZVwXQNzwtYVQH1H40r0UVQEWRlu3u1QaUZvbAkJIqgLAl3hZjyKoNaGYI/zWiOoBy679m7lAZ0O3QGfwWdQBhLwWZv7lUZUDfcRu9MFIJ0GntCjOHyoCe7iRgUQkQNqSDWe8fdQH97i3UrkItQDvANu4EWQAhn5lTz+bf87stYFFmYAHTs3mWqrsN4U6waWABqbegwubjhSxqbUFmb49SeRf72vJxDyXVABU04b53XVVAUb0ELaoBwhb5XmJn1QS0HyQLWtQDdK3+HHZWTUDDWhcJWtQDhM1skMPKqQjosOYTYYuKgC76vsXKqQhoSCT/ZRgpFQFhU4OuMxn1AO0DSSIWNQFlsjch1QDpHussXAOpCwibHsg831AN0FqeB/IsqQooK2AmnVYLUHYo7716WqoCwt7wpRvDqAVoQgPx9z+pCygv4gkqqRKgTcD8vouZ1AWEfUkPs6IOoFuNYxGDrqgMCIttaqqnVQFUGhOKGn1ObUDnG5paDKgCaLZXKsqiNiBsA1hGfqsBKBF8jFxz1QFhU33If1EFQCleL1nxtnCkQ25ABQMCD2FqAPrGZ3iZKwDCrj8atF8FQEneT9+25n3zSIfsgLBrvep9rjSgorng+dvWvAzbGQBhN0eCKTcVBXSun3ahzqq3hTsFIEy3vF6zLUIzpQd08x3/cPIK1WUAYdiZQSD6J/5ZtvWbZ/eg5wd0cUGo9wxjpyMXAoTd3/4IGLSTb45N/ebZPeh5AOnSl/TX+k2ies25FKCKovWPgM6JORZzbOo3z+pBbw4oa+vCISHANybxGj3JtQDh/+8Pg7W+w1ZncufY1G+e04OeAbTvxQEhANTvH7+V087O1QDhOp/QQwMinpq7immObwUgpt88ndKNHDnyWz2lZV1GLdzye7XeTAZoPsVCBrTDCgvSAetQjjo6SMEP8x4PBz3oOdVoQEy/eTpVkpSUdLICoVoDylGhRzrq0Ba0w1CDclTWcrL37jJpNCCm3zynB73jbwt3vl2MRzb1m6dSHkBcMf3mTSkPIKuEKtQDCCEPIIQ8gBDyAELobw8IpWObJAiSul+CIF/86ngMGQAljpUgyL8XSBAk9ivHY3gAIeQBhJAMgIqLJAiiuydBkIKHaA9KMgByL3kAISQHoFNzJiXoHIrAeUig3moQkgHQnQnZleuWOBKB+5BAtdUgJQOgo0shvDXJkQjchwSqrQYpGQBVluJn0wmOROA+JFBtNUjJU0lnTL3iyOKcYXbVWw1SEgM6EBeXCUs+mId85bioOMPs2i2HV4OUDFtQTTxze9Y+cR8SqLYapGQAlL7I0QjchwSqrQYpGQCljMA12aEQnIcE6q0GIc+ZNEIeQAh5ACHkAYSQBxBCHkAIeQAh5DSA9OB0FbjAO6tBmvkU7xM8Nl2p1OtEyJkA1c4v4J1lJaCBK6VeJ0JqACrnm4gDEvJbBajcVQF57+7q324nhHenhEdMxvACTw8dCb0/axEQmz8vrMkaCHNGNQ0cdMG0ix0DhP4PPpzZsuHwW/jMYY167GUB+rGHf+vVeNCdzzRqu50btDcAT1HBIPZccK9UUEbHMS1nh+QH1HxH1gv1Kg1RfY4e7ROFF9hv8y3o3fb4sWb+CVdf9iqGnWMPH4mJMgGqvXv37ka/s3Dw4+m/TupSXN7syfTUSC0N6IbvwrMrwC940J1/vORfzQ1KbEGmYLDv06e3NsYBmeJQy9kh+QEtgzAb5B71ugFhnlc6BMuIiZsgnN0Jwr9AlmHlnxB+F8pU0rlBX8LTPsX4TheW/FXwQwj3ABpQmiYXwn15ZNC/QB43KA6ICpbhdxfCRFBGxaGWs0PyAzqI7wkgd317ItN2AwQHiInHIFw8DMIHIAtWbntnbDADqPwf0yD8BnjjAu/H4x5YxgCq6Oc3OukmvvwhCItAHjcosQWZgq3rguePgTIqDrWcHZIf0DES0Gfkb2m/DoITpomLnyIBlfboveK/GxlAE3tWQrgr3LjwGwSgWi+mDjIcX9zTdzdZSeOAuEFxQFSw1V3xfAYoo+JQy9khpQAd8carypveRy0A/eh7H8LNNKDVwfhOArM1f0CY3/dicnAJhOnMFnSY2JVGjaEAcYPigKhgB/3uQbgSlFFxqOXskFKADL37nTjer7fBAtBJkHwztVUAZgSU4fP9gwcPyuBzHX8+PKirvjxi6MmfOgbQgI5o12ZtD15KAeIGjZldTAUz9B5xLrUdKKfiUMvZIaUAQWxSWDh5RDYDBJeGh4y72jnKCGg+eZgfDsvjWgSNxivVnKGN/rGrG7OLfdrWr9WiWgoQN2hy4+eoYLBwRKPB27QGOo5pOTvkNGfSkgrbgJ+MbmwvRSj3BFQR8kbRpc527VLmcglAGU+atNnaJU72DWi7oArtQ8slAKkpDyCEPIAQ8gBCyAMIIQ8ghDyAEPIAQuj/Aftv9Re1hwX3AAAAAElFTkSuQmCC" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="summaries" class="section level3">
 <h3>Summaries</h3>
@@ -649,9 +647,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-46"><a href="#cb16-46"></a><span class="co">#&gt; </span></span>
 <span id="cb16-47"><a href="#cb16-47"></a><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></span>
 <span id="cb16-48"><a href="#cb16-48"></a><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></span>
-<span id="cb16-49"><a href="#cb16-49"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
+<span id="cb16-49"><a href="#cb16-49"></a><span class="co">#&gt; &lt;environment: 0x563770a90478&gt;</span></span>
 <span id="cb16-50"><a href="#cb16-50"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-51"><a href="#cb16-51"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
+<span id="cb16-51"><a href="#cb16-51"></a><span class="co">#&gt; &lt;environment: 0x563770a90478&gt;</span></span>
 <span id="cb16-52"><a href="#cb16-52"></a><span class="co">#&gt; </span></span>
 <span id="cb16-53"><a href="#cb16-53"></a><span class="co">#&gt;              Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
 <span id="cb16-54"><a href="#cb16-54"></a><span class="co">#&gt; (Intercept) 25.151899   4.501475  5.58748 2.3643e-08 ***</span></span>
@@ -671,9 +669,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-68"><a href="#cb16-68"></a><span class="co">#&gt; </span></span>
 <span id="cb16-69"><a href="#cb16-69"></a><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></span>
 <span id="cb16-70"><a href="#cb16-70"></a><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></span>
-<span id="cb16-71"><a href="#cb16-71"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
+<span id="cb16-71"><a href="#cb16-71"></a><span class="co">#&gt; &lt;environment: 0x563770a90478&gt;</span></span>
 <span id="cb16-72"><a href="#cb16-72"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-73"><a href="#cb16-73"></a><span class="co">#&gt; &lt;environment: 0x55afc3f7e148&gt;</span></span>
+<span id="cb16-73"><a href="#cb16-73"></a><span class="co">#&gt; &lt;environment: 0x563770a90478&gt;</span></span>
 <span id="cb16-74"><a href="#cb16-74"></a><span class="co">#&gt; </span></span>
 <span id="cb16-75"><a href="#cb16-75"></a><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
 <span id="cb16-76"><a href="#cb16-76"></a><span class="co">#&gt; (Intercept) -2.7883417  3.9483795 -0.70620   0.480081    </span></span>
@@ -693,7 +691,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-90"><a href="#cb16-90"></a><span class="co">#&gt; </span></span>
 <span id="cb16-91"><a href="#cb16-91"></a><span class="co">#&gt; Call:</span></span>
 <span id="cb16-92"><a href="#cb16-92"></a><span class="co">#&gt; `bbmle::mle2`(list(method = &quot;BFGS&quot;, control = list(REPORT = 10, </span></span>
-<span id="cb16-93"><a href="#cb16-93"></a><span class="co">#&gt;     maxit = 10000, reltol = 1e-06), skip.hessian = FALSE, start = c(D_P = 0.0231239615913565, </span></span>
+<span id="cb16-93"><a href="#cb16-93"></a><span class="co">#&gt;     maxit = 10000, reltol = 1e-06), start = c(D_P = 0.0231239615913565, </span></span>
 <span id="cb16-94"><a href="#cb16-94"></a><span class="co">#&gt; D_CONST = 7.53375095184334, D_Xd1 = 0.140015230368245, D_Xd2 = -0.0737970096786045, </span></span>
 <span id="cb16-95"><a href="#cb16-95"></a><span class="co">#&gt; D_X1 = -0.074691417704378, D_X2 = 0.0462502352837326, S_P = 0.0248455188388157, </span></span>
 <span id="cb16-96"><a href="#cb16-96"></a><span class="co">#&gt; S_CONST = 6.24286219183355, S_Xs1 = 0.558355600251176, S_X1 = -0.0743221338857006, </span></span>
@@ -704,30 +702,30 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-101"><a href="#cb16-101"></a><span class="co">#&gt; </span></span>
 <span id="cb16-102"><a href="#cb16-102"></a><span class="co">#&gt; Coefficients:</span></span>
 <span id="cb16-103"><a href="#cb16-103"></a><span class="co">#&gt;             Estimate Std. Error z value     Pr(z)    </span></span>
-<span id="cb16-104"><a href="#cb16-104"></a><span class="co">#&gt; D_P         0.315927   0.091374  3.4575 0.0005452 ***</span></span>
-<span id="cb16-105"><a href="#cb16-105"></a><span class="co">#&gt; D_CONST     1.719435   1.106403  1.5541 0.1201661    </span></span>
-<span id="cb16-106"><a href="#cb16-106"></a><span class="co">#&gt; D_Xd1       0.046123   0.129963  0.3549 0.7226719    </span></span>
-<span id="cb16-107"><a href="#cb16-107"></a><span class="co">#&gt; D_Xd2      -0.026924   0.122840 -0.2192 0.8265120    </span></span>
-<span id="cb16-108"><a href="#cb16-108"></a><span class="co">#&gt; D_X1       -0.225090   0.941187 -0.2392 0.8109846    </span></span>
-<span id="cb16-109"><a href="#cb16-109"></a><span class="co">#&gt; D_X2        0.123374   0.873290  0.1413 0.8876532    </span></span>
-<span id="cb16-110"><a href="#cb16-110"></a><span class="co">#&gt; S_P         0.463977   0.040523 11.4497 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-111"><a href="#cb16-111"></a><span class="co">#&gt; S_CONST    -0.652257   3.363514 -0.1939 0.8462376    </span></span>
-<span id="cb16-112"><a href="#cb16-112"></a><span class="co">#&gt; S_Xs1      -0.224884   0.212250 -1.0595 0.2893618    </span></span>
-<span id="cb16-113"><a href="#cb16-113"></a><span class="co">#&gt; S_X1       -0.301697   1.317718 -0.2290 0.8189044    </span></span>
-<span id="cb16-114"><a href="#cb16-114"></a><span class="co">#&gt; S_X2        0.157299   1.269605  0.1239 0.9013977    </span></span>
-<span id="cb16-115"><a href="#cb16-115"></a><span class="co">#&gt; D_VARIANCE  5.623492   2.911855  1.9312 0.0534534 .  </span></span>
-<span id="cb16-116"><a href="#cb16-116"></a><span class="co">#&gt; S_VARIANCE 11.712092   1.003949 11.6660 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-117"><a href="#cb16-117"></a><span class="co">#&gt; RHO         0.991965   0.012483 79.4673 &lt; 2.2e-16 ***</span></span>
+<span id="cb16-104"><a href="#cb16-104"></a><span class="co">#&gt; D_P         0.315924   0.091511  3.4523 0.0005558 ***</span></span>
+<span id="cb16-105"><a href="#cb16-105"></a><span class="co">#&gt; D_CONST     1.719470   1.092990  1.5732 0.1156770    </span></span>
+<span id="cb16-106"><a href="#cb16-106"></a><span class="co">#&gt; D_Xd1       0.046121   0.129970  0.3549 0.7226982    </span></span>
+<span id="cb16-107"><a href="#cb16-107"></a><span class="co">#&gt; D_Xd2      -0.026926   0.122851 -0.2192 0.8265139    </span></span>
+<span id="cb16-108"><a href="#cb16-108"></a><span class="co">#&gt; D_X1       -0.225092   0.939851 -0.2395 0.8107202    </span></span>
+<span id="cb16-109"><a href="#cb16-109"></a><span class="co">#&gt; D_X2        0.123371   0.872075  0.1415 0.8874998    </span></span>
+<span id="cb16-110"><a href="#cb16-110"></a><span class="co">#&gt; S_P         0.463973   0.040454 11.4692 &lt; 2.2e-16 ***</span></span>
+<span id="cb16-111"><a href="#cb16-111"></a><span class="co">#&gt; S_CONST    -0.652204   3.349089 -0.1947 0.8455960    </span></span>
+<span id="cb16-112"><a href="#cb16-112"></a><span class="co">#&gt; S_Xs1      -0.224882   0.212531 -1.0581 0.2900021    </span></span>
+<span id="cb16-113"><a href="#cb16-113"></a><span class="co">#&gt; S_X1       -0.301695   1.315731 -0.2293 0.8186373    </span></span>
+<span id="cb16-114"><a href="#cb16-114"></a><span class="co">#&gt; S_X2        0.157300   1.267858  0.1241 0.9012619    </span></span>
+<span id="cb16-115"><a href="#cb16-115"></a><span class="co">#&gt; D_VARIANCE  5.623440   2.915913  1.9285 0.0537887 .  </span></span>
+<span id="cb16-116"><a href="#cb16-116"></a><span class="co">#&gt; S_VARIANCE 11.711973   0.994662 11.7748 &lt; 2.2e-16 ***</span></span>
+<span id="cb16-117"><a href="#cb16-117"></a><span class="co">#&gt; RHO         0.991966   0.012510 79.2924 &lt; 2.2e-16 ***</span></span>
 <span id="cb16-118"><a href="#cb16-118"></a><span class="co">#&gt; ---</span></span>
 <span id="cb16-119"><a href="#cb16-119"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
 <span id="cb16-120"><a href="#cb16-120"></a><span class="co">#&gt; </span></span>
-<span id="cb16-121"><a href="#cb16-121"></a><span class="co">#&gt; -2 log L: 95759.78</span></span>
+<span id="cb16-121"><a href="#cb16-121"></a><span class="co">#&gt; -2 log L: 95759.8</span></span>
 <span id="cb16-122"><a href="#cb16-122"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(bsmdl_est)</span>
 <span id="cb16-123"><a href="#cb16-123"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
 <span id="cb16-124"><a href="#cb16-124"></a><span class="co">#&gt; </span></span>
 <span id="cb16-125"><a href="#cb16-125"></a><span class="co">#&gt; Call:</span></span>
 <span id="cb16-126"><a href="#cb16-126"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-127"><a href="#cb16-127"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, skip.hessian = FALSE, start = c(D_P = 0.0231239615913565, </span></span>
+<span id="cb16-127"><a href="#cb16-127"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, skip.hessian = TRUE, start = c(D_P = 0.0231239615913565, </span></span>
 <span id="cb16-128"><a href="#cb16-128"></a><span class="co">#&gt; D_CONST = 7.53375095184334, D_Xd1 = 0.140015230368245, D_Xd2 = -0.0737970096786045, </span></span>
 <span id="cb16-129"><a href="#cb16-129"></a><span class="co">#&gt; D_X1 = -0.074691417704378, D_X2 = 0.0462502352837326, S_P = 0.0248455188388157, </span></span>
 <span id="cb16-130"><a href="#cb16-130"></a><span class="co">#&gt; S_CONST = 6.24286219183355, S_Xs1 = 0.558355600251176, S_X1 = -0.0743221338857006, </span></span>
@@ -737,105 +735,103 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb16-134"><a href="#cb16-134"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
 <span id="cb16-135"><a href="#cb16-135"></a><span class="co">#&gt; </span></span>
 <span id="cb16-136"><a href="#cb16-136"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-137"><a href="#cb16-137"></a><span class="co">#&gt;              Estimate Std. Error  z value     Pr(z)    </span></span>
-<span id="cb16-138"><a href="#cb16-138"></a><span class="co">#&gt; D_P        -0.0676615  0.0053178 -12.7235 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-139"><a href="#cb16-139"></a><span class="co">#&gt; D_CONST     9.0991117  0.0234794 387.5354 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-140"><a href="#cb16-140"></a><span class="co">#&gt; D_Xd1       0.3051360  0.0405738   7.5205 5.456e-14 ***</span></span>
-<span id="cb16-141"><a href="#cb16-141"></a><span class="co">#&gt; D_Xd2      -0.1839963  0.0761052  -2.4177   0.01562 *  </span></span>
-<span id="cb16-142"><a href="#cb16-142"></a><span class="co">#&gt; D_X1        0.5776875  0.0139506  41.4095 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-143"><a href="#cb16-143"></a><span class="co">#&gt; D_X2       -0.1443290  0.1024587  -1.4087   0.15894    </span></span>
-<span id="cb16-144"><a href="#cb16-144"></a><span class="co">#&gt; S_P         0.0813754  0.2122468   0.3834   0.70142    </span></span>
-<span id="cb16-145"><a href="#cb16-145"></a><span class="co">#&gt; S_CONST     5.4182457  0.1672661  32.3930 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-146"><a href="#cb16-146"></a><span class="co">#&gt; S_Xs1       0.9298673  0.5269122   1.7647   0.07761 .  </span></span>
-<span id="cb16-147"><a href="#cb16-147"></a><span class="co">#&gt; S_X1       -0.5213550  0.3845421  -1.3558   0.17517    </span></span>
-<span id="cb16-148"><a href="#cb16-148"></a><span class="co">#&gt; S_X2        0.2025852  0.5065630   0.3999   0.68921    </span></span>
-<span id="cb16-149"><a href="#cb16-149"></a><span class="co">#&gt; D_VARIANCE  0.9286177  0.0364390  25.4842 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-150"><a href="#cb16-150"></a><span class="co">#&gt; S_VARIANCE  0.9959581  0.0049565 200.9406 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-151"><a href="#cb16-151"></a><span class="co">#&gt; RHO         0.1731088  0.0068595  25.2363 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-152"><a href="#cb16-152"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-153"><a href="#cb16-153"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-154"><a href="#cb16-154"></a><span class="co">#&gt; </span></span>
-<span id="cb16-155"><a href="#cb16-155"></a><span class="co">#&gt; -2 log L: 26189.5</span></span>
-<span id="cb16-156"><a href="#cb16-156"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(damdl_est)</span>
-<span id="cb16-157"><a href="#cb16-157"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-158"><a href="#cb16-158"></a><span class="co">#&gt; </span></span>
-<span id="cb16-159"><a href="#cb16-159"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-160"><a href="#cb16-160"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-161"><a href="#cb16-161"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, skip.hessian = FALSE, start = c(D_P = -0.00260947112358515, </span></span>
-<span id="cb16-162"><a href="#cb16-162"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
-<span id="cb16-163"><a href="#cb16-163"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
-<span id="cb16-164"><a href="#cb16-164"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
-<span id="cb16-165"><a href="#cb16-165"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, D_VARIANCE = 1, S_VARIANCE = 1, </span></span>
-<span id="cb16-166"><a href="#cb16-166"></a><span class="co">#&gt; RHO = 0), minuslogl = function (...) </span></span>
-<span id="cb16-167"><a href="#cb16-167"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-168"><a href="#cb16-168"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-169"><a href="#cb16-169"></a><span class="co">#&gt; </span></span>
-<span id="cb16-170"><a href="#cb16-170"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-171"><a href="#cb16-171"></a><span class="co">#&gt;             Estimate Std. Error z value    Pr(z)   </span></span>
-<span id="cb16-172"><a href="#cb16-172"></a><span class="co">#&gt; D_P        -0.100366   0.145267 -0.6909 0.489624   </span></span>
-<span id="cb16-173"><a href="#cb16-173"></a><span class="co">#&gt; D_CONST    12.327107   6.467643  1.9060 0.056655 . </span></span>
-<span id="cb16-174"><a href="#cb16-174"></a><span class="co">#&gt; D_Xd1       0.151130   0.530098  0.2851 0.775569   </span></span>
-<span id="cb16-175"><a href="#cb16-175"></a><span class="co">#&gt; D_Xd2      -0.098899   0.497777 -0.1987 0.842513   </span></span>
-<span id="cb16-176"><a href="#cb16-176"></a><span class="co">#&gt; D_X1        0.602814   1.038098  0.5807 0.561449   </span></span>
-<span id="cb16-177"><a href="#cb16-177"></a><span class="co">#&gt; D_X2       -0.099291   0.689958 -0.1439 0.885572   </span></span>
-<span id="cb16-178"><a href="#cb16-178"></a><span class="co">#&gt; S_P         0.001214   0.040901  0.0297 0.976321   </span></span>
-<span id="cb16-179"><a href="#cb16-179"></a><span class="co">#&gt; S_CONST     6.868130   2.174538  3.1584 0.001586 **</span></span>
-<span id="cb16-180"><a href="#cb16-180"></a><span class="co">#&gt; S_Xs1       0.469062   0.451740  1.0383 0.299110   </span></span>
-<span id="cb16-181"><a href="#cb16-181"></a><span class="co">#&gt; S_X1        0.043372   0.458715  0.0946 0.924672   </span></span>
-<span id="cb16-182"><a href="#cb16-182"></a><span class="co">#&gt; S_X2        0.026985   0.445808  0.0605 0.951733   </span></span>
-<span id="cb16-183"><a href="#cb16-183"></a><span class="co">#&gt; P_DIFF      0.609389   0.840360  0.7252 0.468359   </span></span>
-<span id="cb16-184"><a href="#cb16-184"></a><span class="co">#&gt; D_VARIANCE  1.686571   2.516242  0.6703 0.502683   </span></span>
-<span id="cb16-185"><a href="#cb16-185"></a><span class="co">#&gt; S_VARIANCE  0.797918   0.280988  2.8397 0.004516 **</span></span>
-<span id="cb16-186"><a href="#cb16-186"></a><span class="co">#&gt; RHO         0.672593   0.554509  1.2130 0.225149   </span></span>
-<span id="cb16-187"><a href="#cb16-187"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-188"><a href="#cb16-188"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-189"><a href="#cb16-189"></a><span class="co">#&gt; </span></span>
-<span id="cb16-190"><a href="#cb16-190"></a><span class="co">#&gt; -2 log L: 48414.93</span></span>
-<span id="cb16-191"><a href="#cb16-191"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(samdl_est)</span>
-<span id="cb16-192"><a href="#cb16-192"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-193"><a href="#cb16-193"></a><span class="co">#&gt; </span></span>
-<span id="cb16-194"><a href="#cb16-194"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-195"><a href="#cb16-195"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-196"><a href="#cb16-196"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, skip.hessian = FALSE, start = c(D_P = -0.00260947112358515, </span></span>
-<span id="cb16-197"><a href="#cb16-197"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
-<span id="cb16-198"><a href="#cb16-198"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
-<span id="cb16-199"><a href="#cb16-199"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
-<span id="cb16-200"><a href="#cb16-200"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, P_CONST = 8.28009900264685, </span></span>
-<span id="cb16-201"><a href="#cb16-201"></a><span class="co">#&gt; P_Xp1 = -0.013207398816623, D_VARIANCE = 1, S_VARIANCE = 1, P_VARIANCE = 1, </span></span>
-<span id="cb16-202"><a href="#cb16-202"></a><span class="co">#&gt; RHO_DS = 0, RHO_DP = 0, RHO_SP = 0), minuslogl = function (...) </span></span>
-<span id="cb16-203"><a href="#cb16-203"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-204"><a href="#cb16-204"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-205"><a href="#cb16-205"></a><span class="co">#&gt; </span></span>
-<span id="cb16-206"><a href="#cb16-206"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-207"><a href="#cb16-207"></a><span class="co">#&gt;              Estimate Std. Error z value    Pr(z)   </span></span>
-<span id="cb16-208"><a href="#cb16-208"></a><span class="co">#&gt; D_P        -0.0971316  0.0943072 -1.0299 0.303034   </span></span>
-<span id="cb16-209"><a href="#cb16-209"></a><span class="co">#&gt; D_CONST     9.7139866  3.5971067  2.7005 0.006924 **</span></span>
-<span id="cb16-210"><a href="#cb16-210"></a><span class="co">#&gt; D_Xd1       0.2950376  0.5918948  0.4985 0.618158   </span></span>
-<span id="cb16-211"><a href="#cb16-211"></a><span class="co">#&gt; D_Xd2      -0.1722320  0.5931622 -0.2904 0.771539   </span></span>
-<span id="cb16-212"><a href="#cb16-212"></a><span class="co">#&gt; D_X1        0.5641836  0.7266000  0.7765 0.437471   </span></span>
-<span id="cb16-213"><a href="#cb16-213"></a><span class="co">#&gt; D_X2       -0.0869383  0.5951835 -0.1461 0.883866   </span></span>
-<span id="cb16-214"><a href="#cb16-214"></a><span class="co">#&gt; S_P         0.0989968  0.1171670  0.8449 0.398155   </span></span>
-<span id="cb16-215"><a href="#cb16-215"></a><span class="co">#&gt; S_CONST     5.1636578  3.4173140  1.5110 0.130781   </span></span>
-<span id="cb16-216"><a href="#cb16-216"></a><span class="co">#&gt; S_Xs1       0.9380370  0.7764735  1.2081 0.227019   </span></span>
-<span id="cb16-217"><a href="#cb16-217"></a><span class="co">#&gt; S_X1       -0.5153828  0.8034774 -0.6414 0.521237   </span></span>
-<span id="cb16-218"><a href="#cb16-218"></a><span class="co">#&gt; S_X2        0.1660077  0.6134594  0.2706 0.786692   </span></span>
-<span id="cb16-219"><a href="#cb16-219"></a><span class="co">#&gt; P_DIFF      1.1852181  0.7435204  1.5941 0.110922   </span></span>
-<span id="cb16-220"><a href="#cb16-220"></a><span class="co">#&gt; P_CONST     3.2090705  2.2336752  1.4367 0.150810   </span></span>
-<span id="cb16-221"><a href="#cb16-221"></a><span class="co">#&gt; P_Xp1       0.7695691  0.7074431  1.0878 0.276676   </span></span>
-<span id="cb16-222"><a href="#cb16-222"></a><span class="co">#&gt; D_VARIANCE  0.9769727  0.8059301  1.2122 0.225424   </span></span>
-<span id="cb16-223"><a href="#cb16-223"></a><span class="co">#&gt; S_VARIANCE  1.0493231  0.9984562  1.0509 0.293284   </span></span>
-<span id="cb16-224"><a href="#cb16-224"></a><span class="co">#&gt; P_VARIANCE  0.9399843  1.5106009  0.6223 0.533772   </span></span>
-<span id="cb16-225"><a href="#cb16-225"></a><span class="co">#&gt; RHO_DS      0.0389034  1.3307039  0.0292 0.976677   </span></span>
-<span id="cb16-226"><a href="#cb16-226"></a><span class="co">#&gt; RHO_DP      0.0029079  1.0359008  0.0028 0.997760   </span></span>
-<span id="cb16-227"><a href="#cb16-227"></a><span class="co">#&gt; RHO_SP      0.0013893  1.0251445  0.0014 0.998919   </span></span>
-<span id="cb16-228"><a href="#cb16-228"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-229"><a href="#cb16-229"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-230"><a href="#cb16-230"></a><span class="co">#&gt; </span></span>
-<span id="cb16-231"><a href="#cb16-231"></a><span class="co">#&gt; -2 log L: 46400.96</span></span></code></pre></div>
+<span id="cb16-137"><a href="#cb16-137"></a><span class="co">#&gt;             Estimate Std. Error z value  Pr(z)</span></span>
+<span id="cb16-138"><a href="#cb16-138"></a><span class="co">#&gt; D_P        -0.067662   0.581623 -0.1163 0.9074</span></span>
+<span id="cb16-139"><a href="#cb16-139"></a><span class="co">#&gt; D_CONST     9.099111  21.871774  0.4160 0.6774</span></span>
+<span id="cb16-140"><a href="#cb16-140"></a><span class="co">#&gt; D_Xd1       0.305137   3.535910  0.0863 0.9312</span></span>
+<span id="cb16-141"><a href="#cb16-141"></a><span class="co">#&gt; D_Xd2      -0.183996   3.477094 -0.0529 0.9578</span></span>
+<span id="cb16-142"><a href="#cb16-142"></a><span class="co">#&gt; D_X1        0.577687   5.382744  0.1073 0.9145</span></span>
+<span id="cb16-143"><a href="#cb16-143"></a><span class="co">#&gt; D_X2       -0.144329   3.946666 -0.0366 0.9708</span></span>
+<span id="cb16-144"><a href="#cb16-144"></a><span class="co">#&gt; S_P         0.081375   0.391603  0.2078 0.8354</span></span>
+<span id="cb16-145"><a href="#cb16-145"></a><span class="co">#&gt; S_CONST     5.418246  15.545463  0.3485 0.7274</span></span>
+<span id="cb16-146"><a href="#cb16-146"></a><span class="co">#&gt; S_Xs1       0.929867   3.995834  0.2327 0.8160</span></span>
+<span id="cb16-147"><a href="#cb16-147"></a><span class="co">#&gt; S_X1       -0.521355   3.865024 -0.1349 0.8927</span></span>
+<span id="cb16-148"><a href="#cb16-148"></a><span class="co">#&gt; S_X2        0.202585   3.269284  0.0620 0.9506</span></span>
+<span id="cb16-149"><a href="#cb16-149"></a><span class="co">#&gt; D_VARIANCE  0.928618   4.460374  0.2082 0.8351</span></span>
+<span id="cb16-150"><a href="#cb16-150"></a><span class="co">#&gt; S_VARIANCE  0.995958   3.170304  0.3142 0.7534</span></span>
+<span id="cb16-151"><a href="#cb16-151"></a><span class="co">#&gt; RHO         0.173109   8.143795  0.0213 0.9830</span></span>
+<span id="cb16-152"><a href="#cb16-152"></a><span class="co">#&gt; </span></span>
+<span id="cb16-153"><a href="#cb16-153"></a><span class="co">#&gt; -2 log L: 26189.5</span></span>
+<span id="cb16-154"><a href="#cb16-154"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(damdl_est)</span>
+<span id="cb16-155"><a href="#cb16-155"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
+<span id="cb16-156"><a href="#cb16-156"></a><span class="co">#&gt; </span></span>
+<span id="cb16-157"><a href="#cb16-157"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb16-158"><a href="#cb16-158"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
+<span id="cb16-159"><a href="#cb16-159"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, start = c(D_P = -0.00260947112358515, </span></span>
+<span id="cb16-160"><a href="#cb16-160"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
+<span id="cb16-161"><a href="#cb16-161"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
+<span id="cb16-162"><a href="#cb16-162"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
+<span id="cb16-163"><a href="#cb16-163"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, D_VARIANCE = 1, S_VARIANCE = 1, </span></span>
+<span id="cb16-164"><a href="#cb16-164"></a><span class="co">#&gt; RHO = 0), minuslogl = function (...) </span></span>
+<span id="cb16-165"><a href="#cb16-165"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
+<span id="cb16-166"><a href="#cb16-166"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
+<span id="cb16-167"><a href="#cb16-167"></a><span class="co">#&gt; </span></span>
+<span id="cb16-168"><a href="#cb16-168"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb16-169"><a href="#cb16-169"></a><span class="co">#&gt;             Estimate Std. Error z value    Pr(z)   </span></span>
+<span id="cb16-170"><a href="#cb16-170"></a><span class="co">#&gt; D_P        -0.100366   0.145267 -0.6909 0.489624   </span></span>
+<span id="cb16-171"><a href="#cb16-171"></a><span class="co">#&gt; D_CONST    12.327107   6.467643  1.9060 0.056655 . </span></span>
+<span id="cb16-172"><a href="#cb16-172"></a><span class="co">#&gt; D_Xd1       0.151130   0.530098  0.2851 0.775569   </span></span>
+<span id="cb16-173"><a href="#cb16-173"></a><span class="co">#&gt; D_Xd2      -0.098899   0.497777 -0.1987 0.842513   </span></span>
+<span id="cb16-174"><a href="#cb16-174"></a><span class="co">#&gt; D_X1        0.602814   1.038098  0.5807 0.561449   </span></span>
+<span id="cb16-175"><a href="#cb16-175"></a><span class="co">#&gt; D_X2       -0.099291   0.689958 -0.1439 0.885572   </span></span>
+<span id="cb16-176"><a href="#cb16-176"></a><span class="co">#&gt; S_P         0.001214   0.040901  0.0297 0.976321   </span></span>
+<span id="cb16-177"><a href="#cb16-177"></a><span class="co">#&gt; S_CONST     6.868130   2.174538  3.1584 0.001586 **</span></span>
+<span id="cb16-178"><a href="#cb16-178"></a><span class="co">#&gt; S_Xs1       0.469062   0.451740  1.0383 0.299110   </span></span>
+<span id="cb16-179"><a href="#cb16-179"></a><span class="co">#&gt; S_X1        0.043372   0.458715  0.0946 0.924672   </span></span>
+<span id="cb16-180"><a href="#cb16-180"></a><span class="co">#&gt; S_X2        0.026985   0.445808  0.0605 0.951733   </span></span>
+<span id="cb16-181"><a href="#cb16-181"></a><span class="co">#&gt; P_DIFF      0.609389   0.840360  0.7252 0.468359   </span></span>
+<span id="cb16-182"><a href="#cb16-182"></a><span class="co">#&gt; D_VARIANCE  1.686571   2.516242  0.6703 0.502683   </span></span>
+<span id="cb16-183"><a href="#cb16-183"></a><span class="co">#&gt; S_VARIANCE  0.797918   0.280988  2.8397 0.004516 **</span></span>
+<span id="cb16-184"><a href="#cb16-184"></a><span class="co">#&gt; RHO         0.672593   0.554509  1.2130 0.225149   </span></span>
+<span id="cb16-185"><a href="#cb16-185"></a><span class="co">#&gt; ---</span></span>
+<span id="cb16-186"><a href="#cb16-186"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb16-187"><a href="#cb16-187"></a><span class="co">#&gt; </span></span>
+<span id="cb16-188"><a href="#cb16-188"></a><span class="co">#&gt; -2 log L: 48414.93</span></span>
+<span id="cb16-189"><a href="#cb16-189"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(samdl_est)</span>
+<span id="cb16-190"><a href="#cb16-190"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
+<span id="cb16-191"><a href="#cb16-191"></a><span class="co">#&gt; </span></span>
+<span id="cb16-192"><a href="#cb16-192"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb16-193"><a href="#cb16-193"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
+<span id="cb16-194"><a href="#cb16-194"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, start = c(D_P = -0.00260947112358515, </span></span>
+<span id="cb16-195"><a href="#cb16-195"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
+<span id="cb16-196"><a href="#cb16-196"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
+<span id="cb16-197"><a href="#cb16-197"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
+<span id="cb16-198"><a href="#cb16-198"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, P_CONST = 8.28009900264685, </span></span>
+<span id="cb16-199"><a href="#cb16-199"></a><span class="co">#&gt; P_Xp1 = -0.013207398816623, D_VARIANCE = 1, S_VARIANCE = 1, P_VARIANCE = 1, </span></span>
+<span id="cb16-200"><a href="#cb16-200"></a><span class="co">#&gt; RHO_DS = 0, RHO_DP = 0, RHO_SP = 0), minuslogl = function (...) </span></span>
+<span id="cb16-201"><a href="#cb16-201"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
+<span id="cb16-202"><a href="#cb16-202"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
+<span id="cb16-203"><a href="#cb16-203"></a><span class="co">#&gt; </span></span>
+<span id="cb16-204"><a href="#cb16-204"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb16-205"><a href="#cb16-205"></a><span class="co">#&gt;              Estimate Std. Error z value    Pr(z)   </span></span>
+<span id="cb16-206"><a href="#cb16-206"></a><span class="co">#&gt; D_P        -0.0971316  0.0943072 -1.0299 0.303034   </span></span>
+<span id="cb16-207"><a href="#cb16-207"></a><span class="co">#&gt; D_CONST     9.7139866  3.5971067  2.7005 0.006924 **</span></span>
+<span id="cb16-208"><a href="#cb16-208"></a><span class="co">#&gt; D_Xd1       0.2950376  0.5918948  0.4985 0.618158   </span></span>
+<span id="cb16-209"><a href="#cb16-209"></a><span class="co">#&gt; D_Xd2      -0.1722320  0.5931622 -0.2904 0.771539   </span></span>
+<span id="cb16-210"><a href="#cb16-210"></a><span class="co">#&gt; D_X1        0.5641836  0.7266000  0.7765 0.437471   </span></span>
+<span id="cb16-211"><a href="#cb16-211"></a><span class="co">#&gt; D_X2       -0.0869383  0.5951835 -0.1461 0.883866   </span></span>
+<span id="cb16-212"><a href="#cb16-212"></a><span class="co">#&gt; S_P         0.0989968  0.1171670  0.8449 0.398155   </span></span>
+<span id="cb16-213"><a href="#cb16-213"></a><span class="co">#&gt; S_CONST     5.1636578  3.4173140  1.5110 0.130781   </span></span>
+<span id="cb16-214"><a href="#cb16-214"></a><span class="co">#&gt; S_Xs1       0.9380370  0.7764734  1.2081 0.227019   </span></span>
+<span id="cb16-215"><a href="#cb16-215"></a><span class="co">#&gt; S_X1       -0.5153828  0.8034774 -0.6414 0.521237   </span></span>
+<span id="cb16-216"><a href="#cb16-216"></a><span class="co">#&gt; S_X2        0.1660077  0.6134594  0.2706 0.786692   </span></span>
+<span id="cb16-217"><a href="#cb16-217"></a><span class="co">#&gt; P_DIFF      1.1852181  0.7435204  1.5941 0.110922   </span></span>
+<span id="cb16-218"><a href="#cb16-218"></a><span class="co">#&gt; P_CONST     3.2090705  2.2336752  1.4367 0.150810   </span></span>
+<span id="cb16-219"><a href="#cb16-219"></a><span class="co">#&gt; P_Xp1       0.7695691  0.7074431  1.0878 0.276676   </span></span>
+<span id="cb16-220"><a href="#cb16-220"></a><span class="co">#&gt; D_VARIANCE  0.9769727  0.8059302  1.2122 0.225424   </span></span>
+<span id="cb16-221"><a href="#cb16-221"></a><span class="co">#&gt; S_VARIANCE  1.0493231  0.9984561  1.0509 0.293284   </span></span>
+<span id="cb16-222"><a href="#cb16-222"></a><span class="co">#&gt; P_VARIANCE  0.9399843  1.5106008  0.6223 0.533772   </span></span>
+<span id="cb16-223"><a href="#cb16-223"></a><span class="co">#&gt; RHO_DS      0.0389034  1.3307037  0.0292 0.976677   </span></span>
+<span id="cb16-224"><a href="#cb16-224"></a><span class="co">#&gt; RHO_DP      0.0029079  1.0359007  0.0028 0.997760   </span></span>
+<span id="cb16-225"><a href="#cb16-225"></a><span class="co">#&gt; RHO_SP      0.0013893  1.0251445  0.0014 0.998919   </span></span>
+<span id="cb16-226"><a href="#cb16-226"></a><span class="co">#&gt; ---</span></span>
+<span id="cb16-227"><a href="#cb16-227"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb16-228"><a href="#cb16-228"></a><span class="co">#&gt; </span></span>
+<span id="cb16-229"><a href="#cb16-229"></a><span class="co">#&gt; -2 log L: 46400.96</span></span></code></pre></div>
 <p>The estimated demanded and supplied quantities can be calculated per observation.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>market &lt;-<span class="st"> </span><span class="kw">cbind</span>(</span>
-<span id="cb17-2"><a href="#cb17-2"></a>  <span class="dt">demand =</span> <span class="kw">get_demanded_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>],</span>
-<span id="cb17-3"><a href="#cb17-3"></a>  <span class="dt">supply =</span> <span class="kw">get_supplied_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>]</span>
+<span id="cb17-2"><a href="#cb17-2"></a>  <span class="dt">demand =</span> <span class="kw">demanded_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>],</span>
+<span id="cb17-3"><a href="#cb17-3"></a>  <span class="dt">supply =</span> <span class="kw">supplied_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>]</span>
 <span id="cb17-4"><a href="#cb17-4"></a>)</span>
 <span id="cb17-5"><a href="#cb17-5"></a><span class="kw">summary</span>(market)</span>
 <span id="cb17-6"><a href="#cb17-6"></a><span class="co">#&gt;      demand           supply      </span></span>
@@ -847,8 +843,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb17-12"><a href="#cb17-12"></a><span class="co">#&gt;  Max.   :11.087   Max.   :11.221</span></span></code></pre></div>
 <p>The package offers also basic aggregation functionality.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>aggregates &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
-<span id="cb18-2"><a href="#cb18-2"></a>  <span class="dt">demand =</span> <span class="kw">get_aggregate_demand</span>(bsmdl, bsmdl_est<span class="op">@</span>coef),</span>
-<span id="cb18-3"><a href="#cb18-3"></a>  <span class="dt">supply =</span> <span class="kw">get_aggregate_supply</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)</span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="dt">demand =</span> <span class="kw">aggregate_demand</span>(bsmdl, bsmdl_est<span class="op">@</span>coef),</span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="dt">supply =</span> <span class="kw">aggregate_supply</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)</span>
 <span id="cb18-4"><a href="#cb18-4"></a>)</span>
 <span id="cb18-5"><a href="#cb18-5"></a>aggregates</span>
 <span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt;   demand   supply </span></span>

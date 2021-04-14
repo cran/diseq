@@ -28,14 +28,14 @@
 #'   c("id", "date"), "date", "Q", "P", # keys, quantity, and price variables
 #'   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", "Xp1", # equation specifications
 #'   simulated_data, # data
-#'   use_correlated_shocks = TRUE # allow shocks to be correlated
+#'   correlated_shocks = TRUE # allow shocks to be correlated
 #' )
 #' @export
 setClass(
-    "diseq_stochastic_adjustment",
-    contains = "disequilibrium_model",
-    representation(),
-    prototype()
+  "diseq_stochastic_adjustment",
+  contains = "disequilibrium_model",
+  representation(),
+  prototype()
 )
 
 #' @describeIn initialize_market_model Disequilibrium model with stochastic price
@@ -47,14 +47,14 @@ setMethod(
            key_columns, time_column, quantity_column, price_column,
            demand_specification, supply_specification, price_specification,
            data,
-           use_correlated_shocks = TRUE, verbose = 0) {
+           correlated_shocks = TRUE, verbose = 0) {
     .Object <- callNextMethod(
       .Object,
       "Stochastic Adjustment", verbose,
       key_columns, time_column,
       quantity_column, price_column,
       demand_specification, supply_specification, price_specification,
-      use_correlated_shocks,
+      correlated_shocks,
       data,
       function(...) new("system_stochastic_adjustment", ...)
     )
@@ -64,7 +64,7 @@ setMethod(
 )
 
 setMethod(
-  "get_shortage_variance", signature(object = "diseq_stochastic_adjustment"),
+  "shortage_variance", signature(object = "diseq_stochastic_adjustment"),
   function(object) {
     sqrt(object@system@demand@var + object@system@supply@var - 2 * object@system@demand@sigma *
       object@system@supply@sigma * object@system@rho_ds)
@@ -72,32 +72,32 @@ setMethod(
 )
 
 setMethod(
-    "calculate_initializing_values", signature(object = "diseq_stochastic_adjustment"),
-    function(object) {
-        start <- callNextMethod(object)
+  "calculate_initializing_values", signature(object = "diseq_stochastic_adjustment"),
+  function(object) {
+    start <- callNextMethod(object)
 
-        len <- length(start)
-        pos <- len - ifelse(object@system@correlated_shocks, 3, 2)
-        start <- c(
-            start[1:pos],
-            object@system@price_equation@linear_model$coefficients, start[(pos + 1):len]
-        )
+    len <- length(start)
+    pos <- len - ifelse(object@system@correlated_shocks, 3, 2)
+    start <- c(
+      start[1:pos],
+      object@system@price_equation@linear_model$coefficients, start[(pos + 1):len]
+    )
 
-        len <- length(start)
-        if (object@system@correlated_shocks) {
-            start <- c(start[1:(len - 1)], 1, start[len], 0, 0)
-            names(start)[len:length(start)] <- c(
-                get_prefixed_variance_variable(object@system@price_equation),
-                paste0(get_correlation_variable(object@system), c("_DS", "_DP", "_SP"))
-            )
-        }
-        else {
-            start <- c(start, price_variance = 1)
-            names(start)[len + 1] <- get_prefixed_variance_variable(object@system@price_equation)
-        }
-
-        start
+    len <- length(start)
+    if (object@system@correlated_shocks) {
+      start <- c(start[1:(len - 1)], 1, start[len], 0, 0)
+      names(start)[len:length(start)] <- c(
+        prefixed_variance_variable(object@system@price_equation),
+        paste0(correlation_variable(object@system), c("_DS", "_DP", "_SP"))
+      )
     }
+    else {
+      start <- c(start, price_variance = 1)
+      names(start)[len + 1] <- prefixed_variance_variable(object@system@price_equation)
+    }
+
+    start
+  }
 )
 
 #' @rdname minus_log_likelihood
@@ -105,8 +105,7 @@ setMethod(
   "minus_log_likelihood", signature(object = "diseq_stochastic_adjustment"),
   function(object, parameters) {
     object@system <- set_parameters(object@system, parameters)
-    object@system <- calculate_system_loglikelihood(object@system)
-    -sum(object@system@log_likelihood)
+    -sum(calculate_system_loglikelihood(object@system))
   }
 )
 
@@ -114,8 +113,7 @@ setMethod(
   "gradient", signature(object = "diseq_stochastic_adjustment"),
   function(object, parameters) {
     object@system <- set_parameters(object@system, parameters)
-    object@system <- calculate_system_gradient(object@system)
-    -object@system@gradient
+    -colSums(calculate_system_scores(object@system))
   }
 )
 

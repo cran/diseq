@@ -1,3 +1,61 @@
+# diseq 0.2.1
+
+* Cumulative update of CRAN version.
+
+# diseq 0.2.0.9010
+
+* Reduced file size of stochastic adjustment model's derivative calculations.
+
+# diseq 0.2.0.9009
+
+* Reduced file size of directional model's derivative calculations.
+
+# diseq 0.2.0.9008
+
+* Reduced file size of basic model's derivative calculations.
+
+# diseq 0.2.0.9007
+
+* Reduced file size of deterministic adjustment gradient calculation.
+
+# diseq 0.2.0.9006
+
+* Reduced file size of equilibrium gradient calculation.
+
+# diseq 0.2.0.9005
+
+* Removed get from access functions to reduce the verbosity of function calls. 
+
+# diseq 0.2.0.9004
+
+* Added validation functions for estimation input variables `gradient`, `hessian`, and `standard_errors`. 
+
+# diseq 0.2.0.9003
+
+* The input variable `gradient` controls whether the gradient is calculated by analytic expression or is numerically approximated. Switched from Boolean input to passing sting options so that the user interface for choosing gradient and hessian options is consistent.
+
+# diseq 0.2.0.9002
+
+* Fixed bug in `equilibrium_model` plot functionality.
+* Minor improvements in `houses` documentation.
+
+# diseq 0.2.0.9001
+
+* Better options for hessian estimation: Consolidated all three potential options in the `hessian` input variable of `estimate`.
+* Better options for adjusted standard errors: Consolidated all three potential options in the `standard_errors` input variable of `estimate`.
+
+# diseq 0.1.5.9003
+
+* Added houses dataset
+
+# diseq 0.1.5.9002
+
+* Fixed option class concerning the calculation of the Hessian in estimation calls. Models can be now estimated by skipping the Hessian, calculating it based on the analytic expressions, or calculating it numerically.
+
+# diseq 0.1.5.9001
+
+* Corrected bug in initialization of indicator variables.
+
 # diseq 0.1.5
 
 * Deployed development documentation website.
