@@ -1,3 +1,40 @@
+# diseq 0.3.1
+
+* Cumulative update of CRAN version.
+
+# diseq 0.3.0.9004
+
+* Included package article in documentation website.
+
+# diseq 0.3.0.9003
+
+* Added package article.
+
+# diseq 0.3.0.9002
+
+* Fixed bug in `show` and `summary` methods of `diseq_stochastic_adjustment`.
+* Fixed bug in calculation of clustered standard errors.
+* Changed input arguments of marginal effect calls to match the interface of the remaining post-analysis calls (changes the user space).
+* Added `prefixed_quantity_variable` method.
+* Added implementation figure.
+
+# diseq 0.3.0.9001
+
+* Fixed R check missing documentation entries.
+
+# diseq 0.3.0.9000
+
+* Changes in model simulation.
+ - Simplified simulation calls (changes the user space).
+ - Re-factored simulation code and exported additional functions. 
+ - Added marginal system effect methods, and unified marginal probabilities effects methods (changes the user space).
+* Improvements in documentation.
+ - Minor typos corrections.
+ - Added new examples.
+ - Documented formulas in system and equation classes. 
+ - Modified some of the examples to use the `houses` dataset.
+ - Grouped documentation entries.
+
 # diseq 0.2.1
 
 * Cumulative update of CRAN version.

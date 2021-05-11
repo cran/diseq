@@ -1,6 +1,6 @@
 #' @include equation_base.R
 
-#' @title Stochastic adjustment disequilibrium model equation class
+#' @describeIn equation_classes Stochastic adjustment disequilibrium model equation class
 setClass(
   "equation_stochastic_adjustment",
   contains = "equation_base",
@@ -10,7 +10,9 @@ setClass(
 setMethod(
   "initialize", "equation_stochastic_adjustment",
   function(.Object, quantity, price, specification, data, name, prefix) {
-    .Object <- callNextMethod(.Object, quantity, price, specification, data, name, prefix)
+    .Object <- callNextMethod(
+      .Object, quantity, price, specification, data, name, prefix
+    )
     .Object
   }
 )

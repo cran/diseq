@@ -34,7 +34,7 @@ rho_sp <- 0.0
 
 seed <- 443
 
-stochastic_adjustment_data <- simulate_model_data(
+stochastic_adjustment_data <- simulate_data(
   "diseq_stochastic_adjustment", nobs, tobs,
   alpha_d, beta_d0, beta_d, eta_d,
   alpha_s, beta_s0, beta_s, eta_s,
@@ -141,35 +141,51 @@ samdl_est <- estimate(samdl,
 variables <- c(price_column, "Xd1", "Xd2", "X1", "X2", "Xs1")
 
 bsmdl_mme <- sapply(variables,
-  function(v) mean_marginal_effect(bsmdl, bsmdl_est, v),
+  function(v) shortage_probability_marginal(bsmdl, bsmdl_est@coef, v),
   USE.NAMES = FALSE
 )
 drmdl_mme <- sapply(variables,
-  function(v) mean_marginal_effect(drmdl, drmdl_est, v),
+  function(v) shortage_probability_marginal(drmdl, drmdl_est@coef, v),
   USE.NAMES = FALSE
 )
 damdl_mme <- sapply(variables,
-  function(v) mean_marginal_effect(damdl, damdl_est, v),
+  function(v) shortage_probability_marginal(damdl, damdl_est@coef, v),
   USE.NAMES = FALSE
 )
 samdl_mme <- sapply(variables,
-  function(v) mean_marginal_effect(samdl, samdl_est, v),
+  function(v) shortage_probability_marginal(samdl, samdl_est@coef, v),
   USE.NAMES = FALSE
 )
 bsmdl_mem <- sapply(variables,
-  function(v) marginal_effect_at_mean(bsmdl, bsmdl_est, v),
+  function(v) {
+    shortage_probability_marginal(bsmdl, bsmdl_est@coef, v,
+      aggregate = "at_the_mean"
+    )
+  },
   USE.NAMES = FALSE
 )
 drmdl_mem <- sapply(variables,
-  function(v) marginal_effect_at_mean(drmdl, drmdl_est, v),
+  function(v) {
+    shortage_probability_marginal(drmdl, drmdl_est@coef, v,
+      aggregate = "at_the_mean"
+    )
+  },
   USE.NAMES = FALSE
 )
 damdl_mem <- sapply(variables,
-  function(v) marginal_effect_at_mean(damdl, damdl_est, v),
+  function(v) {
+    shortage_probability_marginal(damdl, damdl_est@coef, v,
+      aggregate = "at_the_mean"
+    )
+  },
   USE.NAMES = FALSE
 )
 samdl_mem <- sapply(variables,
-  function(v) marginal_effect_at_mean(samdl, samdl_est, v),
+  function(v) {
+    shortage_probability_marginal(samdl, samdl_est@coef, v,
+      aggregate = "at_the_mean"
+    )
+  },
   USE.NAMES = FALSE
 )
 
@@ -188,9 +204,9 @@ mdt <- tibble::add_column(
 
 ## ----analysis.shortages-------------------------------------------------------
 abs_estsep <- c(
-  nobs = length(has_shortage(bsmdl, bsmdl_est@coef)),
-  nshortages = sum(has_shortage(bsmdl, bsmdl_est@coef)),
-  nsurpluses = sum(!has_shortage(bsmdl, bsmdl_est@coef))
+  nobs = length(shortage_indicators(bsmdl, bsmdl_est@coef)),
+  nshortages = sum(shortage_indicators(bsmdl, bsmdl_est@coef)),
+  nsurpluses = sum(!shortage_indicators(bsmdl, bsmdl_est@coef))
 )
 print(abs_estsep)
 
@@ -203,7 +219,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
     ggplot2::geom_density() +
     ggplot2::ggtitle(paste0(
       "Normalized shortages density (",
-      model_description(bsmdl), ")"
+      model_name(bsmdl), ")"
     ))
 }
 
