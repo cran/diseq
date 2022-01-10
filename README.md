@@ -42,15 +42,7 @@ two-stage least squares (Theil 1953) or full information maximum
 likelihood (Karapanagiotis, n.d.). Asymptotically, these methods are
 equivalent (Balestra and Varadharajan-Krishnakumar 1987).
 
-\[
-\begin{equation}
-\begin{aligned}
-D_{n t} &= X_{d, n t}'\beta_{d} + P_{n t}\alpha_{d} + u_{d, n t} \\
-S_{n t} &= X_{s, n t}'\beta_{s} + P_{n t}\alpha_{s} + u_{s, n t} \\
-Q_{n t} &= D_{n t} = S_{n t}
-\end{aligned} \tag{EM} \label{equilibrium}
-\end{equation}
-\] <img src='man/figures/equilibrium_model.png'/>
+<img src='https://render.githubusercontent.com/render/math?math=%5Cbegin%7Baligned%7D%0AD_%7Bn%20t%7D%20%26%3D%20X_%7Bd%2C%20n%20t%7D%27%5Cbeta_%7Bd%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bd%7D%20%2B%20u_%7Bd%2C%20n%20t%7D%20%5C%5C%0AS_%7Bn%20t%7D%20%26%3D%20X_%7Bs%2C%20n%20t%7D%27%5Cbeta_%7Bs%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bs%7D%20%2B%20u_%7Bs%2C%20n%20t%7D%20%5C%5C%0AQ_%7Bn%20t%7D%20%26%3D%20D_%7Bn%20t%7D%20%3D%20S_%7Bn%20t%7D%0A%5Cend%7Baligned%7D%20'/> <img src='man/figures/equilibrium_model.png'/>
 
 ## The basic disequilibrium model
 
@@ -65,15 +57,7 @@ to the demand or the supply side since the estimation of the model will
 allocate the observations on the demand or supply side so that the
 likelihood is maximized.
 
-\[
-\begin{equation}
-\begin{aligned}
-D_{n t} &= X_{d, n t}'\beta_{d} + u_{d, n t} \\
-S_{n t} &= X_{s, n t}'\beta_{s} + u_{s, n t} \\
-Q_{n t} &= \min\{D_{n t},S_{n t}\}
-\end{aligned} \tag{BM} \label{basic}
-\end{equation}
-\] <img src='man/figures/diseq_basic.png'/>
+<img src='https://render.githubusercontent.com/render/math?math=%5Cbegin%7Baligned%7D%0AD_%7Bn%20t%7D%20%26%3D%20X_%7Bd%2C%20n%20t%7D%27%5Cbeta_%7Bd%7D%20%2B%20u_%7Bd%2C%20n%20t%7D%20%5C%5C%0AS_%7Bn%20t%7D%20%26%3D%20X_%7Bs%2C%20n%20t%7D%27%5Cbeta_%7Bs%7D%20%2B%20u_%7Bs%2C%20n%20t%7D%20%5C%5C%0AQ_%7Bn%20t%7D%20%26%3D%20%5Cmin%5C%7BD_%7Bn%20t%7D%2CS_%7Bn%20t%7D%5C%7D%0A%5Cend%7Baligned%7D%20'/> <img src='man/figures/diseq_basic.png'/>
 
 ## The directional disequilibrium model
 
@@ -90,16 +74,7 @@ also, when inaccurate, intensifies misspecification problems. Therefore,
 the additional structure of the directional model does not guarantee
 better estimates in comparison with the basic model.
 
-\[
-\begin{equation}
-\begin{aligned}
-D_{n t} &= X_{d, n t}'\beta_{d} + u_{d, n t} \\
-S_{n t} &= X_{s, n t}'\beta_{s} + u_{s, n t} \\
-Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
-\Delta P_{n t} &\ge 0 \implies D_{n t} \ge S_{n t}
-\end{aligned} \tag{DM} \label{directional}
-\end{equation}
-\] <img src='man/figures/diseq_directional.png'/>
+<img src='https://render.githubusercontent.com/render/math?math=%5Cbegin%7Baligned%7D%0AD_%7Bn%20t%7D%20%26%3D%20X_%7Bd%2C%20n%20t%7D%27%5Cbeta_%7Bd%7D%20%2B%20u_%7Bd%2C%20n%20t%7D%20%5C%5C%0AS_%7Bn%20t%7D%20%26%3D%20X_%7Bs%2C%20n%20t%7D%27%5Cbeta_%7Bs%7D%20%2B%20u_%7Bs%2C%20n%20t%7D%20%5C%5C%0AQ_%7Bn%20t%7D%20%26%3D%20%5Cmin%5C%7BD_%7Bn%20t%7D%2CS_%7Bn%20t%7D%5C%7D%20%5C%5C%0A%5CDelta%20P_%7Bn%20t%7D%20%26%5Cge%200%20%5Cimplies%20D_%7Bn%20t%7D%20%5Cge%20S_%7Bn%20t%7D%0A%5Cend%7Baligned%7D%20'/> <img src='man/figures/diseq_directional.png'/>
 
 ## A disequilibrium model with deterministic price dynamics
 
@@ -117,16 +92,7 @@ dynamics, that accounts for market forces that are in alignment with
 standard economic reasoning. By letting \(\gamma\) approach zero, the
 equilibrium model can be obtained as a limiting case of this model.
 
-\[
-\begin{equation}
-\begin{aligned}
-D_{n t} &= X_{d, n t}'\beta_{d} + P_{n t}\alpha_{d} + u_{d, n t} \\
-S_{n t} &= X_{s, n t}'\beta_{s} + P_{n t}\alpha_{s} + u_{s, n t} \\
-Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
-\Delta P_{n t} &= \frac{1}{\gamma} \left( D_{n t} - S_{n t} \right)
-\end{aligned} \tag{DA} \label{deterministic_adjustment}
-\end{equation}
-\] <img src='man/figures/diseq_deterministic_adjustment.png'/>
+<img src='https://render.githubusercontent.com/render/math?math=%5Cbegin%7Baligned%7D%0AD_%7Bn%20t%7D%20%26%3D%20X_%7Bd%2C%20n%20t%7D%27%5Cbeta_%7Bd%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bd%7D%20%2B%20u_%7Bd%2C%20n%20t%7D%20%5C%5C%0AS_%7Bn%20t%7D%20%26%3D%20X_%7Bs%2C%20n%20t%7D%27%5Cbeta_%7Bs%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bs%7D%20%2B%20u_%7Bs%2C%20n%20t%7D%20%5C%5C%0AQ_%7Bn%20t%7D%20%26%3D%20%5Cmin%5C%7BD_%7Bn%20t%7D%2CS_%7Bn%20t%7D%5C%7D%20%5C%5C%0A%5CDelta%20P_%7Bn%20t%7D%20%26%3D%20%5Cfrac%7B1%7D%7B%5Cgamma%7D%20%5Cleft%28%20D_%7Bn%20t%7D%20-%20S_%7Bn%20t%7D%20%5Cright%29%0A%5Cend%7Baligned%7D%20'/> <img src='man/figures/diseq_deterministic_adjustment.png'/>
 
 ## A disequilibrium model with stochastic price dynamics
 
@@ -141,16 +107,7 @@ freedom, accompanied, however, by a significant increase in estimation
 complexity, which can hinder the stability of the procedure and the
 numerical accuracy of the outcomes.
 
-\[
-\begin{equation}
-\begin{aligned}
-D_{n t} &= X_{d, n t}'\beta_{d} + P_{n t}\alpha_{d} + u_{d, n t} \\
-S_{n t} &= X_{s, n t}'\beta_{s} + P_{n t}\alpha_{s} + u_{s, n t} \\
-Q_{n t} &= \min\{D_{n t},S_{n t}\} \\
-\Delta P_{n t} &= \frac{1}{\gamma} \left( D_{n t} - S_{n t} \right) +  X_{p, n t}'\beta_{p} + u_{p, n t}
-\end{aligned} \tag{SA} \label{stochastic_adjustment}
-\end{equation}
-\] <img src='man/figures/diseq_stochastic_adjustment.png'/>
+<img src='https://render.githubusercontent.com/render/math?math=%5Cbegin%7Baligned%7D%0AD_%7Bn%20t%7D%20%26%3D%20X_%7Bd%2C%20n%20t%7D%27%5Cbeta_%7Bd%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bd%7D%20%2B%20u_%7Bd%2C%20n%20t%7D%20%5C%5C%0AS_%7Bn%20t%7D%20%26%3D%20X_%7Bs%2C%20n%20t%7D%27%5Cbeta_%7Bs%7D%20%2B%20P_%7Bn%20t%7D%5Calpha_%7Bs%7D%20%2B%20u_%7Bs%2C%20n%20t%7D%20%5C%5C%0AQ_%7Bn%20t%7D%20%26%3D%20%5Cmin%5C%7BD_%7Bn%20t%7D%2CS_%7Bn%20t%7D%5C%7D%20%5C%5C%0A%5CDelta%20P_%7Bn%20t%7D%20%26%3D%20%5Cfrac%7B1%7D%7B%5Cgamma%7D%20%5Cleft%28%20D_%7Bn%20t%7D%20-%20S_%7Bn%20t%7D%20%5Cright%29%20%2B%20%20X_%7Bp%2C%20n%20t%7D%27%5Cbeta_%7Bp%7D%20%2B%20u_%7Bp%2C%20n%20t%7D%0A%5Cend%7Baligned%7D%20'/> <img src='man/figures/diseq_stochastic_adjustment.png'/>
 
 # Installation and documentation
 
@@ -180,6 +137,15 @@ package. The documentation files can also accessed in `R` by typing
 ``` r
 ?? diseq
 ```
+
+An overview of the package’s functionality was presented in the session
+Trends, Markets, Models of the
+[useR\!2021](https://user2021.r-project.org/) conference. The recording
+of the session, including the talk for this package, can be found in the
+video that follows. The presentation slides of the talk are also
+available [here](https://talks.pikappa.eu/useR!2021/).
+
+<a style="display:block;margin:auto" href="https://www.youtube.com/watch?v=Kkjkny94dgU" target="_blank"><img src="http://img.youtube.com/vi/Kkjkny94dgU/0.jpg"  alt="Session Recording" width="560" height="315" border="10" /></a>
 
 # A practical example
 
@@ -211,52 +177,35 @@ constructor sets the model’s parameters and performs the necessary
 initialization processes. The following variables specify this example’s
 parameterization.
 
-  - The key is the combination of columns that uniquely identify a
-    record of the dataset. For panel data, this should be a vector of
-    the entity identifier and the time columns.
+  - The models can be estimated both with panel and time series data.
+    The constructor expects both a subject and a time identifier in
+    order to perform the necessary initialization operations (these are
+    respectively given by `id` and `date` in the simulated data of this
+    example). The observation identification of the data is
+    automatically generated by composing the subject and time
+    identifiers. The resulting composite key is the combination of
+    columns that uniquely identify a record of the dataset.
 
-<!-- end list -->
+  - The observable traded quantity variable (given by `Q` in this
+    example’s simulated data). The demanded and supplied quantities are
+    not observable and they identified either based on the market
+    clearing condition or the short side rule.
 
-``` r
-key_columns <- c("id", "date")
-```
+  - The price variable, which is named after `P` in the simulated data.
 
-  - The quantity variable.
-
-<!-- end list -->
-
-``` r
-quantity_column <- "Q"
-```
-
-  - The price variable.
-
-<!-- end list -->
-
-``` r
-price_column <- "P"
-```
-
-  - The specification of the system’s equations. Each specification sets
-    the right hand side of one system equation. The expressions are
-    specified similarly to the expressions of formulas of linear models.
-    Indicator variables and interactions are created automatically by
-    the constructor.
-
-<!-- end list -->
-
-``` r
-demand_specification <- paste0(price_column, " + Xd1 + Xd2 + X1 + X2")
-supply_specification <- "Xs1 + X1 + X2"
-```
+  - The right hand side specifications of the demand and supply
+    equations. The expressions are specified similarly to the
+    expressions of formulas of linear models. Indicator variables and
+    interactions are created automatically by the constructor.
 
   - The verbosity level controls the level of messaging. The object
     displays
+    
       - error: always,
-      - warning: \(\ge\) 1,
-      - info: \(\ge\) 2,
-      - verbose: \(\ge\) 3 and
-      - debug: \(\ge\) 4.
+      - warning: ≥ 1,
+      - info: ≥ 2,
+      - verbose: ≥ 3 and
+      - debug: ≥ 4.
 
 <!-- end list -->
 
@@ -273,55 +222,61 @@ verbose <- 0
 correlated_shocks <- TRUE
 ```
 
-``` r
-mdl <- new(
-  "diseq_basic",
-  key_columns,
-  quantity_column, price_column, demand_specification, paste0(price_column, " + ", supply_specification),
-  model_tbl,
-  correlated_shocks = correlated_shocks, verbose = verbose
-)
-```
-
 The model is estimated with default options by a simple call. See the
 documentation of `estimate` for more details and options.
 
 ``` r
-est <- estimate(mdl)
-bbmle::summary(est)
+fit <- diseq_basic(
+  Q | P | id | date ~ P + Xd1 + Xd2 + X1 + X2 | P + Xs1 + X1 + X2,
+  model_tbl, correlated_shocks = correlated_shocks, verbose = verbose
+)
 ```
 
+The results can be inspected in the usual fashion via `summary`.
+
+``` r
+summary(fit)
+```
+
+    ## Basic Model for Markets in Disequilibrium
+    ##   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2
+    ##   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2
+    ##   Short Side Rule   : Q = min(D_Q, S_Q)
+    ##   Shocks            : Correlated
+    ##   Nobs              : 50000
+    ##   Sample Separation : Not Separated
+    ##   Quantity Var      : Q
+    ##   Price Var         : P
+    ##   Key Var(s)        : id, date
+    ##   Time Var          : date
+    ## 
     ## Maximum likelihood estimation
+    ##   Method              : BFGS
+    ##   Convergence Status  : success
+    ##   Starting Values     :
+    ##        D_P    D_CONST      D_Xd1      D_Xd2       D_X1       D_X2        S_P 
+    ##    2.20197   11.23889    0.27090   -0.08668    1.44062    4.46769    2.19995 
+    ##    S_CONST      S_Xs1       S_X1       S_X2 D_VARIANCE S_VARIANCE        RHO 
+    ##   10.22189    0.59623    1.43858    4.46673    1.00000    1.00000    0.00000 
     ## 
-    ## Call:
-    ## `bbmle::mle2`(list(skip.hessian = TRUE, start = c(D_P = 2.20196877751699, 
-    ## D_CONST = 11.2388922841303, D_Xd1 = 0.270903396323925, D_Xd2 = -0.0866785170449159, 
-    ## D_X1 = 1.44062383641357, D_X2 = 4.46769000498207, S_P = 2.19994905762293, 
-    ## S_CONST = 10.2218850028638, S_Xs1 = 0.59622703822817, S_X1 = 1.43857649730767, 
-    ## S_X2 = 4.46672975897316, D_VARIANCE = 1, S_VARIANCE = 1, RHO = 0
-    ## ), method = "BFGS", minuslogl = function(...) minus_log_likelihood(object, ...), 
-    ##     gr = function(...) gradient(object, ...)))
+    ## Coefficients
+    ##            Estimate Std. Error  z value      Pr(z)
+    ## D_P        -1.92778   0.064387 -29.9405 5.849e-197
+    ## D_CONST    12.71875   0.166572  76.3557  0.000e+00
+    ## D_Xd1       2.10418   0.038621  54.4831  0.000e+00
+    ## D_Xd2      -0.63963   0.029376 -21.7742 4.076e-105
+    ## D_X1        3.49023   0.039875  87.5300  0.000e+00
+    ## D_X2        6.29355   0.038586 163.1028  0.000e+00
+    ## S_P         2.80653   0.012009 233.7023  0.000e+00
+    ## S_CONST    10.16444   0.049438 205.5993  0.000e+00
+    ## S_Xs1       0.67821   0.009762  69.4737  0.000e+00
+    ## S_X1        1.12951   0.010447 108.1137  0.000e+00
+    ## S_X2        4.19819   0.010354 405.4635  0.000e+00
+    ## D_VARIANCE  1.01778   0.030312  33.5767 3.669e-247
+    ## S_VARIANCE  1.00263   0.007420 135.1273  0.000e+00
+    ## RHO        -0.02388   0.037672  -0.6338  5.262e-01
     ## 
-    ## Coefficients:
-    ##              Estimate Std. Error  z value  Pr(z)    
-    ## D_P        -1.9277826  0.0643871 -29.9405 <2e-16 ***
-    ## D_CONST    12.7187450  0.1665723  76.3557 <2e-16 ***
-    ## D_Xd1       2.1041794  0.0386208  54.4831 <2e-16 ***
-    ## D_Xd2      -0.6396308  0.0293756 -21.7742 <2e-16 ***
-    ## D_X1        3.4902260  0.0398746  87.5300 <2e-16 ***
-    ## D_X2        6.2935478  0.0385864 163.1028 <2e-16 ***
-    ## S_P         2.8065335  0.0120090 233.7023 <2e-16 ***
-    ## S_CONST    10.1644425  0.0494381 205.5993 <2e-16 ***
-    ## S_Xs1       0.6782140  0.0097622  69.4737 <2e-16 ***
-    ## S_X1        1.1295126  0.0104475 108.1137 <2e-16 ***
-    ## S_X2        4.1981877  0.0103540 405.4635 <2e-16 ***
-    ## D_VARIANCE  1.0177756  0.0303119  33.5767 <2e-16 ***
-    ## S_VARIANCE  1.0026251  0.0074199 135.1273 <2e-16 ***
-    ## RHO        -0.0238756  0.0376718  -0.6338 0.5262    
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## -2 log L: 138110.5
+    ## -2 log L: 138110
 
 # Design and functionality
 
@@ -376,22 +331,13 @@ estimation of the other three disequilibrium models of *diseq*.
 
 The package is planned to be expanded in the following ways:
 
-  - Firstly, it is planned for the package to become more inclusive by
-    adding additional market models.
-  - Secondly, the main implementation is currently written directly in
-    *R* and is single-threaded using only one processor for the
-    estimations of the models. For the numerically intensive likelihood
-    optimizations that the package employs, this results to extended
-    execution times when the models are estimated using large datasets.
-    Alternative likelihood optimizations are gradually implemented in
-    *C++* using a concurrent design. The equilibrium implementation is
-    already implemented. It is planned for future versions to provide
-    *C++* implementations also for the remaining models.
-  - Thirdly, it is planned to include single-command functionality for
-    the market-clearing tests (Karapanagiotis, n.d.; Hwang 1980; Quandt
-    1978).
-  - Fourthly, it is planned to include additional estimation methods
-    (Zilinskas and Bogle 2006; Quandt and Ramsey 1978).
+1.  The package should become more inclusive by adding additional market
+    models.
+2.  Single-command functionality for the market-clearing tests
+    (e.g. (Karapanagiotis, n.d.; Hwang 1980; Quandt 1978)) should be
+    included in the package.
+3.  Alternative estimation methods (e.g (Zilinskas and Bogle 2006;
+    Quandt and Ramsey 1978)) could also be implemented.
 
 # Contributors
 
@@ -405,7 +351,7 @@ The code is distributed under the MIT License.
 
 # References
 
-<div id="refs" class="references hanging-indent">
+<div id="refs" class="references">
 
 <div id="ref-balestra1987">
 

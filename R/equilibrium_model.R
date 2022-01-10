@@ -38,8 +38,8 @@ setClass(
 #' # initialize the model
 #' model <- new(
 #'   "equilibrium_model", # model type
-#'   c("id", "date"), "Q", "P", # keys, quantity, and price variables
-#'   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'   subject = id, time = date, quantity = Q, price = P,
+#'   demand = P + Xd1 + Xd2 + X1 + X2, supply = P + Xs1 + X1 + X2,
 #'   simulated_data, # data
 #'   correlated_shocks = TRUE # allow shocks to be correlated
 #' )
@@ -47,17 +47,16 @@ setClass(
 #' show(model)
 setMethod(
   "initialize", "equilibrium_model",
-  function(
-           .Object,
-           key_columns, quantity_column, price_column,
-           demand_specification, supply_specification,
-           data,
-           correlated_shocks = TRUE, verbose = 0) {
+  function(.Object,
+           quantity, price, demand, supply, subject, time,
+           data, correlated_shocks = TRUE, verbose = 0) {
+    specification <- make_specification(
+      data, quantity, price, demand, supply, subject, time
+    )
     .Object <- callNextMethod(
       .Object,
       "Equilibrium", verbose,
-      key_columns, NULL,
-      quantity_column, price_column, demand_specification, supply_specification, NULL,
+      specification,
       correlated_shocks,
       data,
       function(...) new("system_equilibrium", ...)
@@ -65,6 +64,29 @@ setMethod(
     .Object@market_type_string <- "Equilibrium"
 
     .Object
+  }
+)
+
+#' @describeIn single_call_estimation Equilibrium model
+#' @export
+setGeneric(
+  "equilibrium_model",
+  function(specification, data,
+           correlated_shocks = TRUE, verbose = 0,
+           estimation_options = list()) {
+    standardGeneric("equilibrium_model")
+  }
+)
+
+#' @rdname single_call_estimation
+setMethod(
+  "equilibrium_model", signature(specification = "formula"),
+  function(specification, data, correlated_shocks, verbose,
+           estimation_options) {
+    initialize_from_formula(
+      "equilibrium_model", specification, data, correlated_shocks, verbose,
+      estimation_options
+    )
   }
 )
 
@@ -98,73 +120,17 @@ setMethod(
   }
 )
 
-#' @describeIn estimate Equilibrium model estimation.
-#' @param method A string specifying the estimation method. When the passed value is
-#' among \code{Nelder-Mead}, \code{BFGS}, \code{CG}, \code{L-BFGS-B}, \code{SANN},
-#' and \code{Brent}, the model is estimated using
-#' full information maximum likelihood based on \code{\link[bbmle]{mle2}} functionality.
-#' When \code{2SLS} is supplied, the model is estimated using two-stage least squares
-#' based on \code{\link[systemfit]{systemfit}}. In this case, the function returns a
-#' list containing the first and second stage estimates. The default value is
-#' \code{BFGS}.
-setMethod(
-  "estimate", signature(object = "equilibrium_model"),
-  function(object, method = "BFGS", ...) {
-    if (method != "2SLS") {
-      return(callNextMethod(object, method = method, ...))
-    }
-
-    ## create fitted variable
-    fitted_column <- paste0(object@system@demand@price_variable, "_FITTED")
-
-    ## estimate first stage
-    first_stage_controls <- unique(c(
-      object@system@demand@control_variables,
-      object@system@supply@control_variables
-    ))
-    first_stage_formula <- paste0(
-      object@system@demand@price_variable,
-      " ~ ", paste0(first_stage_controls, collapse = " + ")
-    )
-
-    first_stage_model <- lm(first_stage_formula, object@model_tibble)
-    object@model_tibble[, fitted_column] <- first_stage_model$fitted.values
-
-    ## create demand formula
-    independent <- object@system@demand@independent_variables
-    demand_formula <- formula(paste0(
-      object@system@quantity_variable,
-      " ~ ", paste0(independent, collapse = " + ")
-    ))
-
-    ## create supply formula
-    independent <- object@system@supply@independent_variables
-    supply_formula <- formula(paste0(
-      object@system@quantity_variable,
-      " ~ ", paste0(independent, collapse = " + ")
-    ))
-
-    inst <- formula(paste0(" ~ ", paste0(first_stage_controls, collapse = " + ")))
-    system_model <- systemfit::systemfit(
-      list(demand = demand_formula, supply = supply_formula),
-      method = "2SLS", inst = inst, data = object@model_tibble,
-      ...
-    )
-
-    list(first_stage_model = first_stage_model, system_model = system_model)
-  }
-)
-
 #' @rdname maximize_log_likelihood
 setMethod(
   "maximize_log_likelihood", signature(object = "equilibrium_model"),
-  function(object, start, step, objective_tolerance, gradient_tolerance) {
+  function(object, start, step, objective_tolerance, gradient_tolerance,
+           max_it) {
     start <- prepare_initializing_values(object, NULL)
 
     cpp_model <- new(cpp_equilibrium_model, object@system)
     cpp_model$minimize(
       start, step, objective_tolerance,
-      gradient_tolerance
+      gradient_tolerance, max_it
     )
   }
 )

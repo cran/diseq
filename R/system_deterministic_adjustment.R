@@ -16,28 +16,26 @@ setClass(
   representation(
     gamma = "numeric",
     delta = "numeric",
-
     mu_P = "matrix",
     var_P = "numeric",
     sigma_P = "numeric",
     h_P = "matrix",
-
     lagged_price_vector = "matrix"
   ),
   prototype(
     gamma = NA_real_,
     delta = NA_real_,
-
     lagged_price_vector = matrix(NA_real_)
   )
 )
 
 setMethod(
   "initialize", "system_deterministic_adjustment",
-  function(
-           .Object, quantity, price,
-           demand_specification, supply_specification, data, correlated_shocks) {
-    price_diff <- paste0(price, "_DIFF")
+  function(.Object, specification, data, correlated_shocks) {
+    price_diff <- paste0(
+      all.vars(formula(specification, lhs = 2, rhs = 0)),
+      "_DIFF"
+    )
 
     demand_initializer <- function(...) {
       excess_supply_subset <- data[, price_diff] < 0
@@ -49,8 +47,7 @@ setMethod(
     }
 
     .Object <- callNextMethod(
-      .Object, quantity, price,
-      demand_specification, supply_specification, data, correlated_shocks,
+      .Object, specification, data, correlated_shocks,
       demand_initializer, supply_initializer
     )
     .Object@lagged_price_vector <- as.matrix(data[, lagged_price_variable(.Object)])
@@ -59,6 +56,26 @@ setMethod(
     .Object
   }
 )
+
+setMethod(
+  "show_implementation", signature(object = "system_deterministic_adjustment"),
+  function(object) {
+    callNextMethod(object)
+    cat(sprintf(
+      "  %-18s: %s\n  %-18s: %s\n", "Short Side Rule", paste0(
+        quantity_variable(object@demand), " = min(",
+        prefixed_quantity_variable(object@demand), ", ",
+        prefixed_quantity_variable(object@supply), ")"
+      ),
+      "Separation Rule", paste0(
+        price_differences_variable(object), " analogous to (",
+        prefixed_quantity_variable(object@demand), " - ",
+        prefixed_quantity_variable(object@supply), ")"
+      )
+    ))
+  }
+)
+
 
 setMethod(
   "likelihood_variables", signature(object = "system_deterministic_adjustment"),

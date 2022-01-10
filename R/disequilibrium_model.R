@@ -10,21 +10,16 @@ setClass(
 
 setMethod(
   "initialize", "disequilibrium_model",
-  function(
-           .Object,
+  function(.Object,
            model_type_string, verbose,
-           key_columns, time_column,
-           quantity_column, price_column,
-           demand_specification, supply_specification, price_specification,
+           specification,
            correlated_shocks,
            data,
            system_initializer) {
     .Object <- callNextMethod(
       .Object,
       model_type_string, verbose,
-      key_columns, time_column,
-      quantity_column, price_column,
-      demand_specification, supply_specification, price_specification,
+      specification,
       correlated_shocks,
       data,
       system_initializer
@@ -37,43 +32,41 @@ setMethod(
 
 #' @title Analysis of shortages
 #'
-#' @details The following methods offer functionality for analyzing estimated shortages
-#' in the disequilibrium models.
-#' @param object A disequilibrium model object.
+#' @details The following methods offer functionality for analyzing estimated
+#' shortages in the disequilibrium models. The methods can be called either
+#' using directly a fitted model object, or by separately providing a model
+#' object and a parameter vector.
+#' @param fit A fitted model object.
+#' @param model A disequilibrium model object.
 #' @param parameters A vector of parameters at which the shortages are evaluated.
-#' @return A vector with the (modified) shortages.
+#' @return A vector with the (estimated) shortages.
 #' @examples
 #' \donttest{
-#' # initialize the model using the houses dataset
-#' model <- new(
-#'   "diseq_deterministic_adjustment", # model type
-#'   c("ID", "TREND"), "TREND", "HS", "RM", # keys, time, quantity, and price variables
-#'   "RM + TREND + W + CSHS + L1RM + L2RM + MONTH", # demand specification
-#'   "RM + TREND + W + L1RM + MA6DSF + MA3DHF + MONTH", # supply specification
-#'   fair_houses(), # data
-#'   correlated_shocks = FALSE # allow shocks to be correlated
-#' )
-#'
-#' # estimate the model object (BFGS is used by default)
-#' est <- estimate(model, control = list(maxit = 1e+5))
+#' # estimate a model using the houses dataset
+#' fit <- diseq_deterministic_adjustment(
+#'   HS | RM | ID | TREND ~
+#'   RM + TREND + W + CSHS + L1RM + L2RM + MONTH |
+#'   RM + TREND + W + L1RM + MA6DSF + MA3DHF + MONTH,
+#'   fair_houses(),  correlated_shocks = FALSE,
+#'   estimation_options = list(control = list(maxit = 1e+5)))
 #'
 #' # get estimated normalized shortages
-#' head(normalized_shortages(model, est@coef))
+#' head(normalized_shortages(fit))
 #'
 #' # get estimated relative shortages
-#' head(relative_shortages(model, est@coef))
+#' head(relative_shortages(fit))
 #'
 #' # get the estimated shortage probabilities
-#' head(shortage_probabilities(model, est@coef))
+#' head(shortage_probabilities(fit))
 #'
 #' # get the estimated shortage indicators
-#' head(shortage_indicators(model, est@coef))
+#' head(shortage_indicators(fit))
 #'
 #' # get the estimated shortages
-#' head(shortages(model, est@coef))
+#' head(shortages(fit))
 #'
 #' # get the estimated shortage variance
-#' shortage_standard_deviation(model, est@coef)
+#' shortage_standard_deviation(fit)
 #' }
 #' @name shortage_analysis
 NULL
@@ -84,7 +77,7 @@ NULL
 #' Returns the predicted shortages at a given point.
 #' }
 #' @export
-setGeneric("shortages", function(object, parameters) {
+setGeneric("shortages", function(fit, model, parameters) {
   standardGeneric("shortages")
 })
 
@@ -95,7 +88,7 @@ setGeneric("shortages", function(object, parameters) {
 #' given point.
 #' }
 #' @export
-setGeneric("normalized_shortages", function(object, parameters) {
+setGeneric("normalized_shortages", function(fit, model, parameters) {
   standardGeneric("normalized_shortages")
 })
 
@@ -105,7 +98,7 @@ setGeneric("normalized_shortages", function(object, parameters) {
 #' Returns the shortages normalized by the supplied quantity at a given point.
 #' }
 #' @export
-setGeneric("relative_shortages", function(object, parameters) {
+setGeneric("relative_shortages", function(fit, model, parameters) {
   standardGeneric("relative_shortages")
 })
 
@@ -113,24 +106,24 @@ setGeneric("relative_shortages", function(object, parameters) {
 #' @details
 #' \subsection{shortage_probabilities}{
 #' Returns the shortage probabilities, i.e. the probabilities of an
-#' observation coming from an excess demand regime, at the given point.
+#' observation coming from an excess demand state, at the given point.
 #' }
 #' @export
-setGeneric("shortage_probabilities", function(object, parameters) {
+setGeneric("shortage_probabilities", function(fit, model, parameters) {
   standardGeneric("shortage_probabilities")
 })
 
 #' @describeIn shortage_analysis Shortage indicators.
 #' @details
 #' \subsection{shortage_indicators}{
-#' Returns a vector of indicators (Boolean values) for each observation. An element of
-#' the vector is TRUE for observations at which the estimated shortages are
-#' non-negative, i.e. the market at in an excess demand state. The remaining elements
-#' are FALSE. The evaluation of the shortages is performed using the passed parameter
-#' vector.
+#' Returns a vector of indicators (Boolean values) for each observation. An
+#' element of the vector is TRUE for observations at which the estimated
+#' shortages are non-negative, i.e. the market at in an excess demand state.
+#' The remaining elements are FALSE. The evaluation of the shortages is
+#' performed using the passed parameter vector.
 #' }
 #' @export
-setGeneric("shortage_indicators", function(object, parameters) {
+setGeneric("shortage_indicators", function(fit, model, parameters) {
   standardGeneric("shortage_indicators")
 })
 
@@ -140,7 +133,7 @@ setGeneric("shortage_indicators", function(object, parameters) {
 #' Returns the variance of excess demand.
 #' }
 #' @export
-setGeneric("shortage_standard_deviation", function(object, parameters) {
+setGeneric("shortage_standard_deviation", function(fit, model, parameters) {
   standardGeneric("shortage_standard_deviation")
 })
 
@@ -148,35 +141,31 @@ setGeneric("shortage_standard_deviation", function(object, parameters) {
 #' Marginal effects
 #'
 #' Returns the estimated effect of a variable.
-#' @param object A disequilibrium model object.
-#' @param parameters A vector of parameters.
+#' @param fit A fitted disequilibrium market model.
 #' @param variable Variable name for which the effect is calculated.
-#' @param aggregate Mode of aggregation. Valid options are "mean" (the default) and
-#' "at_the_mean".
+#' @param model A disequilibrium model object.
+#' @param parameters A vector of parameters.
+#' @param aggregate Mode of aggregation. Valid options are "mean" (the
+#' default) and "at_the_mean".
 #' @return The estimated effect of the passed variable.
 #' @examples
 #' \donttest{
-#' # initialize the model using the houses dataset
-#' model <- new(
-#'   "diseq_deterministic_adjustment", # model type
-#'   c("ID", "TREND"), "TREND", "HS", "RM", # keys, time, quantity, and price variables
-#'   "RM + TREND + W + CSHS + L1RM + L2RM + MONTH", # demand specification
-#'   "RM + TREND + W + L1RM + MA6DSF + MA3DHF + MONTH", # supply specification
-#'   fair_houses(), # data
-#'   correlated_shocks = FALSE # allow shocks to be correlated
-#' )
+#' # estimate a model using the houses dataset
+#' fit <- diseq_deterministic_adjustment(
+#'   HS | RM | ID | TREND ~
+#'   RM + TREND + W + CSHS + L1RM + L2RM + MONTH |
+#'   RM + TREND + W + L1RM + MA6DSF + MA3DHF + MONTH,
+#'   fair_houses(),  correlated_shocks = FALSE,
+#'   estimation_options = list(control = list(maxit = 1e+5)))
 #'
-#' # estimate the model object (BFGS is used by default)
-#' est <- estimate(model, control = list(maxit = 1e+5))
+#' # mean marginal effect of variable "RM" on the shortage probabilities
+#' #' shortage_probability_marginal(fit, "RM")
 #'
-#' # get the mean marginal effect of variable "RM" on the shortage probabilities
-#' shortage_probability_marginal(model, est@coef, "RM")
+#' # marginal effect at the mean of variable "RM" on the shortage probabilities
+#' shortage_probability_marginal(fit, "CSHS", aggregate = "at_the_mean")
 #'
-#' # get the marginal effect at the mean of variable "RM" on the shortage probabilities
-#' shortage_probability_marginal(model, est@coef, "CSHS", aggregate = "at_the_mean")
-#'
-#' # get the marginal effect of variable "RM" on the system
-#' shortage_marginal(model, est@coef, "RM")
+#' # marginal effect of variable "RM" on the system
+#' shortage_marginal(fit, "RM")
 #' }
 #' @name marginal_effects
 NULL
@@ -189,7 +178,7 @@ NULL
 #' \deqn{M_{x} = \frac{\beta_{d, x} - \beta_{s, x}}{\sqrt{\sigma_{d, x}^{2} +
 #' \sigma_{s, x}^{2} - 2 \rho_{ds} \sigma_{d, x} \sigma_{s, x}}}.}
 #' @export
-setGeneric("shortage_marginal", function(object, parameters, variable) {
+setGeneric("shortage_marginal", function(fit, variable, model, parameters) {
   standardGeneric("shortage_marginal")
 })
 
@@ -204,86 +193,117 @@ setGeneric("shortage_marginal", function(object, parameters, variable) {
 #' quantity, \eqn{S} the supplied quantity, and \eqn{\phi} is the standard normal
 #' density.
 #' @export
-setGeneric("shortage_probability_marginal",
-           function(object, parameters, variable, aggregate = "mean") {
-  standardGeneric("shortage_probability_marginal")
-})
+setGeneric(
+  "shortage_probability_marginal",
+  function(fit, variable, aggregate = "mean", model, parameters) {
+    standardGeneric("shortage_probability_marginal")
+  }
+)
 
 
 #' @rdname shortage_analysis
 setMethod(
-  "shortages", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    object@system <- set_parameters(object@system, parameters)
-    (object@system@demand@independent_matrix %*% object@system@demand@alpha_beta -
-     object@system@supply@independent_matrix %*% object@system@supply@alpha_beta)
+  "shortages", signature(model = "disequilibrium_model", fit = "missing"),
+  function(model, parameters) {
+    model@system <- set_parameters(model@system, parameters)
+    result <- (
+      model@system@demand@independent_matrix %*% model@system@demand@alpha_beta -
+        model@system@supply@independent_matrix %*% model@system@supply@alpha_beta)
+    colnames(result) <- "shortages"
+    result
   }
 )
 
 #' @rdname shortage_analysis
 setMethod(
-  "normalized_shortages", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    shortages(object, parameters) / shortage_standard_deviation(object, parameters)
+  "normalized_shortages",
+  signature(model = "disequilibrium_model", fit = "missing"),
+  function(model, parameters) {
+    result <- shortages(
+      model = model, parameters = parameters
+    ) / shortage_standard_deviation(
+      model = model, parameters = parameters
+    )
+    colnames(result) <- c("normalized_shortages")
+    result
   }
 )
 
 #' @rdname shortage_analysis
 setMethod(
-  "relative_shortages", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    object@system <- set_parameters(object@system, parameters)
-    demand <- object@system@demand@independent_matrix %*% object@system@demand@alpha_beta
-    supply <- object@system@supply@independent_matrix %*% object@system@supply@alpha_beta
-    (demand - supply) / supply
+  "relative_shortages",
+  signature(model = "disequilibrium_model", fit = "missing"),
+  function(model, parameters) {
+    model@system <- set_parameters(model@system, parameters)
+    demand <- model@system@demand@independent_matrix %*% model@system@demand@alpha_beta
+    supply <- model@system@supply@independent_matrix %*% model@system@supply@alpha_beta
+    result <- (demand - supply) / supply
+    colnames(result) <- "relative_shortages"
+    result
   }
 )
 
 #' @rdname shortage_analysis
 setMethod(
-  "shortage_probabilities", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    pnorm(normalized_shortages(object, parameters))
+  "shortage_probabilities",
+  signature(model = "disequilibrium_model", fit = "missing"),
+  function(model, parameters) {
+    result <- pnorm(normalized_shortages(
+      model = model, parameters = parameters
+    ))
+    colnames(result) <- "shortage_probabilities"
+    result
   }
 )
 
 #' @rdname shortage_analysis
 setMethod(
-  "shortage_indicators", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    shortages(object, parameters) >= 0
+  "shortage_indicators",
+  signature(model = "disequilibrium_model", fit = "missing"),
+  function(model, parameters) {
+    result <- shortages(model = model, parameters = parameters) >= 0
+    colnames(result) <- "shortage_indicators"
+    result
   }
 )
 
 #' @rdname shortage_analysis
 setMethod(
-  "shortage_standard_deviation", signature(object = "disequilibrium_model"),
-  function(object, parameters) {
-    object@system <- set_parameters(object@system, parameters)
-    sqrt(object@system@demand@var + object@system@supply@var -
-      2 * object@system@demand@sigma * object@system@supply@sigma * object@system@rho)
+  "shortage_standard_deviation", signature(
+    model = "disequilibrium_model",
+    fit = "missing"
+  ),
+  function(model, parameters) {
+    model@system <- set_parameters(model@system, parameters)
+    result <- sqrt(
+      model@system@demand@var + model@system@supply@var -
+        2 * model@system@demand@sigma * model@system@supply@sigma * model@system@rho
+    )
+    names(result) <- "shortage_standard_deviation"
+    result
   }
 )
 
 #' @rdname marginal_effects
 setMethod(
-  "shortage_marginal", signature(object = "disequilibrium_model"),
-  function(object, parameters, variable) {
-    var <- shortage_standard_deviation(object, parameters)
-    dname <- paste0(object@system@demand@variable_prefix, variable)
+  "shortage_marginal", signature(
+    fit = "missing",
+    model = "disequilibrium_model"
+  ),
+  function(variable, model, parameters) {
+    var <- shortage_standard_deviation(model = model, parameters = parameters)
+    dname <- paste0(model@system@demand@variable_prefix, variable)
     dvar <- parameters[dname]
-    sname <- paste0(object@system@supply@variable_prefix, variable)
+    sname <- paste0(model@system@supply@variable_prefix, variable)
     svar <- parameters[sname]
-    in_demand <- dname %in% prefixed_independent_variables(object@system@demand)
-    in_supply <- sname %in% prefixed_independent_variables(object@system@supply)
+    in_demand <- dname %in% prefixed_independent_variables(model@system@demand)
+    in_supply <- sname %in% prefixed_independent_variables(model@system@supply)
     if (in_demand && in_supply) {
       effect <- (dvar - svar) / var
       names(effect) <- paste0("B_", variable)
-    }
-    else if (in_demand) {
+    } else if (in_demand) {
       effect <- dvar / var
-    }
-    else {
+    } else {
       effect <- -svar / var
     }
     effect
@@ -292,21 +312,59 @@ setMethod(
 
 #' @rdname marginal_effects
 setMethod(
-  "shortage_probability_marginal", signature(object = "disequilibrium_model"),
-  function(object, parameters, variable, aggregate) {
+  "shortage_probability_marginal", signature(
+    fit = "missing",
+    model = "disequilibrium_model"
+  ),
+  function(variable, aggregate, model, parameters) {
     marginal_scale_function <- NULL
     if (aggregate == "mean") {
-      marginal_scale_function <- function(x) mean(dnorm(normalized_shortages(object, x)))
+      marginal_scale_function <- function(x) {
+        mean(dnorm(normalized_shortages(model = model, parameters = x)))
+      }
     } else if (aggregate == "at_the_mean") {
-      marginal_scale_function <- function(x) dnorm(mean(normalized_shortages(object, x)))
+      marginal_scale_function <- function(x) {
+        dnorm(mean(normalized_shortages(model = model, parameters = x)))
+      }
     } else {
       allowed_aggergate <- c("mean", "at_the_mean")
-      print_error(object@logger, paste0(
+      print_error(model@logger, paste0(
         "Invalid `aggregate` option '", aggregate, "'. Valid options are ('",
-        paste0(allowed_aggergate, collapse = "', '"), "')."))
+        paste0(allowed_aggergate, collapse = "', '"), "')."
+      ))
     }
 
     marginal_scale <- marginal_scale_function(parameters)
-    shortage_marginal(object, parameters, variable) * marginal_scale
+    shortage_marginal(
+      model = model, parameters = parameters,
+      variable = variable
+    ) * marginal_scale
+  }
+)
+
+
+#' @rdname marginal_effects
+setMethod(
+  "shortage_marginal", signature(
+    fit = "missing",
+    model = "disequilibrium_model"
+  ),
+  function(variable, model, parameters) {
+    var <- shortage_standard_deviation(model = model, parameters = parameters)
+    dname <- paste0(model@system@demand@variable_prefix, variable)
+    dvar <- parameters[dname]
+    sname <- paste0(model@system@supply@variable_prefix, variable)
+    svar <- parameters[sname]
+    in_demand <- dname %in% prefixed_independent_variables(model@system@demand)
+    in_supply <- sname %in% prefixed_independent_variables(model@system@supply)
+    if (in_demand && in_supply) {
+      effect <- (dvar - svar) / var
+      names(effect) <- paste0("B_", variable)
+    } else if (in_demand) {
+      effect <- dvar / var
+    } else {
+      effect <- -svar / var
+    }
+    effect
   }
 )

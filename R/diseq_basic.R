@@ -1,13 +1,14 @@
 #' @include disequilibrium_model.R
 
-#' @describeIn market_models Basic disequilibrium model with unknown sample separation.
+#' @describeIn market_models Basic disequilibrium model with unknown sample
+#' separation.
 #'
 #' @description
 #' \subsection{diseq_basic}{
 #' The basic disequilibrium model consists of three equations. Two of them
-#' are the demand and supply equations. In addition, the model replaces the market
-#' clearing condition with the short side rule. The model is estimated using full
-#' information maximum likelihood.
+#' are the demand and supply equations. In addition, the model replaces the
+#' market clearing condition with the short side rule. The model is estimated
+#' using full information maximum likelihood.
 #'
 #' \deqn{D_{nt} = X_{d,nt}'\beta_{d} + u_{d,nt},}
 #' \deqn{S_{nt} = X_{s,nt}'\beta_{s} + u_{s,nt},}
@@ -21,7 +22,8 @@ setClass(
   prototype()
 )
 
-#' @describeIn initialize_market_model Basic disequilibrium model base constructor
+#' @describeIn initialize_market_model Basic disequilibrium model base
+#' constructor
 #' @examples
 #' simulated_data <- simulate_data(
 #'   "diseq_basic", 500, 3, # model type, observed entities, observed time points
@@ -32,8 +34,8 @@ setClass(
 #' # initialize the model
 #' model <- new(
 #'   "diseq_basic", # model type
-#'   c("id", "date"), "Q", "P", # keys, quantity, and price variables
-#'   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", # equation specifications
+#'   subject = id, time = date, quantity = Q, price = P,
+#'   demand = P + Xd1 + Xd2 + X1 + X2, supply = P + Xs1 + X1 + X2,
 #'   simulated_data, # data
 #'   correlated_shocks = FALSE # use independent shocks
 #' )
@@ -42,30 +44,54 @@ setClass(
 setMethod(
   "initialize", "diseq_basic",
   function(.Object,
-           key_columns, quantity_column, price_column,
-           demand_specification, supply_specification,
-           data,
-           correlated_shocks = TRUE, verbose = 0) {
+           quantity, price, demand, supply, subject, time,
+           data, correlated_shocks = TRUE, verbose = 0) {
+    specification <- make_specification(
+      data, quantity, price, demand, supply, subject, time
+    )
     .Object <- callNextMethod(
       .Object,
       "Basic", verbose,
-      key_columns, NULL,
-      quantity_column, price_column, demand_specification, supply_specification, NULL,
+      specification,
       correlated_shocks,
       data,
       function(...) new("system_basic", ...)
     )
-
     .Object
   }
 )
 
+#' @describeIn single_call_estimation Basic disequilibrium model.
+#' @export
+setGeneric(
+  "diseq_basic",
+  function(specification, data,
+           correlated_shocks = TRUE, verbose = 0,
+           estimation_options = list()) {
+    standardGeneric("diseq_basic")
+  }
+)
+
+#' @rdname single_call_estimation
+setMethod(
+  "diseq_basic", signature(specification = "formula"),
+  function(specification, data, correlated_shocks, verbose,
+           estimation_options) {
+    initialize_from_formula(
+      "diseq_basic", specification, data, correlated_shocks, verbose,
+      estimation_options
+    )
+  }
+)
+
 #' @rdname minus_log_likelihood
-setMethod("minus_log_likelihood", signature(object = "diseq_basic"),
-          function(object, parameters) {
-  object@system <- set_parameters(object@system, parameters)
-  -sum(log(object@system@lh))
-})
+setMethod(
+  "minus_log_likelihood", signature(object = "diseq_basic"),
+  function(object, parameters) {
+    object@system <- set_parameters(object@system, parameters)
+    -sum(log(object@system@lh))
+  }
+)
 
 #' @rdname gradient
 setMethod("gradient", signature(object = "diseq_basic"), function(object, parameters) {

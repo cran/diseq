@@ -12,7 +12,7 @@ parameters <- list(
 # Optimization setup
 reltol <- 1e-4
 optimization_method <- "BFGS"
-optimization_control <- list(REPORT = 10, maxit = 50000, reltol = reltol)
+optimization_options <- list(REPORT = 10, maxit = 50000, reltol = reltol)
 
 
 # Tests
@@ -24,43 +24,51 @@ test_that(paste0("Model can be simulated"), {
 
 est <- NULL
 test_that(paste0(model_name(mdl), " can be estimated"), {
-  est <<- estimate(mdl,
-    control = optimization_control,
-    method = optimization_method, standard_errors = "heteroscedastic"
+  est <<- diseq_deterministic_adjustment(
+    formula(mdl), simulated_data,
+    estimation_options = list(
+      control = optimization_options,
+      method = optimization_method, standard_errors = "heteroscedastic"
+    )
   )
-  expect_is(est, "mle2")
+  expect_is(est@fit[[1]], "mle2")
+})
+
+
+test_that(paste0(model_name(mdl), " fit can be summarized"), {
+  test_summary(est, 45)
 })
 
 test_that(paste0("Estimates of '", model_name(mdl), "' are accurate"), {
-  test_estimation_accuracy(est@coef, unlist(parameters[-c(1, 2)]), 1e-0)
+  test_estimation_accuracy(coef(est), unlist(parameters[-c(1, 2)]), 1e-0)
 })
 
-test_that(paste0("Mean marginal effect can be calculated"), {
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "P", "mean")
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "Xd1", "mean")
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "X2", "mean")
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "P", "at_the_mean")
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "Xs1", "at_the_mean")
-  test_marginal_effect(shortage_probability_marginal, mdl, est, "X2", "at_the_mean")
+test_that(paste0("Marginal effects can be calculated"), {
+  test_marginal_effect(shortage_probability_marginal, est, "P", "mean")
+  test_marginal_effect(shortage_probability_marginal, est, "Xd1", "mean")
+  test_marginal_effect(shortage_probability_marginal, est, "X2", "mean")
+  test_marginal_effect(shortage_probability_marginal, est, "P", "at_the_mean")
+  test_marginal_effect(shortage_probability_marginal, est, "Xs1", "at_the_mean")
+  test_marginal_effect(shortage_probability_marginal, est, "X2", "at_the_mean")
 })
 
 test_that(paste0("Aggregation can be calculated"), {
-  test_aggregation(aggregate_demand, mdl, est@coef)
-  test_aggregation(aggregate_supply, mdl, est@coef)
+  test_aggregation(aggregate_demand, est)
+  test_aggregation(aggregate_supply, est)
 })
 
 test_that(paste0("Shortages can be calculated"), {
-  test_shortages(relative_shortages, mdl, est@coef)
-  test_shortages(shortage_probabilities, mdl, est@coef)
+  test_shortages(relative_shortages, est)
+  test_shortages(shortage_probabilities, est)
 })
 
 test_that(paste0("Scores can be calculated"), {
-  test_scores(mdl, est@coef)
+  test_scores(est)
 })
 
 test_that(paste0(
   "Calculated gradient of '",
   model_name(mdl), "' matches the numerical approximation"
 ), {
-  test_calculated_gradient(mdl, est@coef, 1e-5)
+  test_calculated_gradient(mdl, coef(est), 1e-5)
 })

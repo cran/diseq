@@ -17,12 +17,10 @@ setClass(
 
 setMethod(
   "initialize", "system_basic",
-  function(
-           .Object, quantity, price,
-           demand_specification, supply_specification, data, correlated_shocks,
+  function(.Object, specification, data, correlated_shocks,
            demand_initializer = NULL, supply_initializer = NULL) {
     .Object <- callNextMethod(
-      .Object, quantity, price, demand_specification, supply_specification, data, correlated_shocks,
+      .Object, specification, data, correlated_shocks,
       ifelse(is.null(demand_initializer),
         function(...) new("equation_basic", ...), demand_initializer
       ),
@@ -30,6 +28,20 @@ setMethod(
         function(...) new("equation_basic", ...), supply_initializer
       )
     )
+  }
+)
+
+setMethod(
+  "show_implementation", signature(object = "system_basic"),
+  function(object) {
+    callNextMethod(object)
+    cat(sprintf(
+      "  %-18s: %s\n", "Short Side Rule", paste0(
+        quantity_variable(object@demand), " = min(",
+        prefixed_quantity_variable(object@demand), ", ",
+        prefixed_quantity_variable(object@supply), ")"
+      )
+    ))
   }
 )
 

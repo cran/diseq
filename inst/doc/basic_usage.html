@@ -12,37 +12,8 @@
 
 
 
-<title>Some examples of estimations using the market models of the package</title>
+<title>Some examples of use-cases using the market models of the package</title>
 
-<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
-// be compatible with the behavior of Pandoc < 2.8).
-document.addEventListener('DOMContentLoaded', function(e) {
-  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
-  var i, h, a;
-  for (i = 0; i < hs.length; i++) {
-    h = hs[i];
-    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
-    a = h.attributes;
-    while (a.length > 0) h.removeAttribute(a[0].name);
-  }
-});
-</script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -63,27 +34,26 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -92,9 +62,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -344,7 +314,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Some examples of estimations using the market models of the package</h1>
+<h1 class="title toc-ignore">Some examples of use-cases using the market models of the package</h1>
 
 
 
@@ -352,245 +322,149 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="setup-the-environment" class="section level2">
 <h2>Setup the environment</h2>
 <p>Load the required libraries.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(diseq)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(magrittr)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(diseq)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(Formula)</a></code></pre></div>
 <p>Prepare the data. Normally this step is long and it depends on the nature of the data and the considered market. For this example, we will use simulated data. Although we could simulate data independently from the package, we will use the top-level simulation functionality of <em>diseq</em> to simplify the process. See the documentation of <code>simulate_data</code> for more information on the simulation functionality. Here, we simulate data using a data generating process for a market in disequilibrium with stochastic price dynamics.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>nobs &lt;-<span class="st"> </span><span class="dv">2000</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>tobs &lt;-<span class="st"> </span><span class="dv">5</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>alpha_d &lt;-<span class="st"> </span><span class="fl">-0.1</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>beta_d0 &lt;-<span class="st"> </span><span class="fl">9.8</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>beta_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">-0.2</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>eta_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.6</span>, <span class="fl">-0.1</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>alpha_s &lt;-<span class="st"> </span><span class="fl">0.1</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>beta_s0 &lt;-<span class="st"> </span><span class="fl">5.1</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>beta_s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.9</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>eta_s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.2</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>gamma &lt;-<span class="st"> </span><span class="fl">1.2</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>beta_p0 &lt;-<span class="st"> </span><span class="fl">3.1</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>beta_p &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.8</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>sigma_d &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>sigma_s &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>sigma_p &lt;-<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>rho_ds &lt;-<span class="st"> </span><span class="fl">0.0</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>rho_dp &lt;-<span class="st"> </span><span class="fl">0.0</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>rho_sp &lt;-<span class="st"> </span><span class="fl">0.0</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>seed &lt;-<span class="st"> </span><span class="dv">443</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>stochastic_adjustment_data &lt;-<span class="st"> </span><span class="kw">simulate_data</span>(</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>  <span class="st">&quot;diseq_stochastic_adjustment&quot;</span>, nobs, tobs,</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>  alpha_d, beta_d0, beta_d, eta_d,</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>  alpha_s, beta_s0, beta_s, eta_s,</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a>  gamma, beta_p0, beta_p,</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a>  <span class="dt">sigma_d =</span> sigma_d, <span class="dt">sigma_s =</span> sigma_s, <span class="dt">sigma_p =</span> sigma_p,</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>  <span class="dt">rho_ds =</span> rho_ds, <span class="dt">rho_dp =</span> rho_dp, <span class="dt">rho_sp =</span> rho_sp,</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a>  <span class="dt">seed =</span> seed</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">nobs &lt;-<span class="st"> </span><span class="dv">2000</span></a>
+<a class="sourceLine" id="cb2-2" title="2">tobs &lt;-<span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4">alpha_d &lt;-<span class="st"> </span><span class="fl">-0.3</span></a>
+<a class="sourceLine" id="cb2-5" title="5">beta_d0 &lt;-<span class="st"> </span><span class="fl">6.8</span></a>
+<a class="sourceLine" id="cb2-6" title="6">beta_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">-0.02</span>)</a>
+<a class="sourceLine" id="cb2-7" title="7">eta_d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.6</span>, <span class="fl">-0.1</span>)</a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9">alpha_s &lt;-<span class="st"> </span><span class="fl">0.6</span></a>
+<a class="sourceLine" id="cb2-10" title="10">beta_s0 &lt;-<span class="st"> </span><span class="fl">2.1</span></a>
+<a class="sourceLine" id="cb2-11" title="11">beta_s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.9</span>)</a>
+<a class="sourceLine" id="cb2-12" title="12">eta_s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.2</span>)</a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14">gamma &lt;-<span class="st"> </span><span class="fl">1.2</span></a>
+<a class="sourceLine" id="cb2-15" title="15">beta_p0 &lt;-<span class="st"> </span><span class="fl">0.9</span></a>
+<a class="sourceLine" id="cb2-16" title="16">beta_p &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb2-17" title="17"></a>
+<a class="sourceLine" id="cb2-18" title="18">sigma_d &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-19" title="19">sigma_s &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-20" title="20">sigma_p &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-21" title="21">rho_ds &lt;-<span class="st"> </span><span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb2-22" title="22">rho_dp &lt;-<span class="st"> </span><span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb2-23" title="23">rho_sp &lt;-<span class="st"> </span><span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb2-24" title="24"></a>
+<a class="sourceLine" id="cb2-25" title="25">seed &lt;-<span class="st"> </span><span class="dv">443</span></a>
+<a class="sourceLine" id="cb2-26" title="26"></a>
+<a class="sourceLine" id="cb2-27" title="27">stochastic_adjustment_data &lt;-<span class="st"> </span><span class="kw">simulate_data</span>(</a>
+<a class="sourceLine" id="cb2-28" title="28">  <span class="st">&quot;diseq_stochastic_adjustment&quot;</span>, nobs, tobs,</a>
+<a class="sourceLine" id="cb2-29" title="29">  alpha_d, beta_d0, beta_d, eta_d,</a>
+<a class="sourceLine" id="cb2-30" title="30">  alpha_s, beta_s0, beta_s, eta_s,</a>
+<a class="sourceLine" id="cb2-31" title="31">  gamma, beta_p0, beta_p,</a>
+<a class="sourceLine" id="cb2-32" title="32">  <span class="dt">sigma_d =</span> sigma_d, <span class="dt">sigma_s =</span> sigma_s, <span class="dt">sigma_p =</span> sigma_p,</a>
+<a class="sourceLine" id="cb2-33" title="33">  <span class="dt">rho_ds =</span> rho_ds, <span class="dt">rho_dp =</span> rho_dp, <span class="dt">rho_sp =</span> rho_sp,</a>
+<a class="sourceLine" id="cb2-34" title="34">  <span class="dt">seed =</span> seed</a>
+<a class="sourceLine" id="cb2-35" title="35">)</a></code></pre></div>
 </div>
-<div id="initialize-the-model" class="section level2">
-<h2>Initialize the model</h2>
-<p>The constructor sets the basic parameters for model initialization and constructs a model object. The needed arguments for a construction call are configured as follows:</p>
-<ul>
-<li>Set the fields that uniquely identify data rows. For panel data this should be a vector of the entity identifier and the time columns.</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>key_columns &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;date&quot;</span>)</span></code></pre></div>
-<ul>
-<li>Set time field. This is needed for the calculation of price’s first differences. The <code>diseq_directional</code>, <code>diseq_deterministic_adjustment</code>, and <code>diseq_stochastic_adjustment</code> models require calculating the first differences.</li>
-</ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>time_column &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;date&quot;</span>)</span></code></pre></div>
-<ul>
-<li>Set the quantity variable. The quantity variable is the observable. For the equilibrium models, it is equal with both the demanded and supplied quantities. For the disequilibrium models, the observed quantity represents either a demanded or a supplied quantity. Each disequilibrium model resolves that state of the observation in a different way.</li>
-</ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>quantity_column &lt;-<span class="st"> &quot;Q&quot;</span></span></code></pre></div>
-<ul>
-<li>Set the price variable.</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>price_column &lt;-<span class="st"> &quot;P&quot;</span></span></code></pre></div>
-<ul>
-<li>Set the remaining demand and supply variables. Simply include the factor variables here as in a usual <code>lm</code> formula. Indicator variables and interaction terms will be created automatically by the constructor. For the <code>diseq_directional</code> model, the price cannot go in both equations. For the rest of the models, the price can go in both equations if treated as exogenous. The <code>diseq_stochastic_adjustment</code> requires also the specification of price dynamics.</li>
-</ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>demand_specification &lt;-<span class="st"> </span><span class="kw">paste0</span>(price_column, <span class="st">&quot; + Xd1 + Xd2 + X1 + X2&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>supply_specification &lt;-<span class="st"> &quot;Xs1 + X1 + X2&quot;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>price_specification &lt;-<span class="st"> &quot;Xp1&quot;</span></span></code></pre></div>
-<ul>
-<li>Set the verbosity level. This controls the level of messaging. The object displays
-<ul>
-<li>error: always,</li>
-<li>warning: . <span class="math inline">\(\ge\)</span> 1,</li>
-<li>info: . <span class="math inline">\(\ge\)</span> 2,</li>
-<li>verbose: . <span class="math inline">\(\ge\)</span> 3 and</li>
-<li>debug :. <span class="math inline">\(\ge\)</span> 4.</li>
-</ul></li>
-</ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>verbose &lt;-<span class="st"> </span><span class="dv">2</span></span></code></pre></div>
-<ul>
-<li>Should the estimation allow for correlated demand and supply shocks?</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>correlated_shocks &lt;-<span class="st"> </span><span class="ot">TRUE</span></span></code></pre></div>
-<p>Using the above parameterization, construct the model objects. Here, we construct an equilibrium model and four disequilibrium models, using in all cases the same data simulated by the process based on the stochastic price adjustment model. Of course, this is only done to simplify the exposition of the functionality. The constructors of the models that use price dynamics information in the estimation, i.e. <code>diseq_directional</code>, <code>diseq_deterministic_adjustment</code>, and <code>diseq_stochastic_adjustment</code>, will automatically generate lagged prices and drop one observation per entity.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>eqmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  <span class="st">&quot;equilibrium_model&quot;</span>,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>  key_columns,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>  quantity_column, price_column,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a><span class="co">#&gt; Info: This is &#39;Equilibrium with correlated shocks&#39; model</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>bsmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>  <span class="st">&quot;diseq_basic&quot;</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>  key_columns,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>  quantity_column, price_column,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a>)</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a><span class="co">#&gt; Info: This is &#39;Basic with correlated shocks&#39; model</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a>drmdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>  <span class="st">&quot;diseq_directional&quot;</span>,</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>  key_columns, time_column,</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a>  quantity_column, price_column,</span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>  demand_specification, supply_specification,</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true"></a>)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true"></a><span class="co">#&gt; Info: This is &#39;Directional with correlated shocks&#39; model</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true"></a><span class="co">#&gt; Info: Sample separated with 9 rows in excess supply and 7991 in excess demand regime.</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true"></a>damdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true"></a>  <span class="st">&quot;diseq_deterministic_adjustment&quot;</span>,</span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true"></a>  key_columns, time_column,</span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true"></a>  quantity_column, price_column,</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true"></a>)</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true"></a><span class="co">#&gt; Info: This is &#39;Deterministic Adjustment with correlated shocks&#39; model</span></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true"></a><span class="co">#&gt; Info: Sample separated with 9 rows in excess supply and 7991 in excess demand regime.</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true"></a>samdl &lt;-<span class="st"> </span><span class="kw">new</span>(</span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true"></a>  <span class="st">&quot;diseq_stochastic_adjustment&quot;</span>,</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true"></a>  key_columns, time_column,</span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true"></a>  quantity_column, price_column,</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true"></a>  demand_specification, <span class="kw">paste0</span>(price_column, <span class="st">&quot; + &quot;</span>, supply_specification),</span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true"></a>  price_specification,</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true"></a>  stochastic_adjustment_data,</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true"></a>  <span class="dt">correlated_shocks =</span> correlated_shocks, <span class="dt">verbose =</span> verbose</span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true"></a>)</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true"></a><span class="co">#&gt; Info: This is &#39;Stochastic Adjustment with correlated shocks&#39; model</span></span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true"></a><span class="co">#&gt; Info: Dropping 2000 rows by generating &#39;LAGGED_P&#39;.</span></span></code></pre></div>
-</div>
-<div id="estimation" class="section level2">
-<h2>Estimation</h2>
-<p>First, we need to set the estimation parameters and choose and estimation method. The only model that can be estimated by least squares is the <code>equilibrium_model</code>. To estimate the model with this methodology call <code>diseq::estimate</code> with <code>method = 2SLS</code> set. The <code>equilibrium_model</code> can also be estimated using full information maximum likelihood, as it is the case for all the disequilibrium models. One may choose an optimization method and the corresponding optimization controls. The available methods are:</p>
-<ul>
-<li><p><code>Nelder-Mead</code>: Does not require the gradient of the likelihood to be known.</p></li>
-<li><p><code>BFGS</code>: Uses the analytically calculated gradients. By default the <em>diseq</em> package uses this method.</p></li>
-<li><p><code>L-BFGS-B</code>: Constrained optimization.</p></li>
-</ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>optimization_method &lt;-<span class="st"> &quot;BFGS&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a>optimization_controls &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">REPORT =</span> <span class="dv">10</span>, <span class="dt">maxit =</span> <span class="dv">10000</span>, <span class="dt">reltol =</span> <span class="fl">1e-6</span>)</span></code></pre></div>
-<p>Then, estimate the models. See the documentation for more options.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>eqmdl_reg &lt;-<span class="st"> </span><span class="kw">estimate</span>(eqmdl, <span class="dt">method =</span> <span class="st">&quot;2SLS&quot;</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>eqmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(eqmdl,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>bsmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(bsmdl,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>  <span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>drmdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(drmdl,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a>  <span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>)</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>damdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(damdl,</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a>)</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>samdl_est &lt;-<span class="st"> </span><span class="kw">estimate</span>(samdl,</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a>  <span class="dt">control =</span> optimization_controls, <span class="dt">method =</span> optimization_method,</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true"></a>  <span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>)</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a>)</span></code></pre></div>
+<div id="estimate-the-models" class="section level2">
+<h2>Estimate the models</h2>
+<p>Prepare the basic parameters for model initialization. The <code>simulate_data</code> call uses <code>Q</code> for the simulated traded quantity, <code>P</code> for the simulated prices, <code>id</code> for subject identification, and <code>date</code> for time identification. It automatically creates the demand specific variables <code>Xd1</code> and <code>Xd2</code>, the supply specific variable <code>Xs1</code>, the common (i.e. both demand and supply) variables <code>X1</code> and <code>X2</code>, and the price dynamics’ variable <code>Xp1</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">market_spec &lt;-<span class="st">   </span>Q <span class="op">|</span><span class="st"> </span>P <span class="op">|</span><span class="st"> </span>id <span class="op">|</span><span class="st"> </span>date <span class="op">~</span><span class="st"> </span>P <span class="op">+</span><span class="st"> </span>Xd1 <span class="op">+</span><span class="st"> </span>Xd2 <span class="op">+</span><span class="st"> </span>X1 <span class="op">+</span><span class="st"> </span>X2 <span class="op">|</span><span class="st"> </span>P <span class="op">+</span><span class="st"> </span>Xs1 <span class="op">+</span><span class="st"> </span>X1 <span class="op">+</span><span class="st"> </span>X2</a></code></pre></div>
+<p>The market specification has two be modified in two cases. For the <code>diseq_directional</code>, the price variable is removed from the supply equation because the separation rule of the model can only be used for markets with exclusively either inelastic demand or supply. For the <code>diseq_stochastic_adjustment</code>, the right hand side of the price dynamics equation is appended in the market specification.</p>
+<p>By default the models are estimated by allowing the demand, supply, and price equations to have correlated error shocks. The default verbosity behavior is to display errors and warnings that might occur when estimating the models.</p>
+<p>By default all models are estimated using full information maximum likelihood based on the <code>&quot;BFGS&quot;</code> optimization algorithm. The first <code>equilibrium_model</code> call modifies the estimation behavior and estimates the model using two stage least squares. The <code>diseq_basic</code> call modifies the default optimization behavior and estimates the model using the <code>&quot;Nelder-Mead&quot;</code> optimization methods.</p>
+<p>Standard errors are by default assumed to be homoscedastic. The second <code>equilibrium_model</code> and <code>diseq_deterministic_adjustment</code> calls modify this behavior by calculating clustered standard errors based on the subject identifier, while the <code>diseq_basic</code> and <code>diseq_directional</code> calls modify it by calculating heteroscedastic standard errors via the sandwich estimator.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">eqmdl_reg &lt;-<span class="st"> </span><span class="kw">equilibrium_model</span>(</a>
+<a class="sourceLine" id="cb4-2" title="2">  market_spec, stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-3" title="3">  <span class="dt">estimation_options =</span> <span class="kw">list</span>(<span class="dt">method =</span> <span class="st">&quot;2SLS&quot;</span>)</a>
+<a class="sourceLine" id="cb4-4" title="4">)</a>
+<a class="sourceLine" id="cb4-5" title="5">eqmdl_fit &lt;-<span class="st"> </span><span class="kw">equilibrium_model</span>(</a>
+<a class="sourceLine" id="cb4-6" title="6">    market_spec, stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-7" title="7">    <span class="dt">estimation_options =</span> <span class="kw">list</span>(<span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>))</a>
+<a class="sourceLine" id="cb4-8" title="8">)</a>
+<a class="sourceLine" id="cb4-9" title="9">bsmdl_fit &lt;-<span class="st"> </span><span class="kw">diseq_basic</span>(</a>
+<a class="sourceLine" id="cb4-10" title="10">    market_spec, stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-11" title="11">    <span class="dt">estimation_options =</span> <span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb4-12" title="12">        <span class="dt">method =</span> <span class="st">&quot;Nelder-Mead&quot;</span>, <span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">maxit =</span> <span class="fl">1e+5</span>),</a>
+<a class="sourceLine" id="cb4-13" title="13">        <span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span></a>
+<a class="sourceLine" id="cb4-14" title="14">    )</a>
+<a class="sourceLine" id="cb4-15" title="15">)</a>
+<a class="sourceLine" id="cb4-16" title="16">drmdl_fit &lt;-<span class="st"> </span><span class="kw">diseq_directional</span>(</a>
+<a class="sourceLine" id="cb4-17" title="17">    <span class="kw">formula</span>(<span class="kw">update</span>(<span class="kw">Formula</span>(market_spec), . <span class="op">~</span><span class="st"> </span>. <span class="op">|</span><span class="st"> </span>. <span class="op">-</span><span class="st"> </span>P)),</a>
+<a class="sourceLine" id="cb4-18" title="18">    stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-19" title="19">    <span class="dt">estimation_options =</span> <span class="kw">list</span>(<span class="dt">standard_errors =</span> <span class="st">&quot;heteroscedastic&quot;</span>)</a>
+<a class="sourceLine" id="cb4-20" title="20">)</a>
+<a class="sourceLine" id="cb4-21" title="21">damdl_fit &lt;-<span class="st"> </span><span class="kw">diseq_deterministic_adjustment</span>(</a>
+<a class="sourceLine" id="cb4-22" title="22">    market_spec, stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-23" title="23">    <span class="dt">estimation_options =</span> <span class="kw">list</span>(<span class="dt">standard_errors =</span> <span class="kw">c</span>(<span class="st">&quot;id&quot;</span>))</a>
+<a class="sourceLine" id="cb4-24" title="24">)</a>
+<a class="sourceLine" id="cb4-25" title="25">samdl_fit &lt;-<span class="st"> </span><span class="kw">diseq_stochastic_adjustment</span>(</a>
+<a class="sourceLine" id="cb4-26" title="26">    <span class="kw">formula</span>(<span class="kw">update</span>(<span class="kw">Formula</span>(market_spec), . <span class="op">~</span><span class="st"> </span>. <span class="op">|</span><span class="st"> </span>. <span class="op">|</span><span class="st"> </span>Xp1)),</a>
+<a class="sourceLine" id="cb4-27" title="27">    stochastic_adjustment_data,</a>
+<a class="sourceLine" id="cb4-28" title="28">    <span class="dt">estimation_options =</span> <span class="kw">list</span>(<span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">maxit =</span> <span class="fl">1e+5</span>))</a>
+<a class="sourceLine" id="cb4-29" title="29">)</a></code></pre></div>
 </div>
 <div id="post-estimation-analysis" class="section level2">
 <h2>Post estimation analysis</h2>
 <div id="marginal-effects" class="section level3">
 <h3>Marginal effects</h3>
 <p>Calculate marginal effects on the shortage probabilities. <em>Diseq</em> offers two marginal effect calls out of the box. The mean marginal effects and the marginal effects ate the mean. Marginal effects on the shortage probabilities are state-dependent. If the variable is only in the demand equation, the output name of the marginal effect is the variable name prefixed by <code>D_</code>. If the variable is only in the supply equation, the name of the marginal effect is the variable name prefixed by <code>S_</code>. If the variable is in both equations, then it is prefixed by <code>B_</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>variables &lt;-<span class="st"> </span><span class="kw">c</span>(price_column, <span class="st">&quot;Xd1&quot;</span>, <span class="st">&quot;Xd2&quot;</span>, <span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;Xs1&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>bsmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(bsmdl, bsmdl_est<span class="op">@</span>coef, v),</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a>)</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>drmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(drmdl, drmdl_est<span class="op">@</span>coef, v),</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a>damdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a>  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(damdl, damdl_est<span class="op">@</span>coef, v),</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a>)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a>samdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a>  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(samdl, samdl_est<span class="op">@</span>coef, v),</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a>)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a>bsmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a>  <span class="cf">function</span>(v) {</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a>    <span class="kw">shortage_probability_marginal</span>(bsmdl, bsmdl_est<span class="op">@</span>coef, v,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true"></a>      <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true"></a>    )</span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true"></a>  },</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true"></a>)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true"></a>drmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true"></a>  <span class="cf">function</span>(v) {</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true"></a>    <span class="kw">shortage_probability_marginal</span>(drmdl, drmdl_est<span class="op">@</span>coef, v,</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true"></a>      <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true"></a>    )</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true"></a>  },</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true"></a>)</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true"></a>damdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true"></a>  <span class="cf">function</span>(v) {</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true"></a>    <span class="kw">shortage_probability_marginal</span>(damdl, damdl_est<span class="op">@</span>coef, v,</span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true"></a>      <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true"></a>    )</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true"></a>  },</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true"></a>)</span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true"></a>samdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true"></a>  <span class="cf">function</span>(v) {</span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true"></a>    <span class="kw">shortage_probability_marginal</span>(samdl, samdl_est<span class="op">@</span>coef, v,</span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true"></a>      <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true"></a>    )</span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true"></a>  },</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true"></a>  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true"></a>)</span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true"></a></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true"></a><span class="kw">cbind</span>(</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true"></a>  bsmdl_mme, drmdl_mme, damdl_mme, samdl_mme, bsmdl_mem, drmdl_mem, damdl_mem,</span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true"></a>  samdl_mem</span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true"></a>)</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true"></a><span class="co">#&gt;         bsmdl_mme     drmdl_mme     damdl_mme   samdl_mme   bsmdl_mem</span></span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true"></a><span class="co">#&gt; B_P   -0.03116252 -0.0001311817 -0.0009663191 -0.04037366 -0.04445983</span></span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true"></a><span class="co">#&gt; D_Xd1  0.06380186  0.0003380489  0.0014376743  0.06073446  0.09102664</span></span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true"></a><span class="co">#&gt; D_Xd2 -0.03847220  0.0001247948 -0.0009408077 -0.03545453 -0.05488861</span></span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true"></a><span class="co">#&gt; B_X1   0.22980161  0.0009789019  0.0053218947  0.22223228  0.32785985</span></span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true"></a><span class="co">#&gt; B_X2  -0.07253722  0.0020569042 -0.0012012494 -0.05206977 -0.10348945</span></span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true"></a><span class="co">#&gt; S_Xs1 -0.19442844 -0.0006311324 -0.0044621154 -0.19309798 -0.27739266</span></span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true"></a><span class="co">#&gt;           drmdl_mem     damdl_mem   samdl_mem</span></span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true"></a><span class="co">#&gt; B_P   -6.251634e-05 -0.0002319415 -0.05602628</span></span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true"></a><span class="co">#&gt; D_Xd1  1.611016e-04  0.0003450789  0.08428082</span></span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true"></a><span class="co">#&gt; D_Xd2  5.947257e-05 -0.0002258181 -0.04920002</span></span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true"></a><span class="co">#&gt; B_X1   4.665084e-04  0.0012773920  0.30839032</span></span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true"></a><span class="co">#&gt; B_X2   9.802444e-04 -0.0002883308 -0.07225689</span></span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true"></a><span class="co">#&gt; S_Xs1 -3.007744e-04 -0.0010710228 -0.26796084</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">variables &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;P&quot;</span>, <span class="st">&quot;Xd1&quot;</span>, <span class="st">&quot;Xd2&quot;</span>, <span class="st">&quot;X1&quot;</span>, <span class="st">&quot;X2&quot;</span>, <span class="st">&quot;Xs1&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2"></a>
+<a class="sourceLine" id="cb5-3" title="3">bsmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-4" title="4">  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(bsmdl_fit, v),</a>
+<a class="sourceLine" id="cb5-5" title="5">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-6" title="6">)</a>
+<a class="sourceLine" id="cb5-7" title="7">drmdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-8" title="8">  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(drmdl_fit, v),</a>
+<a class="sourceLine" id="cb5-9" title="9">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-10" title="10">)</a>
+<a class="sourceLine" id="cb5-11" title="11">damdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-12" title="12">  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(damdl_fit, v),</a>
+<a class="sourceLine" id="cb5-13" title="13">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-14" title="14">)</a>
+<a class="sourceLine" id="cb5-15" title="15">samdl_mme &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-16" title="16">  <span class="cf">function</span>(v) <span class="kw">shortage_probability_marginal</span>(samdl_fit, v),</a>
+<a class="sourceLine" id="cb5-17" title="17">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-18" title="18">)</a>
+<a class="sourceLine" id="cb5-19" title="19">bsmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-20" title="20">  <span class="cf">function</span>(v) {</a>
+<a class="sourceLine" id="cb5-21" title="21">    <span class="kw">shortage_probability_marginal</span>(bsmdl_fit, v, <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span>)</a>
+<a class="sourceLine" id="cb5-22" title="22">  },</a>
+<a class="sourceLine" id="cb5-23" title="23">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-24" title="24">)</a>
+<a class="sourceLine" id="cb5-25" title="25">drmdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-26" title="26">  <span class="cf">function</span>(v) {</a>
+<a class="sourceLine" id="cb5-27" title="27">    <span class="kw">shortage_probability_marginal</span>(drmdl_fit, v, <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span>)</a>
+<a class="sourceLine" id="cb5-28" title="28">  },</a>
+<a class="sourceLine" id="cb5-29" title="29">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-30" title="30">)</a>
+<a class="sourceLine" id="cb5-31" title="31">damdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-32" title="32">  <span class="cf">function</span>(v) {</a>
+<a class="sourceLine" id="cb5-33" title="33">    <span class="kw">shortage_probability_marginal</span>(damdl_fit, v, <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span>)</a>
+<a class="sourceLine" id="cb5-34" title="34">  },</a>
+<a class="sourceLine" id="cb5-35" title="35">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-36" title="36">)</a>
+<a class="sourceLine" id="cb5-37" title="37">samdl_mem &lt;-<span class="st"> </span><span class="kw">sapply</span>(variables,</a>
+<a class="sourceLine" id="cb5-38" title="38">  <span class="cf">function</span>(v) {</a>
+<a class="sourceLine" id="cb5-39" title="39">    <span class="kw">shortage_probability_marginal</span>(samdl_fit, v, <span class="dt">aggregate =</span> <span class="st">&quot;at_the_mean&quot;</span>)</a>
+<a class="sourceLine" id="cb5-40" title="40">  },</a>
+<a class="sourceLine" id="cb5-41" title="41">  <span class="dt">USE.NAMES =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-42" title="42">)</a>
+<a class="sourceLine" id="cb5-43" title="43"></a>
+<a class="sourceLine" id="cb5-44" title="44"><span class="kw">cbind</span>(</a>
+<a class="sourceLine" id="cb5-45" title="45">  bsmdl_mme, drmdl_mme, damdl_mme, samdl_mme, bsmdl_mem, drmdl_mem, damdl_mem,</a>
+<a class="sourceLine" id="cb5-46" title="46">  samdl_mem</a>
+<a class="sourceLine" id="cb5-47" title="47">)</a>
+<a class="sourceLine" id="cb5-48" title="48"><span class="co">#&gt;          bsmdl_mme    drmdl_mme     damdl_mme    samdl_mme   bsmdl_mem</span></a>
+<a class="sourceLine" id="cb5-49" title="49"><span class="co">#&gt; B_P   -0.058233417  0.074489805 -0.1651059977 -0.199290256 -0.06399195</span></a>
+<a class="sourceLine" id="cb5-50" title="50"><span class="co">#&gt; D_Xd1  0.084990788  0.055358542  0.0641363526  0.067995494  0.09339528</span></a>
+<a class="sourceLine" id="cb5-51" title="51"><span class="co">#&gt; D_Xd2  0.009720347  0.006209734  0.0004054397  0.004403883  0.01068156</span></a>
+<a class="sourceLine" id="cb5-52" title="52"><span class="co">#&gt; B_X1   0.181968214  0.117482602  0.1923432239  0.238684040  0.19996252</span></a>
+<a class="sourceLine" id="cb5-53" title="53"><span class="co">#&gt; B_X2  -0.042143710 -0.021743702 -0.0444738050 -0.056832061 -0.04631118</span></a>
+<a class="sourceLine" id="cb5-54" title="54"><span class="co">#&gt; S_Xs1 -0.265232209 -0.132090709 -0.1899577770 -0.206401099 -0.29146025</span></a>
+<a class="sourceLine" id="cb5-55" title="55"><span class="co">#&gt;          drmdl_mem     damdl_mem    samdl_mem</span></a>
+<a class="sourceLine" id="cb5-56" title="56"><span class="co">#&gt; B_P    0.079827913 -0.1925007197 -0.252675118</span></a>
+<a class="sourceLine" id="cb5-57" title="57"><span class="co">#&gt; D_Xd1  0.059325660  0.0747779862  0.086209782</span></a>
+<a class="sourceLine" id="cb5-58" title="58"><span class="co">#&gt; D_Xd2  0.006654738  0.0004727111  0.005583573</span></a>
+<a class="sourceLine" id="cb5-59" title="59"><span class="co">#&gt; B_X1   0.125901672  0.2242572017  0.302621508</span></a>
+<a class="sourceLine" id="cb5-60" title="60"><span class="co">#&gt; B_X2  -0.023301905 -0.0518529889 -0.072055945</span></a>
+<a class="sourceLine" id="cb5-61" title="61"><span class="co">#&gt; S_Xs1 -0.141556628 -0.2214759566 -0.261690778</span></a></code></pre></div>
 </div>
 <div id="shortages" class="section level3">
 <h3>Shortages</h3>
@@ -600,293 +474,350 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p>Normalized shortages. The point estimates of the shortages are normalized by the variance of the difference of the shocks of demand and supply.</p></li>
 <li><p>Relative shortages: The point estimates of the shortages are normalized by the estimated supplied quantity.</p></li>
 </ul>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>mdt &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">add_column</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a>  bsmdl<span class="op">@</span>model_tibble,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a>  <span class="dt">normalized_shortages =</span> <span class="kw">c</span>(<span class="kw">normalized_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>  <span class="dt">shortage_probabilities =</span> <span class="kw">c</span>(<span class="kw">shortage_probabilities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a>  <span class="dt">relative_shortages =</span> <span class="kw">c</span>(<span class="kw">relative_shortages</span>(bsmdl, bsmdl_est<span class="op">@</span>coef))</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">mdt &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">add_column</span>(</a>
+<a class="sourceLine" id="cb6-2" title="2">  bsmdl_fit<span class="op">@</span>model_tibble,</a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="dt">normalized_shortages =</span> <span class="kw">c</span>(<span class="kw">normalized_shortages</span>(bsmdl_fit)),</a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="dt">shortage_probabilities =</span> <span class="kw">c</span>(<span class="kw">shortage_probabilities</span>(bsmdl_fit)),</a>
+<a class="sourceLine" id="cb6-5" title="5">  <span class="dt">relative_shortages =</span> <span class="kw">c</span>(<span class="kw">relative_shortages</span>(bsmdl_fit))</a>
+<a class="sourceLine" id="cb6-6" title="6">)</a></code></pre></div>
 <p>How is the sample separated post-estimation? The indices of the observations for which the estimated demand is greater than the estimated supply are easily obtained.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>abs_estsep &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>  <span class="dt">nobs =</span> <span class="kw">length</span>(<span class="kw">shortage_indicators</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>  <span class="dt">nshortages =</span> <span class="kw">sum</span>(<span class="kw">shortage_indicators</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)),</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>  <span class="dt">nsurpluses =</span> <span class="kw">sum</span>(<span class="op">!</span><span class="kw">shortage_indicators</span>(bsmdl, bsmdl_est<span class="op">@</span>coef))</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a>)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="kw">print</span>(abs_estsep)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a><span class="co">#&gt;       nobs nshortages nsurpluses </span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a><span class="co">#&gt;      10000       6005       3995</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a>rel_estsep &lt;-<span class="st"> </span>abs_estsep <span class="op">/</span><span class="st"> </span>abs_estsep[<span class="st">&quot;nobs&quot;</span>]</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true"></a><span class="kw">names</span>(rel_estsep) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;total&quot;</span>, <span class="st">&quot;shortages_share&quot;</span>, <span class="st">&quot;surpluses_share&quot;</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true"></a><span class="kw">print</span>(rel_estsep)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true"></a><span class="co">#&gt;           total shortages_share surpluses_share </span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true"></a><span class="co">#&gt;          1.0000          0.6005          0.3995</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">requireNamespace</span>(<span class="st">&quot;ggplot2&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true"></a>  ggplot2<span class="op">::</span><span class="kw">ggplot</span>(mdt, ggplot2<span class="op">::</span><span class="kw">aes</span>(normalized_shortages)) <span class="op">+</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_density</span>() <span class="op">+</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true"></a>      <span class="st">&quot;Normalized shortages density (&quot;</span>,</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true"></a>      <span class="kw">model_name</span>(bsmdl), <span class="st">&quot;)&quot;</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true"></a>    ))</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true"></a>}</span></code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAADAFBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQVFRUWFhYXFxcYGBgZGRkaGhobGxscHBwdHR0eHh4fHx8gICAhISEiIiIjIyMkJCQlJSUmJiYnJycoKCgpKSkqKiorKyssLCwtLS0uLi4vLy8wMDAxMTEyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg5OTk6Ojo7Ozs8PDw9PT0+Pj4/Pz9AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dISEhJSUlKSkpLS0tMTExNTU1OTk5PT09QUFBRUVFSUlJTU1NUVFRVVVVWVlZXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5fX19gYGBhYWFiYmJjY2NkZGRlZWVmZmZnZ2doaGhpaWlqampra2tsbGxtbW1ubm5vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Ojo6Pj4+QkJCRkZGSkpKTk5OUlJSVlZWWlpaXl5eYmJiZmZmampqbm5ucnJydnZ2enp6fn5+goKChoaGioqKjo6OkpKSlpaWmpqanp6eoqKipqamqqqqrq6usrKytra2urq6vr6+wsLCxsbGysrKzs7O0tLS1tbW2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXGxsbHx8fIyMjJycnKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7////isF19AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAcBklEQVR4nO2dB3zT1trGj7MgEHYYYfeySqGFAKVlBwqUMAJllAIpEGYDFMJlllFom8ssBcIos2WPAh/jUqCXFTYhZQQCIYNNBhEjJGQ5jt9Pki3LQ/KxLVmyUz8/kI6kR+85/kdbR+cgcMmskNwFcHS5AGHkAoSRCxBGLkAYuQBhZAuggGFqejxniBUrXQx4BGcC0niXXw+IN5pzLSCJx6s+8ciKnM1kYSSqfMaxbQGE0EZ63KeuFSsdQrGwBz3mXX4K/W005wS6xeNVoZ+tyNlMFkaiymcc2yZAXuXoLcFqQDnPVbzLHQEQVT5RAM3w+ooaawDtHxs0h9oXrgRk7fn84bWA+GGtRp6B02N6Lcoj56o2jAgc+RdoAJ0jN+FfAmhdAzg7qfv4G1QE5aqBI/azpX86o9eXq/IoQDf3jgxanGOSyf4OqE6gXmiArYNG/+9IIJXSBWWiaKSXBeO4FpA6rXXQ0lw9L1m+61Ts7E6bqJVGjbMV0JZ56BgDaBRq1rdi6dMAR9H35bq/OIH+1XSMX7GJlUJaoWnkj2jj3rWvH/pdA2g/uQnvn0qqEYqCnxRNB9Z23waQ1w590s27EwMornTpnv6KLyhA3WqENEFDTDKJXox6rtQLDaPcOnX1+tiHTOmC6qLQ0stC5ziBOlQfGYAG63nJ8j2hY7f5hFwpWfEfmwHlNaidrQF0Bs0GSH+/YSFZ9gZpVLaBKriASiaBulpj8m+CfiQpNenCAqJ0o1goxLjNJQvew+cFrEDrAKK8GUBhPi8BQtALMlSD1wB9i6tMMqF3Azb0eSrA/yESEBtUF4UWmwXrOIHqU+G9CljvfuYYtESRCrAKJdoMCCIVUzWAvq5AbaPb0GWy7GuBAvQnQKHPIDIZUh0g9UQWmerUwgBQZt2PcmFSWep4FI12QtOm1MwRDKDhxR4AZD9XkqHIXwXL0TuTTOgfwYYeWq2QTDUhAbFBdVFosVmwDk34VSiD9eoAxSNyH+vQAmwHBCM9btKAWnek5sShHWTZI2lA1O/0nUIOJlSnFsX8NjsQGQIaWDIOILAUdShqjRaDzwRq5m8MoEgvz75rn9ChLpDD1SQg40y0B1Im9KfdqKmhPvpBdVFosVmwjhPoPDlvHQlI59UBgoZBkOa2VAig15VaFFKAPgii5qSglWTZb7KApmoBZQSiOn3ntTcAtI5aHzrW+ZnWJZX7LCrEf3UH6bhJdZBiiFJ7FqMAGWdC/wg2dL3+1OLxPnpB2SiU9LJgHZqSUoB0XhbQTO+cXxVPhACCXWgFBai7PzXnKjpMlv2WKaD5xam/+EB9QDHFv6ZWGdGAGiqf50It+pT4q/45+OFotEEPkHEm9I9gQ3duRS3+wkc/qC4KLTYL1qEHiPGygK6iI5+1AkGA4HOf5iSgeYq7FAuPp9yAulPlUX2oByirQX3q2EFu7+SfGWaiR+QeR5CptgygdtSpJxPN0wNknAn9I9jQ33mkAGSV9tEPqotCi82CdbCAdF4WkNqvt/sKgYAelkAkoNdl6xyLC3f7BrgBTUbrUqO7u9XI1gEa4nUlj1RBQZ0KOxN/9+xDnXr8T94YXo4BNMFtyf2zwYrzeoCMM1EpxmTohX5ZptXV6K6+pQHYoLootNgsWAcLSOelAVGxAcYit2SBgGAJBQhiGiHkPj6PB9CrVgh5zd2C/HSAiiNaM+FpG3LUnyrMn74INbjEAHrbg5zvux70ABlnAkHkOZ0NDZeqIbdvQ6uQC3RBdVE0YrPQOVhAOi99CKBiAxxDHcBmQJGaW86CyCh6nHKD3uVfRZK/BF5HUjvQJfK8CYlXyIE66Sb5ux7Gw8vIbCAi8+B8JK2H5DLiGqEJqI57BEp6RVppUXH5dCgqYHJkoUkmAHdv64V+kVB45xUEao4ZuqDaKGCShdahKWlKpIr1UuXTxIb79PWEjYAcTRuo6/orHhvFjPmju/YasygAyg9E9Rq7D1aKFzHxeIWe2mRRAETebERsvi5mvDBU4542WTQA2VEuQBi5AGHkAoSRCxBGLkAYuQBh5AKEkQ2ACIxyVTgHkY91KPNECKLOxjle5/AteesCRMkugDIxyi/EOTILsA4V3oJ3qPNwjnf5vEtsB5SFkbIQ58hS4R0FIgRR5+Mc2byObNsB4Tbbf/wuhsvUBQgjFyCMXIAwEg7o/vq5a/8WGoQosoBiBnqiEgj57xUShFbRBLSudPk5McTrnf6oe4zNQTQqioBejEM94wnqGJS+unyp8BSbgjAqgoBS+irm0gnqIB0/SFF72RPrg+hU9ACl9vJYq0lpzmInuyh8Bh21MgirIgcofYDHJm2SOc1fnVQVNfnDmiB6KnKAxitWMUn2Oihtuz8a8MjyIHoqaoCWojm6tP6FYvqyEu/fsDSIvooYoEOeQ9gJwyvpc9X9LlkWxEBFC1CM7yfJ7JTRrcatehUvWhLEUEUKUMrHle/qTRrfi92tX+kyPoiRihSgMPfD+pMmN6uxdapEYYMYqSgBOuo2xWDa9G4+prZfNCaIsYoQoGfvNU01mMHxuONW7WrRZoOYqAgBmuh13nAG1/OgW7WqXTcXxERFB9BlzzCjOZwPzG7UqHmbP4ipig6grn7G96TcTxSjKzdM4g1iqiID6E8UYezgeeR6rnQH3bFKfkCxE4ZupOvgwuGQIUty7QcooF6asYPvmfRe97E8QThkZ0CqkJjc6Wep1MMQImvWbrsBOoVWmzh4H9rPVWzhDMIlOwO6Pg3gwjwqdXkrwKEVdgPUv6rpg0NeQOldyt3mCsIlOwM6HgHweJwmnXFr8jVylB8VFfU0A6P8Qpwjo0B/ItHrew6Hkm/dxIqd35gG4ZQ6F+fIyuNbYsG7+T82ArwI1qSjxoWmkqPU5s2bR/CvYZuWePF/Tc+lA2iz2EXgUIF2bAbQsVXkFvQNM3VwHjlQPX/+/O1rjPJUOMdrpf5E/V4cjoJ8/rX7lI03CcIpdQ7OkZHLtyQTD+j6TPLoQ2GB/zsFEDeamY/br608Bp1C2zkc5t6s3i3TzzgIt+x9Fhv2oPD70wDxOefDUt4tW24nQOPLJXM4zL56XooOEA4ACOImjt2sBuhzD/aMDF7MbHMiA0qvMZjLYRbQi2Z1kx0BEI9wmVoH6DTaxeUwX3nhlPvsfwygqSWfczkwtTtGeN/8pwBq0oPTgQGU6NvjHwLormIFpwNXP2gV2vPPALQacVfhwAFKb/neW2w2RQFQ/wbcDmwNs0iP77HZFAFA6ZXGcDvwVfDGeHO8bTVUEQB0Hu3kduABPagciLMUAUALPB5yOyyoxLkJcdf6YFUEAPVsxuOwAFBei/rmKqARRQFQeoUJPA5LqgGfUCww73B+QBf5DkGW1ZMeUD7JrMP5Af3slsjjsAjQreJ8G6BGzg9oQCM+h2U17ScWu2nO4fyAaozgc1gGKKks57MSRk4P6A5ax+ew8FuNue7GtYb05fSANiPei2ELAT2r3MuMw+kBja3M67D0a59FijP8DqcH1Lwnr8NSQMm1PuN3ODug514/8Dos/l5sDfovr8PZAf2JjvE6LAaU9v7HvA5nB/SDF+fjaFqWf3G4A/3O53B2QL2a8zus+CSz9b+4XqxRkglQDkYFapwjR0UPq43ndxSqLAySk3PJbSGPQ63Excgr4F1kO6A3GOWpcI43SmoQizbzOwqUlgWhNNQnjtuhzsXFyMzjW8K06ijjLmbmMtG6r57jywVxO5z8GBRayYzDqs/CV6IdnA4nB9SyuxmHVYDS2/txPhhybkDJxeaYcVjXsMD1kl9xOZwb0P/QITMOK1teWIR2czicG9BCD/4Pmq0G9KJN1QemDucG1K+xOYe1bXdEe4eYOpwbUA2OX8TK6sZN5rqdMHE4NaC7aI05h9WAUt5v+sLY4dSAtqBr5hzWN4+zH60ydjg1oAkV0s05bGg/qEs144cDTg2oZTezDhsAnXf/yWiOMwNKLjbXrMOWFqj6V3xqOMOZAR0386SUki2ArriHG85wZkA/ej0z67CpDbMv/AwfnTkzoJ78T5Jp2QQoUrHSYNqZAVUcb95hWyt4HesbnBqdGFAU2mreYRug/YbV9p0YUITivnmHje0oNmqvP+XEgAbVwzhsBBSh0G+gwIkBvfc1xmEjoOSKwXpTzgvoifk7VcL2pkqneCewEyID+nJilBGKjMdqbSozUffZvBiAdpp7oUHLVkB3PPUq4IsMaF8nt7rzE/T4HBk2bbLm49/Nw6cNviMioNBqOIfNjd32qcE2UiD6LpYa0VrRciXzDXJW8EtYfoBKJQ7LhKNhIgL6sD/OYTOgo3qfwNrhGFSwuSxy//wMnb44H+D6dCp1eQNAcrB4gBLcluEstjeX3KijLik2oJzDw8uX6Lf74nAPqlNK+O9agKe6b513LCEH77Zs2fL3O4yUhTjHHnQDZ1EV4BzvVNyzV7rdYZLqfFyMHCXvElNAM0r6fLWfbuven+6edB85TPtas+zdmolUd40vOnbsuF6NEQDOMblKofAgah5HZulpGIdFUpoCWnaIOVPdfkMN/1oO8IDuAxgSRm7I0flwmy1+F/sIewgS0iL5iPLMPb3Iu9j02/Ro9APtdDwJ5390f8cZw/QvAHCZYgElua/EOAQBOos2alOiAtr0c51QqhPkn0rozudhRx6EktAOEEen3blzJ040QDuQ2frxtIS0ae/P3JCJCmhg2zIftqU0ibk4hDfrFl0lR3MeH51FKlw0QKG++F8vBNAyN21bcCLvYmMt7GgSlykW0EdB+A+WhQB66D1NkxATUFI8JN3S6B0fGZEAJbkvti8gon9NzXMzMQEFtIAATS/MdJf39gS0A12wM6A/tG8ExASkzAdlnkZqPjIiAQr1TbczoLQqmqcpYl9JJ0RD7MDx6Rg+ggF9FGRBqxLCemYJ1TS5IzKgy8WmQsNWDdrYGVCi22K7Azqp+dRTZEDD+ihjvIg0qs91ewLahi7ZHRDx3gBqKDKgwKWwvC2A71X7AhpTKd3+gMJKURUZRAYU1inNPxxi0DP7Amr0hSVtIwkEdJrex0QG9KiKolzKmRJfYPgIBBTv9rMEgIiagwjxz2JvTqVB/O4CLijiAfodXZUC0Dfl08QHVPgoiVIuFxXRAI3yI6QAdBgdER1QXHUprqQbUucX+wNKLT9edEAjmlx5SQm3j+EyNQsoTkE1HW1/QMSAeqID6rYGQ0YMQJvoN2ISANqAosUGNO5bCQANr0kNJQCU6LFQbEB3G4w/Ekkqw56A6tBtSUgAiGjZWWxAn3lodM6OgG6hX6mRFIBmeT93wsoLqxSx1EgKQCfRPtGvg/YveJSAe54oDNDA+vRICkAvyo8XGVBef5+SkTPKnrQnoKqj6JEUgIg+jUQGtPSDV50jcyb45dkP0BWk6dJAEkArFKniAuq1BDpHQlbxW/YDtNhd0ySXJIBuoB3iAgr+kQKU6fGAEwsrJUaFat5FvT/WjPkdjNSFeAvOUHeECmcp4M2G2Y/0AO2qGtc58mXvRhg+AragtDLaPo4k2YKI4bVFPotNcvP09fC/bz9Ax9FBTUIaQJtRLM5i5XVQwu5d13AvfYQAmumtrXchDaD7irU4i+WArp/S6Y3dAH3aSZuQBhDx0Zc4h+WAAn18fDwQIv81irYXoIeezBdvEgEKq2L2q0bCyl3sQbXlL9X3u/7bbrvYVsT0lSoRoIPItPtaQ1kFaOJEapjh8dJegEJ0lX8lAvTKbTHGYRWg3j9SwwJvu10o1tJ9JiARIHVTnnZzdLIK0IJqSeQN6+zS+XYCFIV+Y5JSAZroizkIWQUot51n+161ih/A8LEZ0EIPXRs2UgE6gM6bd1h3HaQ++N2EX5JxfGwG1OkTXVIqQKnuC807HOmB2dPis3VpqQBl+/O39UnLkQDtQmd1ackAfVvepEEPAzkSoBF+7AFTMkB7UaRZhyMBqqH3LaBkgB57hpt1OBCg82gLOyEZIKJlV7MOBwI0x+sxOyEdoKmlUs05HAjQJx31JqQDdMRMi8OEIwGKd1+kNyUdoOQS35lzOA6gtQaf8UoHiOjU2pzDcQD1/kB/SkJAP+gf+0zkMICSS0/Wn5QQ0Dmedl41chhA+5FBI34SAkqvMsqMQxgg9aWjL0QCNLqSwSW/hICIwe+ZcQgDtGzO1qEp2vSMbEGAagwxmJQS0GYUxe8QBCh1qBJ20d8/w9/LegkCdM6ow2spASV5GjeOpydBgM4uArineYR/cn8fQYBmehu2WCYlIKJtO36HIEAH1wGkhGgn+tGA3syYMeNYHkYqtcms5r0MpwtxMfIKLbBgHVBADZd4pvE68lV8S5ja4mYAHaAADTMA9Co0NPQgrkKAaeWFx4oNRhZcDEsqL+AdQFdeuI+22RCEo/KCsU4vAYhjmjTpJ2QXW+IWZzhD0l2MaMjfg5SgXSwtREU3TyEcUMeWRjOkBTStxFM+h7DT/PJFh0aSp/kfnggE9NDLuNdhaQFdQJv5HMIAFWouFPcQ5GCvUjcbVywTQJvQFaM50gIiGvI+uneMW41+Jk3eSQxoVjG+7kYdAlBKmYnGFokBXVcs53E4BKB96LixRWJARCvjswQjhwA0orLJuympAUUornI7HAFQut9wE4vUgB77mOzlGjkCoBMcvZ5LDYgY6svdSZsjAJpUxrRskgM6gzZwOhwBUB2OBsskB0S0+JTT4QCALnD10Sg9oDXcL+kdANBMb44bIekBJVccwuVwAEAfcF3mSw+ImFo8nsMhP6CraD2HRQZAd71mczjkBzSr2CMOiwyAiAFVOM708gNqxNmRoRyATmm+JzaU7ICucF9/yAGI+NTf1CE7oOnenG/GZQH0O0dNGNkB1e3DaZEFUFoN03r3cgM6ZfTCkJEsgIgfPEzakJUb0Njy3PeI8gBKKvmtsUNmQCm+I7gt8gAiRpY17rlUZkDbDCu9sJIJ0FW3JUYOmQEFvs9jkQkQ0aWe0dc/8gK648FXr0IuQPvQXsMZdgGEfWfOvJufVyyFxyJNwwLad/N6ym/cxXCGVQ0LiL0FpVYbwGeRawsy6j1K5l3sN9PXPYxkA5Rc0bDfdVkBfdyc1yIbIOI7r9v6k3ICOoY28VrkA5RQcoL+pJyAPq+dxmuRDxAx1idRb0pGQKcVv/BbZAQU4zVdb0pGQF1qcN+G0ZIREDGs7AN2Qj5AR1GEGYucgG7ob0KyAUpv1pD/CCQvICKkFPt+QzZAqzheyOtJVkCxJcbq0nIBivflfFavk6yAiCleusowcgEa6GO+/yd5AT32+4xJygRoOzJ+7mIkeQERG3TNrMgD6FmFjphGV2QGRHSspD1OywIoq70vrvU5uQHdLK2tMSALoPHuB3AWuQER69ACeiwHoMVoKbbksgMihnnSf0UZAG12H2lBb+FYh70BJbcpdZKQA9Dvnj3fOQMg4kGTssdkABThEZhiSX/zWIfdAREJzYv/KjWgtInoyxRLOsN2BEDE0yAU/FRSQNdbuc1Mt6i3cIcARKQvLF51J99C8QE9ne1dhb5DdRpABBHVAX36J/ciSwC9WbfwinGKD1DMDF+PEZqPjpwIEPH6jwaoA+dlmyWAwnbcCIk1SnEBSj/3Q2u3YoOZr+acClBO2toGqOHiRJMlFgC6HwpwbIlhygRQ7J6ZXcojr/aLE3SznAsQ+ffd1cnN6/PlNwyXWADo5HKApImGKQNAR4e2KY9QydZhewzq2TkbIFI35zZVIL9uE5ex1fEtAER98Zw21CCVHhQUtFXFaMEHvWfuvJOvMpIajOeYSI13WGDBOqAQ5yjUBUnePSmgCmqqW5KPB3RkLcCzUQapzIiIiEs5GBWocY4cFdZRiLfgHWolzpFbYDD56iWbxgO6+CPArWmGKYNdjEdOuItxyIJdLCv4LazdZ5hyAdLX0W9+mpINMCCOSbkAGentE6oTidhsJuUCZJFwmboAYeQChJELEEb/eEA4RW4XIciBYyIEWX9NeAw7AFrcT4Qgo2eIEKTjRuExXIAwcgHCyA6A3qSJECT9lQhBkt/iPTjZAVDRkgsQRvYAtGt08Gpcp/XmVbAmeFKi0GI8nzl4wm2hQewB6Oy4DOLf2C6UzOro/PyrY/G9LZqVesyfqr8G47q6wsoOgFYdATi2QFCIKTcBxmG76zSvl4NISEMfCwtiF0CZeQCr/xAUYigBsOCCsGKoXpN3RQOF7epgp4O0cuuEDEEBqMaZlwu/2Uj65qjgGCIDWhUa+g4ejVuUJSxM8EtyCzovsCyF24ddEhgC7LIFJQ8V+tNgCnn2mSDwGARrZ2cKLQfYBdDqXYJDHF6kjh0t8CxGDMzBm/CyA6DJvUgtEhSicM2YyQ8FFuMaVYxeTwRGcV1J4+QChJELEEYuQBi5AGHkAoSRCxBGDgNoTjeY2Ydzyc9tjeeEd+awpe4Ru0i0HAlQXDTnEgsBnfIRu0i07A7oXv7d63Q/OW/+fkMOH8fB3ZdP7mX+/QAgI5qaA+lRZJoC9DAWbkVSIiezop/RqyfHFuoDUt27nk0DSjYOmrDMOzKTCQaQdk+d+ICNo1nPFtkdUM82lT2qxYNyHCqNQpUwf8jwUrfD29bzQ1+urFCi1BV41xeVQu2ztLtYSOPGjSu6gXqmeznFwALI6IG8a4WwgOLquRcv9xeEtxtU2dPPMOiGJu4B95hgyhEKn8Y9puriaNezRXYHhH6B9KqTYEWFa3CtfATML72E3AIUx2Ab6pqbUXc0rPK5B3dL7GKPQWnVwmFD1TvwzH88TKgZq96tYAH1+Swzd4A/hJNBXzf8t2FQahdjgq2unqReiabq4mjXs6n84mDgV3Xypnx0MPjPJdOzm8F8ajq8GUA2Og4Q2h+eJ5D7WtXVOkAFHXqqoe3IixcvzioHpTaRcwJZQJ07PIf8txBOBx1uGJQCxATzJ++V1bWm6uJo17NFdgfUjvw/IRjKUM9g95SF+e3JcXgAeVRAVwHC+oN6fdAH5UuygMLqkEeVGu8HkOqYjq6Tc+aygG75uzWb+ZReH74ZbhiUAsQE8zlIzug6lYnDrGeL7A6I+i0koJrUW+BNNWE+dQLSBzSlxt7HhS10gHaVuEUaWq4gBwXZ+W6nyfEM/bPYw40tK76lz2IkIIOgFCAmWBWqgknrqUwcZj1byi8VoH6B5LhbP1NAjb4nd7cqDKDbJbZRK03+RAnQvS/4hwAoG7CA2h0CiEF3GEAGQSlATLCgwQAvik/VxdGuZ0v5pQJ0x6dPRJBPrCmg4TVXrWlRtV8qDaigTvNDpN6kVmm/rHexa3DM46tlrT5kAX1dJXyxf+MCBpBB0CuKTQQT7E6Jkctb1pkBTBzteraU3+6AqC7uVv4HIGFSj7AkgC1TyOnt5MzCgHsAq+dB5tzu4+6eDrq8eTpsmJMbQCseUqf3GE3ta5dG910f+a0uWPaSPkHzX8J2KsgviwyDqqd3S2CCQUxI8KWABcDE0a5nixzmSlpUrVgJkF/huBihnAJQdKRG5yxdYZ/3ogO9GxaKkbdTAFofrtF/LF7j8Fe9vxf27pKRUwCSUy5AGLkAYeQChJELEEYuQBi5AGHkAoTR/wNIqP1NiAvofwAAAABJRU5ErkJggg==" /><!-- --></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">abs_fitsep &lt;-<span class="st"> </span><span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb7-2" title="2">  <span class="dt">nobs =</span> <span class="kw">length</span>(<span class="kw">shortage_indicators</span>(bsmdl_fit)),</a>
+<a class="sourceLine" id="cb7-3" title="3">  <span class="dt">nshortages =</span> <span class="kw">sum</span>(<span class="kw">shortage_indicators</span>(bsmdl_fit)),</a>
+<a class="sourceLine" id="cb7-4" title="4">  <span class="dt">nsurpluses =</span> <span class="kw">sum</span>(<span class="op">!</span><span class="kw">shortage_indicators</span>(bsmdl_fit))</a>
+<a class="sourceLine" id="cb7-5" title="5">)</a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="kw">print</span>(abs_fitsep)</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt;       nobs nshortages nsurpluses </span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt;      10000       5202       4798</span></a>
+<a class="sourceLine" id="cb7-9" title="9"></a>
+<a class="sourceLine" id="cb7-10" title="10">rel_fitsep &lt;-<span class="st"> </span>abs_fitsep <span class="op">/</span><span class="st"> </span>abs_fitsep[<span class="st">&quot;nobs&quot;</span>]</a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="kw">names</span>(rel_fitsep) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;total&quot;</span>, <span class="st">&quot;shortages_share&quot;</span>, <span class="st">&quot;surpluses_share&quot;</span>)</a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="kw">print</span>(rel_fitsep)</a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="co">#&gt;           total shortages_share surpluses_share </span></a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="co">#&gt;          1.0000          0.5202          0.4798</span></a>
+<a class="sourceLine" id="cb7-15" title="15"></a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="cf">if</span> (<span class="kw">requireNamespace</span>(<span class="st">&quot;ggplot2&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {</a>
+<a class="sourceLine" id="cb7-17" title="17">  ggplot2<span class="op">::</span><span class="kw">ggplot</span>(mdt, ggplot2<span class="op">::</span><span class="kw">aes</span>(shortage_probabilities)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_density</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ggtitle</span>(<span class="kw">paste0</span>(</a>
+<a class="sourceLine" id="cb7-20" title="20">      <span class="st">&quot;Normalized shortages density (&quot;</span>,</a>
+<a class="sourceLine" id="cb7-21" title="21">      <span class="kw">model_name</span>(bsmdl_fit), <span class="st">&quot;)&quot;</span></a>
+<a class="sourceLine" id="cb7-22" title="22">    )) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme</span>(</a>
+<a class="sourceLine" id="cb7-24" title="24">      <span class="dt">panel.background =</span> ggplot2<span class="op">::</span><span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;transparent&quot;</span>),</a>
+<a class="sourceLine" id="cb7-25" title="25">      <span class="dt">plot.background =</span> ggplot2<span class="op">::</span><span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">&quot;transparent&quot;</span>, <span class="dt">color =</span> <span class="ot">NA</span>),</a>
+<a class="sourceLine" id="cb7-26" title="26">    )</a>
+<a class="sourceLine" id="cb7-27" title="27">}</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="summaries" class="section level3">
 <h3>Summaries</h3>
-<p>All the model estimates support the <code>summary</code> function. The <code>eq_2sls</code> provides also the first stage estimation. The <code>summary</code> output comes from <code>systemfit</code>. The remaining models are estimated using maximum likelihood and the <code>summary</code> functionality is based on <code>bbmle</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">summary</span>(eqmdl_reg<span class="op">$</span>first_stage_model)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a><span class="co">#&gt; lm(formula = first_stage_formula, data = object@model_tibble)</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a><span class="co">#&gt; Residuals:</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a><span class="co">#&gt; -16.6628  -5.8648   0.6677   6.2961  18.0452 </span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="co">#&gt; (Intercept) 20.63325    0.84994  24.276  &lt; 2e-16 ***</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="co">#&gt; Xd1          0.35530    0.15154   2.345   0.0191 *  </span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true"></a><span class="co">#&gt; Xd2         -0.06874    0.15005  -0.458   0.6469    </span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true"></a><span class="co">#&gt; X1           0.58717    0.15052   3.901 9.65e-05 ***</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true"></a><span class="co">#&gt; X2          -0.18630    0.15021  -1.240   0.2149    </span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true"></a><span class="co">#&gt; Xs1         -0.60577    0.15126  -4.005 6.25e-05 ***</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true"></a><span class="co">#&gt; Residual standard error: 7.503 on 9994 degrees of freedom</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true"></a><span class="co">#&gt; Multiple R-squared:  0.003851,   Adjusted R-squared:  0.003353 </span></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true"></a><span class="co">#&gt; F-statistic: 7.728 on 5 and 9994 DF,  p-value: 2.898e-07</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true"></a><span class="kw">summary</span>(eqmdl_reg<span class="op">$</span>system_model)</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true"></a><span class="co">#&gt; systemfit results </span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true"></a><span class="co">#&gt; method: 2SLS </span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true"></a><span class="co">#&gt;            N    DF    SSR detRCov   OLS-R2 McElroy-R2</span></span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true"></a><span class="co">#&gt; system 20000 19989 597716 87.6228 -29.7213  -0.763774</span></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true"></a><span class="co">#&gt;            N   DF    SSR     MSE    RMSE       R2   Adj R2</span></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true"></a><span class="co">#&gt; demand 10000 9994 488427 48.8721 6.99086 -49.2083 -49.2334</span></span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true"></a><span class="co">#&gt; supply 10000 9995 109289 10.9344 3.30671 -10.2344 -10.2389</span></span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true"></a><span class="co">#&gt; The covariance matrix of the residuals</span></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true"></a><span class="co">#&gt;          demand   supply</span></span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true"></a><span class="co">#&gt; demand  48.8721 -21.1367</span></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true"></a><span class="co">#&gt; supply -21.1367  10.9344</span></span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true"></a><span class="co">#&gt; The correlations of the residuals</span></span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true"></a><span class="co">#&gt;           demand    supply</span></span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true"></a><span class="co">#&gt; demand  1.000000 -0.914347</span></span>
-<span id="cb16-44"><a href="#cb16-44" aria-hidden="true"></a><span class="co">#&gt; supply -0.914347  1.000000</span></span>
-<span id="cb16-45"><a href="#cb16-45" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-46"><a href="#cb16-46" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-47"><a href="#cb16-47" aria-hidden="true"></a><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></span>
-<span id="cb16-48"><a href="#cb16-48" aria-hidden="true"></a><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></span>
-<span id="cb16-49"><a href="#cb16-49" aria-hidden="true"></a><span class="co">#&gt; &lt;environment: 0x55aa3a598a80&gt;</span></span>
-<span id="cb16-50"><a href="#cb16-50" aria-hidden="true"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-51"><a href="#cb16-51" aria-hidden="true"></a><span class="co">#&gt; &lt;environment: 0x55aa3a598a80&gt;</span></span>
-<span id="cb16-52"><a href="#cb16-52" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-53"><a href="#cb16-53" aria-hidden="true"></a><span class="co">#&gt;              Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
-<span id="cb16-54"><a href="#cb16-54" aria-hidden="true"></a><span class="co">#&gt; (Intercept) 25.151899   4.501475  5.58748 2.3643e-08 ***</span></span>
-<span id="cb16-55"><a href="#cb16-55" aria-hidden="true"></a><span class="co">#&gt; P           -0.898931   0.232656 -3.86378 0.00011235 ***</span></span>
-<span id="cb16-56"><a href="#cb16-56" aria-hidden="true"></a><span class="co">#&gt; Xd1          0.467931   0.163652  2.85930 0.00425451 ** </span></span>
-<span id="cb16-57"><a href="#cb16-57" aria-hidden="true"></a><span class="co">#&gt; Xd2         -0.144971   0.140942 -1.02859 0.30369778    </span></span>
-<span id="cb16-58"><a href="#cb16-58" aria-hidden="true"></a><span class="co">#&gt; X1           0.468274   0.196060  2.38842 0.01693926 *  </span></span>
-<span id="cb16-59"><a href="#cb16-59" aria-hidden="true"></a><span class="co">#&gt; X2          -0.115913   0.145800 -0.79501 0.42662495    </span></span>
-<span id="cb16-60"><a href="#cb16-60" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-61"><a href="#cb16-61" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-62"><a href="#cb16-62" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-63"><a href="#cb16-63" aria-hidden="true"></a><span class="co">#&gt; Residual standard error: 6.990856 on 9994 degrees of freedom</span></span>
-<span id="cb16-64"><a href="#cb16-64" aria-hidden="true"></a><span class="co">#&gt; Number of observations: 10000 Degrees of Freedom: 9994 </span></span>
-<span id="cb16-65"><a href="#cb16-65" aria-hidden="true"></a><span class="co">#&gt; SSR: 488427.398407 MSE: 48.872063 Root MSE: 6.990856 </span></span>
-<span id="cb16-66"><a href="#cb16-66" aria-hidden="true"></a><span class="co">#&gt; Multiple R-Squared: -49.208252 Adjusted R-Squared: -49.233372 </span></span>
-<span id="cb16-67"><a href="#cb16-67" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-68"><a href="#cb16-68" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-69"><a href="#cb16-69" aria-hidden="true"></a><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></span>
-<span id="cb16-70"><a href="#cb16-70" aria-hidden="true"></a><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></span>
-<span id="cb16-71"><a href="#cb16-71" aria-hidden="true"></a><span class="co">#&gt; &lt;environment: 0x55aa3a598a80&gt;</span></span>
-<span id="cb16-72"><a href="#cb16-72" aria-hidden="true"></a><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></span>
-<span id="cb16-73"><a href="#cb16-73" aria-hidden="true"></a><span class="co">#&gt; &lt;environment: 0x55aa3a598a80&gt;</span></span>
-<span id="cb16-74"><a href="#cb16-74" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-75"><a href="#cb16-75" aria-hidden="true"></a><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></span>
-<span id="cb16-76"><a href="#cb16-76" aria-hidden="true"></a><span class="co">#&gt; (Intercept) -2.7883417  3.9483795 -0.70620   0.480081    </span></span>
-<span id="cb16-77"><a href="#cb16-77" aria-hidden="true"></a><span class="co">#&gt; P            0.4476886  0.1843561  2.42839   0.015184 *  </span></span>
-<span id="cb16-78"><a href="#cb16-78" aria-hidden="true"></a><span class="co">#&gt; Xs1          0.8150032  0.1302455  6.25744 4.0739e-10 ***</span></span>
-<span id="cb16-79"><a href="#cb16-79" aria-hidden="true"></a><span class="co">#&gt; X1          -0.3225859  0.1269523 -2.54100   0.011069 *  </span></span>
-<span id="cb16-80"><a href="#cb16-80" aria-hidden="true"></a><span class="co">#&gt; X2           0.1349937  0.0747959  1.80483   0.071132 .  </span></span>
-<span id="cb16-81"><a href="#cb16-81" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-82"><a href="#cb16-82" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-83"><a href="#cb16-83" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-84"><a href="#cb16-84" aria-hidden="true"></a><span class="co">#&gt; Residual standard error: 3.306714 on 9995 degrees of freedom</span></span>
-<span id="cb16-85"><a href="#cb16-85" aria-hidden="true"></a><span class="co">#&gt; Number of observations: 10000 Degrees of Freedom: 9995 </span></span>
-<span id="cb16-86"><a href="#cb16-86" aria-hidden="true"></a><span class="co">#&gt; SSR: 109288.898698 MSE: 10.934357 Root MSE: 3.306714 </span></span>
-<span id="cb16-87"><a href="#cb16-87" aria-hidden="true"></a><span class="co">#&gt; Multiple R-Squared: -10.234432 Adjusted R-Squared: -10.238928</span></span>
-<span id="cb16-88"><a href="#cb16-88" aria-hidden="true"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(eqmdl_est)</span>
-<span id="cb16-89"><a href="#cb16-89" aria-hidden="true"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-90"><a href="#cb16-90" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-91"><a href="#cb16-91" aria-hidden="true"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-92"><a href="#cb16-92" aria-hidden="true"></a><span class="co">#&gt; `bbmle::mle2`(list(method = &quot;BFGS&quot;, control = list(REPORT = 10, </span></span>
-<span id="cb16-93"><a href="#cb16-93" aria-hidden="true"></a><span class="co">#&gt;     maxit = 10000, reltol = 1e-06), start = c(D_P = 0.0231239615913565, </span></span>
-<span id="cb16-94"><a href="#cb16-94" aria-hidden="true"></a><span class="co">#&gt; D_CONST = 7.53375095184334, D_Xd1 = 0.140015230368245, D_Xd2 = -0.0737970096786045, </span></span>
-<span id="cb16-95"><a href="#cb16-95" aria-hidden="true"></a><span class="co">#&gt; D_X1 = -0.074691417704378, D_X2 = 0.0462502352837326, S_P = 0.0248455188388157, </span></span>
-<span id="cb16-96"><a href="#cb16-96" aria-hidden="true"></a><span class="co">#&gt; S_CONST = 6.24286219183355, S_Xs1 = 0.558355600251176, S_X1 = -0.0743221338857006, </span></span>
-<span id="cb16-97"><a href="#cb16-97" aria-hidden="true"></a><span class="co">#&gt; S_X2 = 0.055148632519299, D_VARIANCE = 1, S_VARIANCE = 1, RHO = 0</span></span>
-<span id="cb16-98"><a href="#cb16-98" aria-hidden="true"></a><span class="co">#&gt; ), minuslogl = function (...) </span></span>
-<span id="cb16-99"><a href="#cb16-99" aria-hidden="true"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-100"><a href="#cb16-100" aria-hidden="true"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-101"><a href="#cb16-101" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-102"><a href="#cb16-102" aria-hidden="true"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-103"><a href="#cb16-103" aria-hidden="true"></a><span class="co">#&gt;              Estimate Std. Error   z value     Pr(z)    </span></span>
-<span id="cb16-104"><a href="#cb16-104" aria-hidden="true"></a><span class="co">#&gt; D_P         0.3159244  0.0045821   68.9476 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-105"><a href="#cb16-105" aria-hidden="true"></a><span class="co">#&gt; D_CONST     1.7194701  0.0604237   28.4569 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-106"><a href="#cb16-106" aria-hidden="true"></a><span class="co">#&gt; D_Xd1       0.0461205  0.0063185    7.2993 2.893e-13 ***</span></span>
-<span id="cb16-107"><a href="#cb16-107" aria-hidden="true"></a><span class="co">#&gt; D_Xd2      -0.0269259  0.0060076   -4.4820 7.396e-06 ***</span></span>
-<span id="cb16-108"><a href="#cb16-108" aria-hidden="true"></a><span class="co">#&gt; D_X1       -0.2250915  0.0469480   -4.7945 1.631e-06 ***</span></span>
-<span id="cb16-109"><a href="#cb16-109" aria-hidden="true"></a><span class="co">#&gt; D_X2        0.1233711  0.0437571    2.8195 0.0048106 ** </span></span>
-<span id="cb16-110"><a href="#cb16-110" aria-hidden="true"></a><span class="co">#&gt; S_P         0.4639733  0.0025746  180.2132 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-111"><a href="#cb16-111" aria-hidden="true"></a><span class="co">#&gt; S_CONST    -0.6522037  0.1730953   -3.7679 0.0001646 ***</span></span>
-<span id="cb16-112"><a href="#cb16-112" aria-hidden="true"></a><span class="co">#&gt; S_Xs1      -0.2248822  0.0109304  -20.5739 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-113"><a href="#cb16-113" aria-hidden="true"></a><span class="co">#&gt; S_X1       -0.3016945  0.0656151   -4.5979 4.267e-06 ***</span></span>
-<span id="cb16-114"><a href="#cb16-114" aria-hidden="true"></a><span class="co">#&gt; S_X2        0.1572998  0.0637950    2.4657 0.0136743 *  </span></span>
-<span id="cb16-115"><a href="#cb16-115" aria-hidden="true"></a><span class="co">#&gt; D_VARIANCE  5.6234397  0.1445005   38.9164 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-116"><a href="#cb16-116" aria-hidden="true"></a><span class="co">#&gt; S_VARIANCE 11.7119726  0.0518544  225.8626 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-117"><a href="#cb16-117" aria-hidden="true"></a><span class="co">#&gt; RHO         0.9919664  0.0006193 1601.7420 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-118"><a href="#cb16-118" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-119"><a href="#cb16-119" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-120"><a href="#cb16-120" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-121"><a href="#cb16-121" aria-hidden="true"></a><span class="co">#&gt; -2 log L: 95759.8</span></span>
-<span id="cb16-122"><a href="#cb16-122" aria-hidden="true"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(bsmdl_est)</span>
-<span id="cb16-123"><a href="#cb16-123" aria-hidden="true"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-124"><a href="#cb16-124" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-125"><a href="#cb16-125" aria-hidden="true"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-126"><a href="#cb16-126" aria-hidden="true"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-127"><a href="#cb16-127" aria-hidden="true"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, skip.hessian = TRUE, start = c(D_P = 0.0231239615913565, </span></span>
-<span id="cb16-128"><a href="#cb16-128" aria-hidden="true"></a><span class="co">#&gt; D_CONST = 7.53375095184334, D_Xd1 = 0.140015230368245, D_Xd2 = -0.0737970096786045, </span></span>
-<span id="cb16-129"><a href="#cb16-129" aria-hidden="true"></a><span class="co">#&gt; D_X1 = -0.074691417704378, D_X2 = 0.0462502352837326, S_P = 0.0248455188388157, </span></span>
-<span id="cb16-130"><a href="#cb16-130" aria-hidden="true"></a><span class="co">#&gt; S_CONST = 6.24286219183355, S_Xs1 = 0.558355600251176, S_X1 = -0.0743221338857006, </span></span>
-<span id="cb16-131"><a href="#cb16-131" aria-hidden="true"></a><span class="co">#&gt; S_X2 = 0.055148632519299, D_VARIANCE = 1, S_VARIANCE = 1, RHO = 0</span></span>
-<span id="cb16-132"><a href="#cb16-132" aria-hidden="true"></a><span class="co">#&gt; ), minuslogl = function (...) </span></span>
-<span id="cb16-133"><a href="#cb16-133" aria-hidden="true"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-134"><a href="#cb16-134" aria-hidden="true"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-135"><a href="#cb16-135" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-136"><a href="#cb16-136" aria-hidden="true"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-137"><a href="#cb16-137" aria-hidden="true"></a><span class="co">#&gt;              Estimate Std. Error  z value     Pr(z)    </span></span>
-<span id="cb16-138"><a href="#cb16-138" aria-hidden="true"></a><span class="co">#&gt; D_P        -0.0676616  0.0058162 -11.6332 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-139"><a href="#cb16-139" aria-hidden="true"></a><span class="co">#&gt; D_CONST     9.0991112  0.2187177  41.6021 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-140"><a href="#cb16-140" aria-hidden="true"></a><span class="co">#&gt; D_Xd1       0.3051367  0.0353591   8.6297 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-141"><a href="#cb16-141" aria-hidden="true"></a><span class="co">#&gt; D_Xd2      -0.1839959  0.0347709  -5.2917 1.212e-07 ***</span></span>
-<span id="cb16-142"><a href="#cb16-142" aria-hidden="true"></a><span class="co">#&gt; D_X1        0.5776872  0.0538274  10.7322 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-143"><a href="#cb16-143" aria-hidden="true"></a><span class="co">#&gt; D_X2       -0.1443290  0.0394667  -3.6570 0.0002552 ***</span></span>
-<span id="cb16-144"><a href="#cb16-144" aria-hidden="true"></a><span class="co">#&gt; S_P         0.0813753  0.0039160  20.7800 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-145"><a href="#cb16-145" aria-hidden="true"></a><span class="co">#&gt; S_CONST     5.4182460  0.1554546  34.8542 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-146"><a href="#cb16-146" aria-hidden="true"></a><span class="co">#&gt; S_Xs1       0.9298672  0.0399583  23.2709 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-147"><a href="#cb16-147" aria-hidden="true"></a><span class="co">#&gt; S_X1       -0.5213546  0.0386502 -13.4890 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-148"><a href="#cb16-148" aria-hidden="true"></a><span class="co">#&gt; S_X2        0.2025852  0.0326928   6.1966 5.769e-10 ***</span></span>
-<span id="cb16-149"><a href="#cb16-149" aria-hidden="true"></a><span class="co">#&gt; D_VARIANCE  0.9286178  0.0446037  20.8193 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-150"><a href="#cb16-150" aria-hidden="true"></a><span class="co">#&gt; S_VARIANCE  0.9959577  0.0317030  31.4152 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-151"><a href="#cb16-151" aria-hidden="true"></a><span class="co">#&gt; RHO         0.1731087  0.0814380   2.1257 0.0335323 *  </span></span>
-<span id="cb16-152"><a href="#cb16-152" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-153"><a href="#cb16-153" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-154"><a href="#cb16-154" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-155"><a href="#cb16-155" aria-hidden="true"></a><span class="co">#&gt; -2 log L: 26189.5</span></span>
-<span id="cb16-156"><a href="#cb16-156" aria-hidden="true"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(damdl_est)</span>
-<span id="cb16-157"><a href="#cb16-157" aria-hidden="true"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-158"><a href="#cb16-158" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-159"><a href="#cb16-159" aria-hidden="true"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-160"><a href="#cb16-160" aria-hidden="true"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-161"><a href="#cb16-161" aria-hidden="true"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, start = c(D_P = -0.00260947112358515, </span></span>
-<span id="cb16-162"><a href="#cb16-162" aria-hidden="true"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
-<span id="cb16-163"><a href="#cb16-163" aria-hidden="true"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
-<span id="cb16-164"><a href="#cb16-164" aria-hidden="true"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
-<span id="cb16-165"><a href="#cb16-165" aria-hidden="true"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, D_VARIANCE = 1, S_VARIANCE = 1, </span></span>
-<span id="cb16-166"><a href="#cb16-166" aria-hidden="true"></a><span class="co">#&gt; RHO = 0), minuslogl = function (...) </span></span>
-<span id="cb16-167"><a href="#cb16-167" aria-hidden="true"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-168"><a href="#cb16-168" aria-hidden="true"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-169"><a href="#cb16-169" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-170"><a href="#cb16-170" aria-hidden="true"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-171"><a href="#cb16-171" aria-hidden="true"></a><span class="co">#&gt;              Estimate Std. Error  z value     Pr(z)    </span></span>
-<span id="cb16-172"><a href="#cb16-172" aria-hidden="true"></a><span class="co">#&gt; D_P        -0.1003664  0.0065747 -15.2656 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-173"><a href="#cb16-173" aria-hidden="true"></a><span class="co">#&gt; D_CONST    12.3271066  0.2937472  41.9650 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-174"><a href="#cb16-174" aria-hidden="true"></a><span class="co">#&gt; D_Xd1       0.1511296  0.0241664   6.2537 4.008e-10 ***</span></span>
-<span id="cb16-175"><a href="#cb16-175" aria-hidden="true"></a><span class="co">#&gt; D_Xd2      -0.0988986  0.0223971  -4.4157 1.007e-05 ***</span></span>
-<span id="cb16-176"><a href="#cb16-176" aria-hidden="true"></a><span class="co">#&gt; D_X1        0.6028142  0.0458154  13.1575 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-177"><a href="#cb16-177" aria-hidden="true"></a><span class="co">#&gt; D_X2       -0.0992912  0.0306302  -3.2416  0.001189 ** </span></span>
-<span id="cb16-178"><a href="#cb16-178" aria-hidden="true"></a><span class="co">#&gt; S_P         0.0012140  0.0018705   0.6490  0.516336    </span></span>
-<span id="cb16-179"><a href="#cb16-179" aria-hidden="true"></a><span class="co">#&gt; S_CONST     6.8681300  0.0987037  69.5833 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-180"><a href="#cb16-180" aria-hidden="true"></a><span class="co">#&gt; S_Xs1       0.4690616  0.0204404  22.9478 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-181"><a href="#cb16-181" aria-hidden="true"></a><span class="co">#&gt; S_X1        0.0433718  0.0207843   2.0868  0.036910 *  </span></span>
-<span id="cb16-182"><a href="#cb16-182" aria-hidden="true"></a><span class="co">#&gt; S_X2        0.0269852  0.0200742   1.3443  0.178859    </span></span>
-<span id="cb16-183"><a href="#cb16-183" aria-hidden="true"></a><span class="co">#&gt; P_DIFF      0.6093889  0.0378878  16.0840 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-184"><a href="#cb16-184" aria-hidden="true"></a><span class="co">#&gt; D_VARIANCE  1.6865709  0.1134915  14.8608 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-185"><a href="#cb16-185" aria-hidden="true"></a><span class="co">#&gt; S_VARIANCE  0.7979176  0.0128478  62.1052 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-186"><a href="#cb16-186" aria-hidden="true"></a><span class="co">#&gt; RHO         0.6725925  0.0250009  26.9027 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-187"><a href="#cb16-187" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-188"><a href="#cb16-188" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-189"><a href="#cb16-189" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-190"><a href="#cb16-190" aria-hidden="true"></a><span class="co">#&gt; -2 log L: 48414.93</span></span>
-<span id="cb16-191"><a href="#cb16-191" aria-hidden="true"></a>bbmle<span class="op">::</span><span class="kw">summary</span>(samdl_est)</span>
-<span id="cb16-192"><a href="#cb16-192" aria-hidden="true"></a><span class="co">#&gt; Maximum likelihood estimation</span></span>
-<span id="cb16-193"><a href="#cb16-193" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-194"><a href="#cb16-194" aria-hidden="true"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb16-195"><a href="#cb16-195" aria-hidden="true"></a><span class="co">#&gt; `bbmle::mle2`(list(control = list(REPORT = 10, maxit = 10000, </span></span>
-<span id="cb16-196"><a href="#cb16-196" aria-hidden="true"></a><span class="co">#&gt;     reltol = 1e-06), method = &quot;BFGS&quot;, start = c(D_P = -0.00260947112358515, </span></span>
-<span id="cb16-197"><a href="#cb16-197" aria-hidden="true"></a><span class="co">#&gt; D_CONST = 7.98130444023755, D_Xd1 = 0.15954441702268, D_Xd2 = -0.0956278531130884, </span></span>
-<span id="cb16-198"><a href="#cb16-198" aria-hidden="true"></a><span class="co">#&gt; D_X1 = 0.0454572982786684, D_X2 = 0.0215741337521343, S_P = 0.000425847047005336, </span></span>
-<span id="cb16-199"><a href="#cb16-199" aria-hidden="true"></a><span class="co">#&gt; S_CONST = 6.8876653018125, S_Xs1 = 0.467154949725634, S_X1 = 0.0442638269176111, </span></span>
-<span id="cb16-200"><a href="#cb16-200" aria-hidden="true"></a><span class="co">#&gt; S_X2 = 0.0274612448510507, P_DIFF = 1, P_CONST = 8.28009900264685, </span></span>
-<span id="cb16-201"><a href="#cb16-201" aria-hidden="true"></a><span class="co">#&gt; P_Xp1 = -0.013207398816623, D_VARIANCE = 1, S_VARIANCE = 1, P_VARIANCE = 1, </span></span>
-<span id="cb16-202"><a href="#cb16-202" aria-hidden="true"></a><span class="co">#&gt; RHO_DS = 0, RHO_DP = 0, RHO_SP = 0), minuslogl = function (...) </span></span>
-<span id="cb16-203"><a href="#cb16-203" aria-hidden="true"></a><span class="co">#&gt; minus_log_likelihood(object, ...), gr = function (...) </span></span>
-<span id="cb16-204"><a href="#cb16-204" aria-hidden="true"></a><span class="co">#&gt; gradient(object, ...)))</span></span>
-<span id="cb16-205"><a href="#cb16-205" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-206"><a href="#cb16-206" aria-hidden="true"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb16-207"><a href="#cb16-207" aria-hidden="true"></a><span class="co">#&gt;              Estimate Std. Error  z value     Pr(z)    </span></span>
-<span id="cb16-208"><a href="#cb16-208" aria-hidden="true"></a><span class="co">#&gt; D_P        -0.0971316  0.0042708 -22.7430 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-209"><a href="#cb16-209" aria-hidden="true"></a><span class="co">#&gt; D_CONST     9.7139866  0.1628629  59.6452 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-210"><a href="#cb16-210" aria-hidden="true"></a><span class="co">#&gt; D_Xd1       0.2950376  0.0263814  11.1835 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-211"><a href="#cb16-211" aria-hidden="true"></a><span class="co">#&gt; D_Xd2      -0.1722320  0.0262455  -6.5624 5.296e-11 ***</span></span>
-<span id="cb16-212"><a href="#cb16-212" aria-hidden="true"></a><span class="co">#&gt; D_X1        0.5641836  0.0322828  17.4763 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-213"><a href="#cb16-213" aria-hidden="true"></a><span class="co">#&gt; D_X2       -0.0869383  0.0266337  -3.2642  0.001098 ** </span></span>
-<span id="cb16-214"><a href="#cb16-214" aria-hidden="true"></a><span class="co">#&gt; S_P         0.0989968  0.0051352  19.2780 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-215"><a href="#cb16-215" aria-hidden="true"></a><span class="co">#&gt; S_CONST     5.1636578  0.1508154  34.2383 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-216"><a href="#cb16-216" aria-hidden="true"></a><span class="co">#&gt; S_Xs1       0.9380370  0.0347684  26.9796 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-217"><a href="#cb16-217" aria-hidden="true"></a><span class="co">#&gt; S_X1       -0.5153828  0.0355065 -14.5152 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-218"><a href="#cb16-218" aria-hidden="true"></a><span class="co">#&gt; S_X2        0.1660077  0.0275448   6.0268 1.672e-09 ***</span></span>
-<span id="cb16-219"><a href="#cb16-219" aria-hidden="true"></a><span class="co">#&gt; P_DIFF      1.1852181  0.0332182  35.6798 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-220"><a href="#cb16-220" aria-hidden="true"></a><span class="co">#&gt; P_CONST     3.2090705  0.0971997  33.0152 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-221"><a href="#cb16-221" aria-hidden="true"></a><span class="co">#&gt; P_Xp1       0.7695691  0.0311411  24.7123 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-222"><a href="#cb16-222" aria-hidden="true"></a><span class="co">#&gt; D_VARIANCE  0.9769727  0.0367130  26.6111 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-223"><a href="#cb16-223" aria-hidden="true"></a><span class="co">#&gt; S_VARIANCE  1.0493231  0.0442629  23.7066 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-224"><a href="#cb16-224" aria-hidden="true"></a><span class="co">#&gt; P_VARIANCE  0.9399843  0.0679687  13.8297 &lt; 2.2e-16 ***</span></span>
-<span id="cb16-225"><a href="#cb16-225" aria-hidden="true"></a><span class="co">#&gt; RHO_DS      0.0389034  0.0600740   0.6476  0.517250    </span></span>
-<span id="cb16-226"><a href="#cb16-226" aria-hidden="true"></a><span class="co">#&gt; RHO_DP      0.0029079  0.0468756   0.0620  0.950535    </span></span>
-<span id="cb16-227"><a href="#cb16-227" aria-hidden="true"></a><span class="co">#&gt; RHO_SP      0.0013893  0.0451614   0.0308  0.975458    </span></span>
-<span id="cb16-228"><a href="#cb16-228" aria-hidden="true"></a><span class="co">#&gt; ---</span></span>
-<span id="cb16-229"><a href="#cb16-229" aria-hidden="true"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb16-230"><a href="#cb16-230" aria-hidden="true"></a><span class="co">#&gt; </span></span>
-<span id="cb16-231"><a href="#cb16-231" aria-hidden="true"></a><span class="co">#&gt; -2 log L: 46400.96</span></span></code></pre></div>
+<p>All the model estimates support the <code>summary</code> function. The <code>eq_2sls</code> provides also the first stage estimation, but it is not included in the summary and has to be explicitly asked.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">summary</span>(eqmdl_reg<span class="op">@</span>fit[[<span class="dv">1</span>]]<span class="op">$</span>first_stage_model)</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="co">#&gt; lm(formula = first_stage_formula, data = object@model_tibble)</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="co">#&gt; Residuals:</span></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; -4.7599 -0.8768  0.0110  0.8875  4.0701 </span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; (Intercept)  5.30801    0.14560  36.455  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt; Xd1          0.16085    0.02596   6.196 6.02e-10 ***</span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; Xd2         -0.01098    0.02570  -0.427    0.669    </span></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt; X1           0.51332    0.02579  19.907  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt; X2          -0.12027    0.02573  -4.674 3.00e-06 ***</span></a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt; Xs1         -0.43902    0.02591 -16.943  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; Residual standard error: 1.285 on 9994 degrees of freedom</span></a>
+<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; Multiple R-squared:  0.06945,    Adjusted R-squared:  0.06898 </span></a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; F-statistic: 149.2 on 5 and 9994 DF,  p-value: &lt; 2.2e-16</span></a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="kw">summary</span>(eqmdl_reg)</a>
+<a class="sourceLine" id="cb8-25" title="25"><span class="co">#&gt; Equilibrium Model for Markets in Equilibrium</span></a>
+<a class="sourceLine" id="cb8-26" title="26"><span class="co">#&gt;   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2</span></a>
+<a class="sourceLine" id="cb8-27" title="27"><span class="co">#&gt;   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2</span></a>
+<a class="sourceLine" id="cb8-28" title="28"><span class="co">#&gt;   Market Clearing   : Q = D_Q = S_Q</span></a>
+<a class="sourceLine" id="cb8-29" title="29"><span class="co">#&gt;   Shocks            : Correlated</span></a>
+<a class="sourceLine" id="cb8-30" title="30"><span class="co">#&gt;   Nobs              : 10000</span></a>
+<a class="sourceLine" id="cb8-31" title="31"><span class="co">#&gt;   Sample Separation : Not Separated</span></a>
+<a class="sourceLine" id="cb8-32" title="32"><span class="co">#&gt;   Quantity Var      : Q</span></a>
+<a class="sourceLine" id="cb8-33" title="33"><span class="co">#&gt;   Price Var         : P</span></a>
+<a class="sourceLine" id="cb8-34" title="34"><span class="co">#&gt;   Key Var(s)        : id, date</span></a>
+<a class="sourceLine" id="cb8-35" title="35"><span class="co">#&gt;   Time Var          : date</span></a>
+<a class="sourceLine" id="cb8-36" title="36"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-37" title="37"><span class="co">#&gt; systemfit results </span></a>
+<a class="sourceLine" id="cb8-38" title="38"><span class="co">#&gt; method: 2SLS </span></a>
+<a class="sourceLine" id="cb8-39" title="39"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-40" title="40"><span class="co">#&gt;            N    DF     SSR detRCov   OLS-R2 McElroy-R2</span></a>
+<a class="sourceLine" id="cb8-41" title="41"><span class="co">#&gt; system 20000 19989 48358.5  4.6502 -2.12978  -0.739797</span></a>
+<a class="sourceLine" id="cb8-42" title="42"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-43" title="43"><span class="co">#&gt;            N   DF     SSR     MSE    RMSE       R2   Adj R2</span></a>
+<a class="sourceLine" id="cb8-44" title="44"><span class="co">#&gt; demand 10000 9994 27698.3 2.77149 1.66478 -2.58529 -2.58708</span></a>
+<a class="sourceLine" id="cb8-45" title="45"><span class="co">#&gt; supply 10000 9995 20660.2 2.06706 1.43773 -1.67428 -1.67535</span></a>
+<a class="sourceLine" id="cb8-46" title="46"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-47" title="47"><span class="co">#&gt; The covariance matrix of the residuals</span></a>
+<a class="sourceLine" id="cb8-48" title="48"><span class="co">#&gt;          demand   supply</span></a>
+<a class="sourceLine" id="cb8-49" title="49"><span class="co">#&gt; demand  2.77149 -1.03857</span></a>
+<a class="sourceLine" id="cb8-50" title="50"><span class="co">#&gt; supply -1.03857  2.06706</span></a>
+<a class="sourceLine" id="cb8-51" title="51"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-52" title="52"><span class="co">#&gt; The correlations of the residuals</span></a>
+<a class="sourceLine" id="cb8-53" title="53"><span class="co">#&gt;           demand    supply</span></a>
+<a class="sourceLine" id="cb8-54" title="54"><span class="co">#&gt; demand  1.000000 -0.433914</span></a>
+<a class="sourceLine" id="cb8-55" title="55"><span class="co">#&gt; supply -0.433914  1.000000</span></a>
+<a class="sourceLine" id="cb8-56" title="56"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-57" title="57"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-58" title="58"><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></a>
+<a class="sourceLine" id="cb8-59" title="59"><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></a>
+<a class="sourceLine" id="cb8-60" title="60"><span class="co">#&gt; &lt;environment: 0x5649889a93b8&gt;</span></a>
+<a class="sourceLine" id="cb8-61" title="61"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
+<a class="sourceLine" id="cb8-62" title="62"><span class="co">#&gt; &lt;environment: 0x5649889a93b8&gt;</span></a>
+<a class="sourceLine" id="cb8-63" title="63"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-64" title="64"><span class="co">#&gt;               Estimate Std. Error   t value   Pr(&gt;|t|)    </span></a>
+<a class="sourceLine" id="cb8-65" title="65"><span class="co">#&gt; (Intercept)  9.7549133  0.3627929  26.88838 &lt; 2.22e-16 ***</span></a>
+<a class="sourceLine" id="cb8-66" title="66"><span class="co">#&gt; P           -0.9575689  0.0764469 -12.52594 &lt; 2.22e-16 ***</span></a>
+<a class="sourceLine" id="cb8-67" title="67"><span class="co">#&gt; Xd1          0.3306545  0.0358080   9.23409 &lt; 2.22e-16 ***</span></a>
+<a class="sourceLine" id="cb8-68" title="68"><span class="co">#&gt; Xd2         -0.0012847  0.0333156  -0.03856  0.9692408    </span></a>
+<a class="sourceLine" id="cb8-69" title="69"><span class="co">#&gt; X1           0.5778408  0.0516015  11.19815 &lt; 2.22e-16 ***</span></a>
+<a class="sourceLine" id="cb8-70" title="70"><span class="co">#&gt; X2          -0.0893816  0.0344208  -2.59673  0.0094254 ** </span></a>
+<a class="sourceLine" id="cb8-71" title="71"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb8-72" title="72"><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></a>
+<a class="sourceLine" id="cb8-73" title="73"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-74" title="74"><span class="co">#&gt; Residual standard error: 1.66478 on 9994 degrees of freedom</span></a>
+<a class="sourceLine" id="cb8-75" title="75"><span class="co">#&gt; Number of observations: 10000 Degrees of Freedom: 9994 </span></a>
+<a class="sourceLine" id="cb8-76" title="76"><span class="co">#&gt; SSR: 27698.280302 MSE: 2.771491 Root MSE: 1.66478 </span></a>
+<a class="sourceLine" id="cb8-77" title="77"><span class="co">#&gt; Multiple R-Squared: -2.585289 Adjusted R-Squared: -2.587082 </span></a>
+<a class="sourceLine" id="cb8-78" title="78"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-79" title="79"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-80" title="80"><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></a>
+<a class="sourceLine" id="cb8-81" title="81"><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></a>
+<a class="sourceLine" id="cb8-82" title="82"><span class="co">#&gt; &lt;environment: 0x5649889a93b8&gt;</span></a>
+<a class="sourceLine" id="cb8-83" title="83"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
+<a class="sourceLine" id="cb8-84" title="84"><span class="co">#&gt; &lt;environment: 0x5649889a93b8&gt;</span></a>
+<a class="sourceLine" id="cb8-85" title="85"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-86" title="86"><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></a>
+<a class="sourceLine" id="cb8-87" title="87"><span class="co">#&gt; (Intercept) -1.0494025  1.0315906 -1.01727    0.30905    </span></a>
+<a class="sourceLine" id="cb8-88" title="88"><span class="co">#&gt; P            1.0884357  0.1800529  6.04509 1.5467e-09 ***</span></a>
+<a class="sourceLine" id="cb8-89" title="89"><span class="co">#&gt; Xs1          0.8985423  0.0842354 10.66703 &lt; 2.22e-16 ***</span></a>
+<a class="sourceLine" id="cb8-90" title="90"><span class="co">#&gt; X1          -0.4723384  0.0968275 -4.87814 1.0874e-06 ***</span></a>
+<a class="sourceLine" id="cb8-91" title="91"><span class="co">#&gt; X2           0.1566904  0.0361420  4.33541 1.4691e-05 ***</span></a>
+<a class="sourceLine" id="cb8-92" title="92"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb8-93" title="93"><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></a>
+<a class="sourceLine" id="cb8-94" title="94"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-95" title="95"><span class="co">#&gt; Residual standard error: 1.437727 on 9995 degrees of freedom</span></a>
+<a class="sourceLine" id="cb8-96" title="96"><span class="co">#&gt; Number of observations: 10000 Degrees of Freedom: 9995 </span></a>
+<a class="sourceLine" id="cb8-97" title="97"><span class="co">#&gt; SSR: 20660.242409 MSE: 2.067058 Root MSE: 1.437727 </span></a>
+<a class="sourceLine" id="cb8-98" title="98"><span class="co">#&gt; Multiple R-Squared: -1.674279 Adjusted R-Squared: -1.675349</span></a>
+<a class="sourceLine" id="cb8-99" title="99"><span class="kw">summary</span>(eqmdl_fit)</a>
+<a class="sourceLine" id="cb8-100" title="100"><span class="co">#&gt; Equilibrium Model for Markets in Equilibrium</span></a>
+<a class="sourceLine" id="cb8-101" title="101"><span class="co">#&gt;   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2</span></a>
+<a class="sourceLine" id="cb8-102" title="102"><span class="co">#&gt;   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2</span></a>
+<a class="sourceLine" id="cb8-103" title="103"><span class="co">#&gt;   Market Clearing   : Q = D_Q = S_Q</span></a>
+<a class="sourceLine" id="cb8-104" title="104"><span class="co">#&gt;   Shocks            : Correlated</span></a>
+<a class="sourceLine" id="cb8-105" title="105"><span class="co">#&gt;   Nobs              : 10000</span></a>
+<a class="sourceLine" id="cb8-106" title="106"><span class="co">#&gt;   Sample Separation : Not Separated</span></a>
+<a class="sourceLine" id="cb8-107" title="107"><span class="co">#&gt;   Quantity Var      : Q</span></a>
+<a class="sourceLine" id="cb8-108" title="108"><span class="co">#&gt;   Price Var         : P</span></a>
+<a class="sourceLine" id="cb8-109" title="109"><span class="co">#&gt;   Key Var(s)        : id, date</span></a>
+<a class="sourceLine" id="cb8-110" title="110"><span class="co">#&gt;   Time Var          : date</span></a>
+<a class="sourceLine" id="cb8-111" title="111"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-112" title="112"><span class="co">#&gt; Maximum likelihood estimation</span></a>
+<a class="sourceLine" id="cb8-113" title="113"><span class="co">#&gt;   Method              : BFGS</span></a>
+<a class="sourceLine" id="cb8-114" title="114"><span class="co">#&gt;   Convergence Status  : success</span></a>
+<a class="sourceLine" id="cb8-115" title="115"><span class="co">#&gt;   Starting Values     :</span></a>
+<a class="sourceLine" id="cb8-116" title="116"><span class="co">#&gt;        D_P    D_CONST      D_Xd1      D_Xd2       D_X1       D_X2        S_P </span></a>
+<a class="sourceLine" id="cb8-117" title="117"><span class="co">#&gt;    0.13815    5.15047    0.15414    0.01746    0.01405    0.03411    0.17315 </span></a>
+<a class="sourceLine" id="cb8-118" title="118"><span class="co">#&gt;    S_CONST      S_Xs1       S_X1       S_X2 D_VARIANCE S_VARIANCE        RHO </span></a>
+<a class="sourceLine" id="cb8-119" title="119"><span class="co">#&gt;    4.15459    0.49648   -0.00247    0.04558    1.00000    1.00000    0.00000 </span></a>
+<a class="sourceLine" id="cb8-120" title="120"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-121" title="121"><span class="co">#&gt; Coefficients</span></a>
+<a class="sourceLine" id="cb8-122" title="122"><span class="co">#&gt;            Estimate Std. Error  z value      Pr(z)</span></a>
+<a class="sourceLine" id="cb8-123" title="123"><span class="co">#&gt; D_P        -1.01247    0.09858 -10.2708  9.545e-25</span></a>
+<a class="sourceLine" id="cb8-124" title="124"><span class="co">#&gt; D_CONST    10.89751    0.47798  22.7991 4.679e-115</span></a>
+<a class="sourceLine" id="cb8-125" title="125"><span class="co">#&gt; D_Xd1      -0.01743    0.01240  -1.4053  1.599e-01</span></a>
+<a class="sourceLine" id="cb8-126" title="126"><span class="co">#&gt; D_Xd2      -0.00890    0.01151  -0.7736  4.392e-01</span></a>
+<a class="sourceLine" id="cb8-127" title="127"><span class="co">#&gt; D_X1        0.60912    0.06310   9.6530  4.776e-22</span></a>
+<a class="sourceLine" id="cb8-128" title="128"><span class="co">#&gt; D_X2       -0.10000    0.03720  -2.6880  7.187e-03</span></a>
+<a class="sourceLine" id="cb8-129" title="129"><span class="co">#&gt; S_P        -0.41615    0.01485 -28.0313 6.748e-173</span></a>
+<a class="sourceLine" id="cb8-130" title="130"><span class="co">#&gt; S_CONST     7.46659    0.03056 244.2868  0.000e+00</span></a>
+<a class="sourceLine" id="cb8-131" title="131"><span class="co">#&gt; S_Xs1       0.25233    0.02374  10.6298  2.167e-26</span></a>
+<a class="sourceLine" id="cb8-132" title="132"><span class="co">#&gt; S_X1        0.30159    0.02790  10.8096  3.102e-27</span></a>
+<a class="sourceLine" id="cb8-133" title="133"><span class="co">#&gt; S_X2       -0.02675    0.02167  -1.2343  2.171e-01</span></a>
+<a class="sourceLine" id="cb8-134" title="134"><span class="co">#&gt; D_VARIANCE  3.01149    0.39228   7.6770  1.629e-14</span></a>
+<a class="sourceLine" id="cb8-135" title="135"><span class="co">#&gt; S_VARIANCE  1.25304    0.03285  38.1432  0.000e+00</span></a>
+<a class="sourceLine" id="cb8-136" title="136"><span class="co">#&gt; RHO         0.94562    0.01006  93.9638  0.000e+00</span></a>
+<a class="sourceLine" id="cb8-137" title="137"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-138" title="138"><span class="co">#&gt; -2 log L: 57914.5</span></a>
+<a class="sourceLine" id="cb8-139" title="139"><span class="kw">summary</span>(bsmdl_fit)</a>
+<a class="sourceLine" id="cb8-140" title="140"><span class="co">#&gt; Basic Model for Markets in Disequilibrium</span></a>
+<a class="sourceLine" id="cb8-141" title="141"><span class="co">#&gt;   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2</span></a>
+<a class="sourceLine" id="cb8-142" title="142"><span class="co">#&gt;   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2</span></a>
+<a class="sourceLine" id="cb8-143" title="143"><span class="co">#&gt;   Short Side Rule   : Q = min(D_Q, S_Q)</span></a>
+<a class="sourceLine" id="cb8-144" title="144"><span class="co">#&gt;   Shocks            : Correlated</span></a>
+<a class="sourceLine" id="cb8-145" title="145"><span class="co">#&gt;   Nobs              : 10000</span></a>
+<a class="sourceLine" id="cb8-146" title="146"><span class="co">#&gt;   Sample Separation : Not Separated</span></a>
+<a class="sourceLine" id="cb8-147" title="147"><span class="co">#&gt;   Quantity Var      : Q</span></a>
+<a class="sourceLine" id="cb8-148" title="148"><span class="co">#&gt;   Price Var         : P</span></a>
+<a class="sourceLine" id="cb8-149" title="149"><span class="co">#&gt;   Key Var(s)        : id, date</span></a>
+<a class="sourceLine" id="cb8-150" title="150"><span class="co">#&gt;   Time Var          : date</span></a>
+<a class="sourceLine" id="cb8-151" title="151"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-152" title="152"><span class="co">#&gt; Maximum likelihood estimation</span></a>
+<a class="sourceLine" id="cb8-153" title="153"><span class="co">#&gt;   Method              : Nelder-Mead</span></a>
+<a class="sourceLine" id="cb8-154" title="154"><span class="co">#&gt;   Max Iterations      : 100000</span></a>
+<a class="sourceLine" id="cb8-155" title="155"><span class="co">#&gt;   Convergence Status  : success</span></a>
+<a class="sourceLine" id="cb8-156" title="156"><span class="co">#&gt;   Starting Values     :</span></a>
+<a class="sourceLine" id="cb8-157" title="157"><span class="co">#&gt;        D_P    D_CONST      D_Xd1      D_Xd2       D_X1       D_X2        S_P </span></a>
+<a class="sourceLine" id="cb8-158" title="158"><span class="co">#&gt;    0.13815    5.15047    0.15414    0.01746    0.01405    0.03411    0.17315 </span></a>
+<a class="sourceLine" id="cb8-159" title="159"><span class="co">#&gt;    S_CONST      S_Xs1       S_X1       S_X2 D_VARIANCE S_VARIANCE        RHO </span></a>
+<a class="sourceLine" id="cb8-160" title="160"><span class="co">#&gt;    4.15459    0.49648   -0.00247    0.04558    1.00000    1.00000    0.00000 </span></a>
+<a class="sourceLine" id="cb8-161" title="161"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-162" title="162"><span class="co">#&gt; Coefficients</span></a>
+<a class="sourceLine" id="cb8-163" title="163"><span class="co">#&gt;            Estimate Std. Error z value      Pr(z)</span></a>
+<a class="sourceLine" id="cb8-164" title="164"><span class="co">#&gt; D_P         0.06505    0.02562  2.5387  1.113e-02</span></a>
+<a class="sourceLine" id="cb8-165" title="165"><span class="co">#&gt; D_CONST     5.12574    0.21738 23.5795 6.252e-123</span></a>
+<a class="sourceLine" id="cb8-166" title="166"><span class="co">#&gt; D_Xd1       0.29708    0.05483  5.4184  6.013e-08</span></a>
+<a class="sourceLine" id="cb8-167" title="167"><span class="co">#&gt; D_Xd2       0.03398    0.03204  1.0604  2.889e-01</span></a>
+<a class="sourceLine" id="cb8-168" title="168"><span class="co">#&gt; D_X1        0.32469    0.10101  3.2145  1.307e-03</span></a>
+<a class="sourceLine" id="cb8-169" title="169"><span class="co">#&gt; D_X2       -0.03387    0.06251 -0.5418  5.879e-01</span></a>
+<a class="sourceLine" id="cb8-170" title="170"><span class="co">#&gt; S_P         0.26860    0.02541 10.5717  4.031e-26</span></a>
+<a class="sourceLine" id="cb8-171" title="171"><span class="co">#&gt; S_CONST     3.68315    0.25270 14.5749  4.056e-48</span></a>
+<a class="sourceLine" id="cb8-172" title="172"><span class="co">#&gt; S_Xs1       0.92709    0.14013  6.6161  3.687e-11</span></a>
+<a class="sourceLine" id="cb8-173" title="173"><span class="co">#&gt; S_X1       -0.31137    0.06729 -4.6271  3.708e-06</span></a>
+<a class="sourceLine" id="cb8-174" title="174"><span class="co">#&gt; S_X2        0.11344    0.05179  2.1905  2.849e-02</span></a>
+<a class="sourceLine" id="cb8-175" title="175"><span class="co">#&gt; D_VARIANCE  0.82064    0.03941 20.8252  2.557e-96</span></a>
+<a class="sourceLine" id="cb8-176" title="176"><span class="co">#&gt; S_VARIANCE  0.99711    0.15989  6.2362  4.485e-10</span></a>
+<a class="sourceLine" id="cb8-177" title="177"><span class="co">#&gt; RHO         0.11547    0.15802  0.7308  4.649e-01</span></a>
+<a class="sourceLine" id="cb8-178" title="178"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-179" title="179"><span class="co">#&gt; -2 log L: 24362.3</span></a>
+<a class="sourceLine" id="cb8-180" title="180"><span class="kw">summary</span>(damdl_fit)</a>
+<a class="sourceLine" id="cb8-181" title="181"><span class="co">#&gt; Deterministic Adjustment Model for Markets in Disequilibrium</span></a>
+<a class="sourceLine" id="cb8-182" title="182"><span class="co">#&gt;   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2</span></a>
+<a class="sourceLine" id="cb8-183" title="183"><span class="co">#&gt;   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2</span></a>
+<a class="sourceLine" id="cb8-184" title="184"><span class="co">#&gt;   Short Side Rule   : Q = min(D_Q, S_Q)</span></a>
+<a class="sourceLine" id="cb8-185" title="185"><span class="co">#&gt;   Separation Rule   : P_DIFF analogous to (D_Q - S_Q)</span></a>
+<a class="sourceLine" id="cb8-186" title="186"><span class="co">#&gt;   Shocks            : Correlated</span></a>
+<a class="sourceLine" id="cb8-187" title="187"><span class="co">#&gt;   Nobs              : 8000</span></a>
+<a class="sourceLine" id="cb8-188" title="188"><span class="co">#&gt;   Sample Separation : Demand Obs = 2540, Supply Obs = 5460</span></a>
+<a class="sourceLine" id="cb8-189" title="189"><span class="co">#&gt;   Quantity Var      : Q</span></a>
+<a class="sourceLine" id="cb8-190" title="190"><span class="co">#&gt;   Price Var         : P</span></a>
+<a class="sourceLine" id="cb8-191" title="191"><span class="co">#&gt;   Key Var(s)        : id, date</span></a>
+<a class="sourceLine" id="cb8-192" title="192"><span class="co">#&gt;   Time Var          : date</span></a>
+<a class="sourceLine" id="cb8-193" title="193"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-194" title="194"><span class="co">#&gt; Maximum likelihood estimation</span></a>
+<a class="sourceLine" id="cb8-195" title="195"><span class="co">#&gt;   Method              : BFGS</span></a>
+<a class="sourceLine" id="cb8-196" title="196"><span class="co">#&gt;   Convergence Status  : success</span></a>
+<a class="sourceLine" id="cb8-197" title="197"><span class="co">#&gt;   Starting Values     :</span></a>
+<a class="sourceLine" id="cb8-198" title="198"><span class="co">#&gt;        D_P    D_CONST      D_Xd1      D_Xd2       D_X1       D_X2        S_P </span></a>
+<a class="sourceLine" id="cb8-199" title="199"><span class="co">#&gt;    0.10164    5.23014    0.16768    0.01574    0.09549    0.01532    0.14235 </span></a>
+<a class="sourceLine" id="cb8-200" title="200"><span class="co">#&gt;    S_CONST      S_Xs1       S_X1       S_X2     P_DIFF D_VARIANCE S_VARIANCE </span></a>
+<a class="sourceLine" id="cb8-201" title="201"><span class="co">#&gt;    4.38416    0.43711    0.07416    0.02458    1.00000    1.00000    1.00000 </span></a>
+<a class="sourceLine" id="cb8-202" title="202"><span class="co">#&gt;        RHO </span></a>
+<a class="sourceLine" id="cb8-203" title="203"><span class="co">#&gt;    0.00000 </span></a>
+<a class="sourceLine" id="cb8-204" title="204"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-205" title="205"><span class="co">#&gt; Coefficients</span></a>
+<a class="sourceLine" id="cb8-206" title="206"><span class="co">#&gt;            Estimate Std. Error   z value      Pr(z)</span></a>
+<a class="sourceLine" id="cb8-207" title="207"><span class="co">#&gt; D_P        -0.18260    0.01688 -10.81970  2.777e-27</span></a>
+<a class="sourceLine" id="cb8-208" title="208"><span class="co">#&gt; D_CONST     6.69333    0.12727  52.59287  0.000e+00</span></a>
+<a class="sourceLine" id="cb8-209" title="209"><span class="co">#&gt; D_Xd1       0.16451    0.02071   7.94236  1.984e-15</span></a>
+<a class="sourceLine" id="cb8-210" title="210"><span class="co">#&gt; D_Xd2       0.00104    0.01802   0.05773  9.540e-01</span></a>
+<a class="sourceLine" id="cb8-211" title="211"><span class="co">#&gt; D_X1        0.43124    0.02687  16.04867  5.841e-58</span></a>
+<a class="sourceLine" id="cb8-212" title="212"><span class="co">#&gt; D_X2       -0.06011    0.02328  -2.58213  9.819e-03</span></a>
+<a class="sourceLine" id="cb8-213" title="213"><span class="co">#&gt; S_P         0.24090    0.01519  15.86368  1.131e-56</span></a>
+<a class="sourceLine" id="cb8-214" title="214"><span class="co">#&gt; S_CONST     4.06253    0.12682  32.03405 3.662e-225</span></a>
+<a class="sourceLine" id="cb8-215" title="215"><span class="co">#&gt; S_Xs1       0.48725    0.02328  20.93164  2.758e-97</span></a>
+<a class="sourceLine" id="cb8-216" title="216"><span class="co">#&gt; S_X1       -0.06213    0.02177  -2.85453  4.310e-03</span></a>
+<a class="sourceLine" id="cb8-217" title="217"><span class="co">#&gt; S_X2        0.05397    0.01886   2.86180  4.212e-03</span></a>
+<a class="sourceLine" id="cb8-218" title="218"><span class="co">#&gt; P_DIFF      0.52648    0.02202  23.91277 2.256e-126</span></a>
+<a class="sourceLine" id="cb8-219" title="219"><span class="co">#&gt; D_VARIANCE  1.02178    0.03318  30.79873 2.725e-208</span></a>
+<a class="sourceLine" id="cb8-220" title="220"><span class="co">#&gt; S_VARIANCE  0.69727    0.01339  52.06415  0.000e+00</span></a>
+<a class="sourceLine" id="cb8-221" title="221"><span class="co">#&gt; RHO         0.60944    0.02733  22.29848 3.823e-110</span></a>
+<a class="sourceLine" id="cb8-222" title="222"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-223" title="223"><span class="co">#&gt; -2 log L: 39800.3</span></a>
+<a class="sourceLine" id="cb8-224" title="224"><span class="kw">summary</span>(samdl_fit)</a>
+<a class="sourceLine" id="cb8-225" title="225"><span class="co">#&gt; Stochastic Adjustment Model for Markets in Disequilibrium</span></a>
+<a class="sourceLine" id="cb8-226" title="226"><span class="co">#&gt;   Demand RHS        : D_P + D_Xd1 + D_Xd2 + D_X1 + D_X2</span></a>
+<a class="sourceLine" id="cb8-227" title="227"><span class="co">#&gt;   Supply RHS        : S_P + S_Xs1 + S_X1 + S_X2</span></a>
+<a class="sourceLine" id="cb8-228" title="228"><span class="co">#&gt;   Price Dynamics RHS: (D_Q - S_Q) + Xp1</span></a>
+<a class="sourceLine" id="cb8-229" title="229"><span class="co">#&gt;   Short Side Rule   : Q = min(D_Q, S_Q)</span></a>
+<a class="sourceLine" id="cb8-230" title="230"><span class="co">#&gt;   Shocks            : Correlated</span></a>
+<a class="sourceLine" id="cb8-231" title="231"><span class="co">#&gt;   Nobs              : 8000</span></a>
+<a class="sourceLine" id="cb8-232" title="232"><span class="co">#&gt;   Sample Separation : Not Separated</span></a>
+<a class="sourceLine" id="cb8-233" title="233"><span class="co">#&gt;   Quantity Var      : Q</span></a>
+<a class="sourceLine" id="cb8-234" title="234"><span class="co">#&gt;   Price Var         : P</span></a>
+<a class="sourceLine" id="cb8-235" title="235"><span class="co">#&gt;   Key Var(s)        : id, date</span></a>
+<a class="sourceLine" id="cb8-236" title="236"><span class="co">#&gt;   Time Var          : date</span></a>
+<a class="sourceLine" id="cb8-237" title="237"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-238" title="238"><span class="co">#&gt; Maximum likelihood estimation</span></a>
+<a class="sourceLine" id="cb8-239" title="239"><span class="co">#&gt;   Method              : BFGS</span></a>
+<a class="sourceLine" id="cb8-240" title="240"><span class="co">#&gt;   Max Iterations      : 100000</span></a>
+<a class="sourceLine" id="cb8-241" title="241"><span class="co">#&gt;   Convergence Status  : success</span></a>
+<a class="sourceLine" id="cb8-242" title="242"><span class="co">#&gt;   Starting Values     :</span></a>
+<a class="sourceLine" id="cb8-243" title="243"><span class="co">#&gt;        D_P    D_CONST      D_Xd1      D_Xd2       D_X1       D_X2        S_P </span></a>
+<a class="sourceLine" id="cb8-244" title="244"><span class="co">#&gt;    0.10164    5.23014    0.16768    0.01574    0.09549    0.01532    0.14235 </span></a>
+<a class="sourceLine" id="cb8-245" title="245"><span class="co">#&gt;    S_CONST      S_Xs1       S_X1       S_X2     P_DIFF    P_CONST      P_Xp1 </span></a>
+<a class="sourceLine" id="cb8-246" title="246"><span class="co">#&gt;    4.38416    0.43711    0.07416    0.02458   14.18100    3.31715   -0.98643 </span></a>
+<a class="sourceLine" id="cb8-247" title="247"><span class="co">#&gt; D_VARIANCE S_VARIANCE P_VARIANCE     RHO_DS     RHO_DP     RHO_SP </span></a>
+<a class="sourceLine" id="cb8-248" title="248"><span class="co">#&gt;    1.00000    1.00000    1.00000    0.00000    0.00000    0.00000 </span></a>
+<a class="sourceLine" id="cb8-249" title="249"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-250" title="250"><span class="co">#&gt; Coefficients</span></a>
+<a class="sourceLine" id="cb8-251" title="251"><span class="co">#&gt;             Estimate Std. Error   z value     Pr(z)</span></a>
+<a class="sourceLine" id="cb8-252" title="252"><span class="co">#&gt; D_P        -0.283818    0.02445 -11.60957 3.685e-31</span></a>
+<a class="sourceLine" id="cb8-253" title="253"><span class="co">#&gt; D_CONST     6.670856    0.16883  39.51312 0.000e+00</span></a>
+<a class="sourceLine" id="cb8-254" title="254"><span class="co">#&gt; D_Xd1       0.295357    0.02671  11.05871 1.989e-28</span></a>
+<a class="sourceLine" id="cb8-255" title="255"><span class="co">#&gt; D_Xd2       0.019129    0.02557   0.74827 4.543e-01</span></a>
+<a class="sourceLine" id="cb8-256" title="256"><span class="co">#&gt; D_X1        0.572856    0.03683  15.55230 1.535e-54</span></a>
+<a class="sourceLine" id="cb8-257" title="257"><span class="co">#&gt; D_X2       -0.092642    0.02612  -3.54740 3.891e-04</span></a>
+<a class="sourceLine" id="cb8-258" title="258"><span class="co">#&gt; S_P         0.581854    0.04519  12.87565 6.172e-38</span></a>
+<a class="sourceLine" id="cb8-259" title="259"><span class="co">#&gt; S_CONST     2.178987    0.24712   8.81755 1.170e-18</span></a>
+<a class="sourceLine" id="cb8-260" title="260"><span class="co">#&gt; S_Xs1       0.896560    0.05190  17.27636 7.088e-67</span></a>
+<a class="sourceLine" id="cb8-261" title="261"><span class="co">#&gt; S_X1       -0.463933    0.05749  -8.06931 7.070e-16</span></a>
+<a class="sourceLine" id="cb8-262" title="262"><span class="co">#&gt; S_X2        0.154224    0.02928   5.26759 1.382e-07</span></a>
+<a class="sourceLine" id="cb8-263" title="263"><span class="co">#&gt; P_DIFF      1.126426    0.06007  18.75213 1.860e-78</span></a>
+<a class="sourceLine" id="cb8-264" title="264"><span class="co">#&gt; P_CONST     0.915931    0.11227   8.15807 3.404e-16</span></a>
+<a class="sourceLine" id="cb8-265" title="265"><span class="co">#&gt; P_Xp1      -0.122637    0.03249  -3.77465 1.602e-04</span></a>
+<a class="sourceLine" id="cb8-266" title="266"><span class="co">#&gt; D_VARIANCE  0.986643    0.05123  19.25817 1.206e-82</span></a>
+<a class="sourceLine" id="cb8-267" title="267"><span class="co">#&gt; S_VARIANCE  1.005088    0.08611  11.67199 1.772e-31</span></a>
+<a class="sourceLine" id="cb8-268" title="268"><span class="co">#&gt; P_VARIANCE  0.898735    0.10383   8.65587 4.892e-18</span></a>
+<a class="sourceLine" id="cb8-269" title="269"><span class="co">#&gt; RHO_DS      0.066835    0.09213   0.72546 4.682e-01</span></a>
+<a class="sourceLine" id="cb8-270" title="270"><span class="co">#&gt; RHO_DP      0.005708    0.06837   0.08349 9.335e-01</span></a>
+<a class="sourceLine" id="cb8-271" title="271"><span class="co">#&gt; RHO_SP     -0.006082    0.06801  -0.08943 9.287e-01</span></a>
+<a class="sourceLine" id="cb8-272" title="272"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-273" title="273"><span class="co">#&gt; -2 log L: 39505.1</span></a></code></pre></div>
 <p>The estimated demanded and supplied quantities can be calculated per observation.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a>market &lt;-<span class="st"> </span><span class="kw">cbind</span>(</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a>  <span class="dt">demand =</span> <span class="kw">demanded_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>],</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true"></a>  <span class="dt">supply =</span> <span class="kw">supplied_quantities</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)[, <span class="dv">1</span>]</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true"></a>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true"></a><span class="kw">summary</span>(market)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true"></a><span class="co">#&gt;      demand           supply      </span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true"></a><span class="co">#&gt;  Min.   : 7.133   Min.   : 6.099  </span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true"></a><span class="co">#&gt;  1st Qu.: 8.625   1st Qu.: 8.078  </span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true"></a><span class="co">#&gt;  Median : 9.050   Median : 8.664  </span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true"></a><span class="co">#&gt;  Mean   : 9.075   Mean   : 8.644  </span></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true"></a><span class="co">#&gt;  3rd Qu.: 9.520   3rd Qu.: 9.220  </span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true"></a><span class="co">#&gt;  Max.   :11.087   Max.   :11.221</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">market &lt;-<span class="st"> </span><span class="kw">cbind</span>(</a>
+<a class="sourceLine" id="cb9-2" title="2">  <span class="dt">demand =</span> <span class="kw">demanded_quantities</span>(bsmdl_fit)[, <span class="dv">1</span>],</a>
+<a class="sourceLine" id="cb9-3" title="3">  <span class="dt">supply =</span> <span class="kw">supplied_quantities</span>(bsmdl_fit)[, <span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb9-4" title="4">)</a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">summary</span>(market)</a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="co">#&gt;      demand          supply     </span></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="co">#&gt;  Min.   :6.103   Min.   :4.863  </span></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="co">#&gt;  1st Qu.:6.873   1st Qu.:6.638  </span></a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="co">#&gt;  Median :7.043   Median :7.010  </span></a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="co">#&gt;  Mean   :7.042   Mean   :7.003  </span></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="co">#&gt;  3rd Qu.:7.209   3rd Qu.:7.369  </span></a>
+<a class="sourceLine" id="cb9-12" title="12"><span class="co">#&gt;  Max.   :8.093   Max.   :9.137</span></a></code></pre></div>
 <p>The package offers also basic aggregation functionality.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>aggregates &lt;-<span class="st"> </span><span class="kw">c</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>  <span class="dt">demand =</span> <span class="kw">aggregate_demand</span>(bsmdl, bsmdl_est<span class="op">@</span>coef),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a>  <span class="dt">supply =</span> <span class="kw">aggregate_supply</span>(bsmdl, bsmdl_est<span class="op">@</span>coef)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a>aggregates</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a><span class="co">#&gt;   demand   supply </span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a><span class="co">#&gt; 90746.69 86439.00</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">aggregates &lt;-<span class="st"> </span><span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb10-2" title="2">  <span class="dt">demand =</span> <span class="kw">aggregate_demand</span>(bsmdl_fit),</a>
+<a class="sourceLine" id="cb10-3" title="3">  <span class="dt">supply =</span> <span class="kw">aggregate_supply</span>(bsmdl_fit)</a>
+<a class="sourceLine" id="cb10-4" title="4">)</a>
+<a class="sourceLine" id="cb10-5" title="5">aggregates</a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="co">#&gt; $demand.date</span></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt; [1] 1 2 3 4 5</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt; Levels: 1 2 3 4 5</span></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt; $demand.D_Q</span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="co">#&gt; [1] 13913.91 14052.51 14115.25 14152.94 14181.93</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="co">#&gt; $supply.date</span></a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="co">#&gt; [1] 1 2 3 4 5</span></a>
+<a class="sourceLine" id="cb10-15" title="15"><span class="co">#&gt; Levels: 1 2 3 4 5</span></a>
+<a class="sourceLine" id="cb10-16" title="16"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-17" title="17"><span class="co">#&gt; $supply.S_Q</span></a>
+<a class="sourceLine" id="cb10-18" title="18"><span class="co">#&gt; [1] 13277.40 13851.89 14140.81 14351.21 14412.80</span></a></code></pre></div>
 </div>
 </div>
 

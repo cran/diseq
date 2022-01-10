@@ -31,7 +31,10 @@ test_calculated_gradient <- function(mdl, params, tolerance) {
 }
 
 test_convergence <- function(est) {
-  testthat::expect(est@details$convergence == 0, sprintf("Failed to converge"))
+  testthat::expect(
+    est@fit[[1]]@details$convergence == 0,
+    sprintf("Failed to converge")
+  )
 }
 
 test_calculated_hessian <- function(mdl, params, tolerance) {
@@ -67,16 +70,16 @@ test_calculated_hessian <- function(mdl, params, tolerance) {
 }
 
 
-test_marginal_effect <- function(effect, mdl, est, column, aggregate) {
+test_marginal_effect <- function(effect, est, column, aggregate) {
   testthat::expect(
-    !is.na(effect(mdl, est@coef, column, aggregate)),
+    !is.na(effect(est, column, aggregate)),
     sprintf("Failed to calculate marginal effect of %s", column)
   )
 }
 
 
-test_aggregation <- function(aggregation, mdl, params) {
-  result <- aggregation(mdl, params)
+test_aggregation <- function(aggregation, est) {
+  result <- aggregation(est)
   testthat::expect(
     (is.null(dim(result)) && !is.na(result)) ||
       (!is.null(dim(result)) && !all(is.na(result[[2]]))),
@@ -85,25 +88,56 @@ test_aggregation <- function(aggregation, mdl, params) {
 }
 
 
-test_shortages <- function(shortage_function, mdl, params) {
+test_shortages <- function(shortage_function, est) {
   testthat::expect(
-    !any(is.na(shortage_function(mdl, params))),
+    !any(is.na(shortage_function(est))),
     sprintf("Failed to calculate shortages")
   )
 }
 
 
-test_scores <- function(mdl, params) {
-  scores <- scores(mdl, params)
-  n <- diseq::number_of_observations(mdl)
-  k <- length(diseq:::likelihood_variables(mdl@system))
+test_scores <- function(est) {
+  scores <- scores(fit = est)
+  n <- diseq::nobs(est)
+  k <- length(diseq:::likelihood_variables(est@system))
   testthat::expect(any(dim(scores) == c(n, k)), sprintf("Score has wrong dimensions"))
   testthat::expect(
-    !any(is.na(scores(mdl, params))),
+    !any(is.na(scores)),
     sprintf("Failed to calculate scores")
   )
 }
 
+test_coef <- function(est) {
+  testthat::expect(
+    class(coef(est)) == "numeric" &
+      length(coef(est)) == length(likelihood_variables(est@system)),
+    sprintf("Failed to access coefficients via coef")
+  )
+}
+
+test_vcov <- function(est) {
+  vc <- vcov(est)
+  testthat::expect(
+    class(vc) == "matrix" &
+      all(dim(vc) == rep(length(likelihood_variables(est@system)), 2)),
+    sprintf("Failed to access variance-covariance matrix via vcov")
+  )
+}
+
+test_logLik <- function(est) {
+  testthat::expect(
+    class(logLik(est)) == "logLik",
+    sprintf("Failed to access log-likelihood object via logLik")
+  )
+}
+
+test_summary <- function(est, expected_no_lines) {
+  no_lines <- length(capture.output(summary(est)))
+  testthat::expect(expected_no_lines == no_lines, sprintf(
+    "Expected %d output lines and got %d",
+    expected_no_lines, no_lines
+  ))
+}
 
 test_estimation_accuracy <- function(estimation, parameters, tolerance) {
   errors <- abs(estimation - parameters)
@@ -121,57 +155,65 @@ test_estimation_accuracy <- function(estimation, parameters, tolerance) {
 ## Simulation settings
 seed <- 42
 verbose <- 0
+simulated_data <- NULL
 
-load_or_simulate_model <- function(model_string, parameters) {
+load_or_simulate_data <- function(model_string, parameters) {
   stored_data_filename <- paste0(model_string, "_", seed, ".rda")
 
   if (file.exists("devel-environment") & file.exists(stored_data_filename)) {
     load(stored_data_filename)
-  }
-  else {
-    model_tibble <- do.call(simulate_data, c(model_string, parameters, seed = seed))
+  } else {
+    model_tibble <- do.call(
+      diseq::simulate_data,
+      c(model_string, parameters, seed = seed)
+    )
     if (file.exists("devel-environment")) {
       save(model_tibble, file = stored_data_filename)
     }
   }
+  model_tibble
+}
+
+load_or_simulate_model <- function(model_string, parameters) {
+  simulated_data <<- load_or_simulate_data(model_string, parameters)
 
   if (model_string %in% c("equilibrium_model", "diseq_basic")) {
     mdl <- new(
       model_string,
-      c("id", "date"),
-      "Q", "P", "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2",
-      model_tibble,
+      subject = id, time = date,
+      quantity = Q, price = P, demand = P + Xd1 + Xd2 + X1 + X2,
+      supply = P + Xs1 + X1 + X2,
+      simulated_data,
       correlated_shocks = TRUE, verbose = verbose
     )
-  }
-  else if (model_string %in% c("diseq_directional")) {
+  } else if (model_string %in% c("diseq_directional")) {
     mdl <- new(
       model_string,
-      c("id", "date"), "date",
-      "Q", "P", "P + Xd1 + Xd2 + X1 + X2", "Xs1 + X1 + X2",
-      model_tibble,
+      subject = id, time = date,
+      quantity = Q, price = P, demand = P + Xd1 + Xd2 + X1 + X2,
+      supply = Xs1 + X1 + X2,
+      simulated_data,
       correlated_shocks = TRUE, verbose = verbose
     )
-  }
-  else if (model_string %in% c("diseq_deterministic_adjustment")) {
+  } else if (model_string %in% c("diseq_deterministic_adjustment")) {
     mdl <- new(
       model_string,
-      c("id", "date"), "date",
-      "Q", "P", "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2",
-      model_tibble,
+      subject = id, time = date,
+      quantity = Q, price = P, demand = P + Xd1 + Xd2 + X1 + X2,
+      supply = P + Xs1 + X1 + X2,
+      simulated_data,
       correlated_shocks = TRUE, verbose = verbose
     )
-  }
-  else if (model_string %in% c("diseq_stochastic_adjustment")) {
+  } else if (model_string %in% c("diseq_stochastic_adjustment")) {
     mdl <- new(
       model_string,
-      c("id", "date"), "date",
-      "Q", "P", "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", "Xp1",
-      model_tibble,
+      subject = id, time = date,
+      quantity = Q, price = P, demand = P + Xd1 + Xd2 + X1 + X2,
+      supply = P + Xs1 + X1 + X2, price_dynamics = Xp1,
+      simulated_data,
       correlated_shocks = TRUE, verbose = verbose
     )
-  }
-  else {
+  } else {
     stop("Unhandled model type.")
   }
 

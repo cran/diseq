@@ -5,25 +5,25 @@ if (requireNamespace("knitr", quietly = TRUE)) {
 
 ## ----setup.libraries----------------------------------------------------------
 library(diseq)
-library(magrittr)
+library(Formula)
 
 ## ----setup.data---------------------------------------------------------------
 nobs <- 2000
 tobs <- 5
 
-alpha_d <- -0.1
-beta_d0 <- 9.8
-beta_d <- c(0.3, -0.2)
+alpha_d <- -0.3
+beta_d0 <- 6.8
+beta_d <- c(0.3, -0.02)
 eta_d <- c(0.6, -0.1)
 
-alpha_s <- 0.1
-beta_s0 <- 5.1
+alpha_s <- 0.6
+beta_s0 <- 2.1
 beta_s <- c(0.9)
 eta_s <- c(-0.5, 0.2)
 
 gamma <- 1.2
-beta_p0 <- 3.1
-beta_p <- c(0.8)
+beta_p0 <- 0.9
+beta_p <- c(-0.1)
 
 sigma_d <- 1
 sigma_s <- 1
@@ -44,147 +44,80 @@ stochastic_adjustment_data <- simulate_data(
   seed = seed
 )
 
-## ----model.parameters.key-----------------------------------------------------
-key_columns <- c("id", "date")
-
-## ----model.parameters.time----------------------------------------------------
-time_column <- c("date")
-
-## ----model.parameters.quantity------------------------------------------------
-quantity_column <- "Q"
-
-## ----model.parameters.price---------------------------------------------------
-price_column <- "P"
-
-## ----model.parameters.specifications------------------------------------------
-demand_specification <- paste0(price_column, " + Xd1 + Xd2 + X1 + X2")
-supply_specification <- "Xs1 + X1 + X2"
-price_specification <- "Xp1"
-
-## ----model.parameters.verbose-------------------------------------------------
-verbose <- 2
-
-## ----model.parameters.correlated_shocks---------------------------------------
-correlated_shocks <- TRUE
+## ----model.parameters---------------------------------------------------------
+market_spec <-   Q | P | id | date ~ P + Xd1 + Xd2 + X1 + X2 | P + Xs1 + X1 + X2
 
 ## ----model.constructor--------------------------------------------------------
-eqmdl <- new(
-  "equilibrium_model",
-  key_columns,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  stochastic_adjustment_data,
-  correlated_shocks = correlated_shocks, verbose = verbose
+eqmdl_reg <- equilibrium_model(
+  market_spec, stochastic_adjustment_data,
+  estimation_options = list(method = "2SLS")
 )
-bsmdl <- new(
-  "diseq_basic",
-  key_columns,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  stochastic_adjustment_data,
-  correlated_shocks = correlated_shocks, verbose = verbose
+eqmdl_fit <- equilibrium_model(
+    market_spec, stochastic_adjustment_data,
+    estimation_options = list(standard_errors = c("id"))
 )
-drmdl <- new(
-  "diseq_directional",
-  key_columns, time_column,
-  quantity_column, price_column,
-  demand_specification, supply_specification,
-  stochastic_adjustment_data,
-  correlated_shocks = correlated_shocks, verbose = verbose
+bsmdl_fit <- diseq_basic(
+    market_spec, stochastic_adjustment_data,
+    estimation_options = list(
+        method = "Nelder-Mead", control = list(maxit = 1e+5),
+        standard_errors = "heteroscedastic"
+    )
 )
-damdl <- new(
-  "diseq_deterministic_adjustment",
-  key_columns, time_column,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  stochastic_adjustment_data,
-  correlated_shocks = correlated_shocks, verbose = verbose
+drmdl_fit <- diseq_directional(
+    formula(update(Formula(market_spec), . ~ . | . - P)),
+    stochastic_adjustment_data,
+    estimation_options = list(standard_errors = "heteroscedastic")
 )
-samdl <- new(
-  "diseq_stochastic_adjustment",
-  key_columns, time_column,
-  quantity_column, price_column,
-  demand_specification, paste0(price_column, " + ", supply_specification),
-  price_specification,
-  stochastic_adjustment_data,
-  correlated_shocks = correlated_shocks, verbose = verbose
+damdl_fit <- diseq_deterministic_adjustment(
+    market_spec, stochastic_adjustment_data,
+    estimation_options = list(standard_errors = c("id"))
 )
-
-## ----estimation.parameters.method---------------------------------------------
-optimization_method <- "BFGS"
-optimization_controls <- list(REPORT = 10, maxit = 10000, reltol = 1e-6)
-
-## ----estimation.execution-----------------------------------------------------
-eqmdl_reg <- estimate(eqmdl, method = "2SLS")
-eqmdl_est <- estimate(eqmdl,
-  control = optimization_controls, method = optimization_method,
-  standard_errors = c("id")
-)
-bsmdl_est <- estimate(bsmdl,
-  control = optimization_controls, method = optimization_method,
-  standard_errors = "heteroscedastic"
-)
-drmdl_est <- estimate(drmdl,
-  control = optimization_controls, method = optimization_method,
-  standard_errors = "heteroscedastic"
-)
-damdl_est <- estimate(damdl,
-  control = optimization_controls, method = optimization_method,
-  standard_errors = c("id")
-)
-samdl_est <- estimate(samdl,
-  control = optimization_controls, method = optimization_method,
-  standard_errors = c("id")
+samdl_fit <- diseq_stochastic_adjustment(
+    formula(update(Formula(market_spec), . ~ . | . | Xp1)),
+    stochastic_adjustment_data,
+    estimation_options = list(control = list(maxit = 1e+5))
 )
 
 ## ----analysis.effects---------------------------------------------------------
-variables <- c(price_column, "Xd1", "Xd2", "X1", "X2", "Xs1")
+variables <- c("P", "Xd1", "Xd2", "X1", "X2", "Xs1")
 
 bsmdl_mme <- sapply(variables,
-  function(v) shortage_probability_marginal(bsmdl, bsmdl_est@coef, v),
+  function(v) shortage_probability_marginal(bsmdl_fit, v),
   USE.NAMES = FALSE
 )
 drmdl_mme <- sapply(variables,
-  function(v) shortage_probability_marginal(drmdl, drmdl_est@coef, v),
+  function(v) shortage_probability_marginal(drmdl_fit, v),
   USE.NAMES = FALSE
 )
 damdl_mme <- sapply(variables,
-  function(v) shortage_probability_marginal(damdl, damdl_est@coef, v),
+  function(v) shortage_probability_marginal(damdl_fit, v),
   USE.NAMES = FALSE
 )
 samdl_mme <- sapply(variables,
-  function(v) shortage_probability_marginal(samdl, samdl_est@coef, v),
+  function(v) shortage_probability_marginal(samdl_fit, v),
   USE.NAMES = FALSE
 )
 bsmdl_mem <- sapply(variables,
   function(v) {
-    shortage_probability_marginal(bsmdl, bsmdl_est@coef, v,
-      aggregate = "at_the_mean"
-    )
+    shortage_probability_marginal(bsmdl_fit, v, aggregate = "at_the_mean")
   },
   USE.NAMES = FALSE
 )
 drmdl_mem <- sapply(variables,
   function(v) {
-    shortage_probability_marginal(drmdl, drmdl_est@coef, v,
-      aggregate = "at_the_mean"
-    )
+    shortage_probability_marginal(drmdl_fit, v, aggregate = "at_the_mean")
   },
   USE.NAMES = FALSE
 )
 damdl_mem <- sapply(variables,
   function(v) {
-    shortage_probability_marginal(damdl, damdl_est@coef, v,
-      aggregate = "at_the_mean"
-    )
+    shortage_probability_marginal(damdl_fit, v, aggregate = "at_the_mean")
   },
   USE.NAMES = FALSE
 )
 samdl_mem <- sapply(variables,
   function(v) {
-    shortage_probability_marginal(samdl, samdl_est@coef, v,
-      aggregate = "at_the_mean"
-    )
+    shortage_probability_marginal(samdl_fit, v, aggregate = "at_the_mean")
   },
   USE.NAMES = FALSE
 )
@@ -196,52 +129,56 @@ cbind(
 
 ## ----analysis.estimates-------------------------------------------------------
 mdt <- tibble::add_column(
-  bsmdl@model_tibble,
-  normalized_shortages = c(normalized_shortages(bsmdl, bsmdl_est@coef)),
-  shortage_probabilities = c(shortage_probabilities(bsmdl, bsmdl_est@coef)),
-  relative_shortages = c(relative_shortages(bsmdl, bsmdl_est@coef))
+  bsmdl_fit@model_tibble,
+  normalized_shortages = c(normalized_shortages(bsmdl_fit)),
+  shortage_probabilities = c(shortage_probabilities(bsmdl_fit)),
+  relative_shortages = c(relative_shortages(bsmdl_fit))
 )
 
 ## ----analysis.shortages-------------------------------------------------------
-abs_estsep <- c(
-  nobs = length(shortage_indicators(bsmdl, bsmdl_est@coef)),
-  nshortages = sum(shortage_indicators(bsmdl, bsmdl_est@coef)),
-  nsurpluses = sum(!shortage_indicators(bsmdl, bsmdl_est@coef))
+abs_fitsep <- c(
+  nobs = length(shortage_indicators(bsmdl_fit)),
+  nshortages = sum(shortage_indicators(bsmdl_fit)),
+  nsurpluses = sum(!shortage_indicators(bsmdl_fit))
 )
-print(abs_estsep)
+print(abs_fitsep)
 
-rel_estsep <- abs_estsep / abs_estsep["nobs"]
-names(rel_estsep) <- c("total", "shortages_share", "surpluses_share")
-print(rel_estsep)
+rel_fitsep <- abs_fitsep / abs_fitsep["nobs"]
+names(rel_fitsep) <- c("total", "shortages_share", "surpluses_share")
+print(rel_fitsep)
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  ggplot2::ggplot(mdt, ggplot2::aes(normalized_shortages)) +
+  ggplot2::ggplot(mdt, ggplot2::aes(shortage_probabilities)) +
     ggplot2::geom_density() +
     ggplot2::ggtitle(paste0(
       "Normalized shortages density (",
-      model_name(bsmdl), ")"
-    ))
+      model_name(bsmdl_fit), ")"
+    )) +
+    ggplot2::theme(
+      panel.background = ggplot2::element_rect(fill = "transparent"),
+      plot.background = ggplot2::element_rect(fill = "transparent", color = NA),
+    )
 }
 
 ## ----analysis.summaries-------------------------------------------------------
-summary(eqmdl_reg$first_stage_model)
-summary(eqmdl_reg$system_model)
-bbmle::summary(eqmdl_est)
-bbmle::summary(bsmdl_est)
-bbmle::summary(damdl_est)
-bbmle::summary(samdl_est)
+summary(eqmdl_reg@fit[[1]]$first_stage_model)
+summary(eqmdl_reg)
+summary(eqmdl_fit)
+summary(bsmdl_fit)
+summary(damdl_fit)
+summary(samdl_fit)
 
 ## ----analysis.market_forces---------------------------------------------------
 market <- cbind(
-  demand = demanded_quantities(bsmdl, bsmdl_est@coef)[, 1],
-  supply = supplied_quantities(bsmdl, bsmdl_est@coef)[, 1]
+  demand = demanded_quantities(bsmdl_fit)[, 1],
+  supply = supplied_quantities(bsmdl_fit)[, 1]
 )
 summary(market)
 
 ## ----analysis.aggregation-----------------------------------------------------
 aggregates <- c(
-  demand = aggregate_demand(bsmdl, bsmdl_est@coef),
-  supply = aggregate_supply(bsmdl, bsmdl_est@coef)
+  demand = aggregate_demand(bsmdl_fit),
+  supply = aggregate_supply(bsmdl_fit)
 )
 aggregates
 

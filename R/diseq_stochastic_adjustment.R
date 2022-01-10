@@ -42,8 +42,9 @@ setClass(
 #' # initialize the model
 #' model <- new(
 #'   "diseq_stochastic_adjustment", # model type
-#'   c("id", "date"), "date", "Q", "P", # keys, quantity, and price variables
-#'   "P + Xd1 + Xd2 + X1 + X2", "P + Xs1 + X1 + X2", "Xp1", # equation specifications
+#'   subject = id, time = date, quantity = Q, price = P,
+#'   demand = P + Xd1 + Xd2 + X1 + X2, supply = P + Xs1 + X1 + X2,
+#'   price_dynamics = Xp1,
 #'   simulated_data, # data
 #'   correlated_shocks = TRUE # allow shocks to be correlated
 #' )
@@ -51,20 +52,15 @@ setClass(
 #' show(model)
 setMethod(
   "initialize", "diseq_stochastic_adjustment",
-  function(
-           .Object,
-           key_columns, time_column, quantity_column, price_column,
-           demand_specification, supply_specification, price_specification,
-           data,
-           correlated_shocks = TRUE, verbose = 0) {
+  function(.Object,
+           quantity, price, demand, supply, price_dynamics, subject, time,
+           data, correlated_shocks = TRUE, verbose = 0) {
+    specification <- make_specification(
+      data, quantity, price, demand, supply, subject, time, price_dynamics
+    )
     .Object <- callNextMethod(
-      .Object,
-      "Stochastic Adjustment", verbose,
-      key_columns, time_column,
-      quantity_column, price_column,
-      demand_specification, supply_specification, price_specification,
-      correlated_shocks,
-      data,
+      .Object, "Stochastic Adjustment", verbose,
+      specification, correlated_shocks, data,
       function(...) new("system_stochastic_adjustment", ...)
     )
 
@@ -72,13 +68,43 @@ setMethod(
   }
 )
 
+#' @describeIn single_call_estimation Disequilibrium model with stochastic
+#' price adjustments.
+#' @export
+setGeneric(
+  "diseq_stochastic_adjustment",
+  function(specification, data,
+           correlated_shocks = TRUE, verbose = 0,
+           estimation_options = list()) {
+    standardGeneric("diseq_stochastic_adjustment")
+  }
+)
+
+#' @rdname single_call_estimation
+setMethod(
+  "diseq_stochastic_adjustment", signature(specification = "formula"),
+  function(specification, data, correlated_shocks, verbose,
+           estimation_options) {
+    initialize_from_formula(
+      "diseq_stochastic_adjustment", specification, data,
+      correlated_shocks, verbose, estimation_options
+    )
+  }
+)
+
 #' @rdname shortage_analysis
 setMethod(
-  "shortage_standard_deviation", signature(object = "diseq_stochastic_adjustment"),
-  function(object, parameters) {
-    object@system <- set_parameters(object@system, parameters)
-    sqrt(object@system@demand@var + object@system@supply@var -
-      2 * object@system@demand@sigma * object@system@supply@sigma * object@system@rho_ds)
+  "shortage_standard_deviation", signature(
+    model = "diseq_stochastic_adjustment", fit = "missing"
+  ),
+  function(model, parameters) {
+    model@system <- set_parameters(model@system, parameters)
+    result <- sqrt(
+      model@system@demand@var + model@system@supply@var -
+      2 * model@system@demand@sigma * model@system@supply@sigma * model@system@rho_ds
+    )
+    names(result) <- "shortage_standard_deviation"
+    result
   }
 )
 
@@ -87,12 +113,21 @@ setMethod(
   function(object) {
     start <- callNextMethod(object)
 
+    lhs <- object@model_tibble[, price_differences_variable(object@system)] %>%
+      dplyr::pull()
+    rhs <- cbind(
+      object@system@quantity_vector,
+      object@system@price_equation@independent_matrix)
+    plm <- stats::lm(lhs ~ rhs - 1)
+    gamma <- 1 / abs(plm$coefficients[1])
+    coefficients <- plm$coefficients[-c(1)] / plm$coefficients[1]
+    names(coefficients) <- colnames(
+      object@system@price_equation@independent_matrix
+    )
+
     len <- length(start)
     pos <- len - ifelse(object@system@correlated_shocks, 3, 2)
-    start <- c(
-      start[1:pos],
-      object@system@price_equation@linear_model$coefficients, start[(pos + 1):len]
-    )
+    start <- c(start[1:(pos - 1)], gamma, coefficients, start[(pos + 1):len])
 
     len <- length(start)
     if (object@system@correlated_shocks) {
@@ -101,8 +136,7 @@ setMethod(
         prefixed_variance_variable(object@system@price_equation),
         paste0(correlation_variable(object@system), c("_DS", "_DP", "_SP"))
       )
-    }
-    else {
+    } else {
       start <- c(start, price_variance = 1)
       names(start)[len + 1] <- prefixed_variance_variable(object@system@price_equation)
     }
