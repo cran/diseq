@@ -12,12 +12,12 @@ nobs <- 1000
 tobs <- 5
 
 alpha_d <- -3.9
-beta_d0 <- 18.9
+beta_d0 <- 28.9
 beta_d <- c(2.1, -0.7)
 eta_d <- c(3.5, 6.25)
 
 alpha_s <- 2.8
-beta_s0 <- 3.2
+beta_s0 <- 26.2
 beta_s <- c(2.65)
 eta_s <- c(1.15, 4.2)
 
@@ -46,26 +46,26 @@ optimization_method <- "BFGS"
 optimization_options <- list(maxit = 10000, reltol = 1e-8)
 
 ## ----model.constructor--------------------------------------------------------
-eqmdl_reg <- equilibrium_model(
+eq_reg <- equilibrium_model(
   formula, eq_data[eq_data$date != 1, ],
   correlated_shocks = correlated_shocks, verbose = verbose,
   estimation_options = list(method = "2SLS")
 )
-eqmdl_fit <- equilibrium_model(
+eq_fit <- equilibrium_model(
   formula, eq_data[eq_data$date != 1, ],
   correlated_shocks = correlated_shocks, verbose = verbose,
   estimation_options = list(
     control = optimization_options, method = optimization_method
   )
 )
-bsmdl_fit <- diseq_basic(
+bs_fit <- diseq_basic(
   formula, eq_data[eq_data$date != 1, ],
   correlated_shocks = correlated_shocks, verbose = verbose,
   estimation_options = list(
     control = optimization_options, method = optimization_method
   )
 )
-damdl_fit <- diseq_deterministic_adjustment(
+da_fit <- diseq_deterministic_adjustment(
   formula, eq_data,
   correlated_shocks = correlated_shocks, verbose = verbose,
   estimation_options = list(
@@ -74,13 +74,16 @@ damdl_fit <- diseq_deterministic_adjustment(
 )
 
 ## ----analysis.summaries-------------------------------------------------------
-summary(eqmdl_reg@fit[[1]]$first_stage_model)
-summary(eqmdl_reg)
-summary(eqmdl_fit)
-summary(bsmdl_fit)
-summary(damdl_fit)
+summary(eq_reg@fit[[1]]$first_stage_model)
+summary(eq_reg)
+summary(eq_fit)
+summary(bs_fit)
+summary(da_fit)
 
 ## ----analysis.estimates-------------------------------------------------------
+da_coef <- coef(da_fit)
+coef_names <- names(da_coef)
+
 sim_coef <- c(
   alpha_d, beta_d0, beta_d, eta_d,
   alpha_s, beta_s0, beta_s, eta_s,
@@ -88,63 +91,36 @@ sim_coef <- c(
   sigma_d, sigma_s,
   rho_ds
 )
-names(sim_coef) <- names(coef(damdl_fit))
 
-dm_inc <- coef(eqmdl_reg)[
-  grep("demand", names(coef(eqmdl_reg)))
-]
-sp_inc <- coef(eqmdl_reg)[
-  grep("supply", names(coef(eqmdl_reg)))
-]
-lm_coef <- c(
-  dm_inc[2], dm_inc[-2], sp_inc[2], sp_inc[-2],
-  NA,
-  NA, NA,
-  NA
-)
+coef_tbl <- function(fit) {
+    tibble::tibble(coef = names(coef(fit)),!!substitute(fit) := coef(fit))
+}
 
-eqmdl_coef <- append(
-  coef(eqmdl_fit), c(NA),
-  after = which(names(coef(eqmdl_fit)) ==
-    prefixed_variance_variable(eqmdl_fit@system@demand)) - 1
-)
+comp <- coef_tbl(da_fit) %>% 
+    dplyr::left_join(coef_tbl(bs_fit), by = "coef") %>%
+    dplyr::left_join(coef_tbl(eq_reg), by = "coef") %>%
+    dplyr::left_join(coef_tbl(eq_fit), by = "coef") %>%
+    dplyr::mutate(sim = sim_coef) %>%
+    dplyr::mutate(sim = sim_coef,
+                  da_fit_err = abs(da_fit - sim),
+                  bs_fit_err = abs(bs_fit - sim),
+                  eq_fit_err = abs(eq_fit - sim)) 
 
-bsmdl_coef <- append(
-  coef(bsmdl_fit), c(NA),
-  after = which(names(coef(bsmdl_fit)) ==
-    prefixed_variance_variable(bsmdl_fit@system@demand)) - 1
-)
-
-damdl_coef <- coef(damdl_fit)
-
-comp <- tibble::tibble(
-  parameter = names(sim_coef),
-  sim = sim_coef, lm = lm_coef, fi = eqmdl_coef,
-  bm = bsmdl_coef, da = damdl_coef,
-  lmerr = abs(lm_coef - sim_coef), fierr = abs(eqmdl_coef - sim_coef),
-  bmerr = abs(bsmdl_coef - sim_coef), daerr = abs(damdl_coef - sim_coef)
-)
 comp
 
 ## ----analysis.averages--------------------------------------------------------
-comp_means <- colMeans(comp[, grep("err", colnames(comp))], na.rm = TRUE)
-comp_means
+model_errors <- colMeans(comp[, grep("err", colnames(comp))], na.rm = TRUE) 
+model_errors
 
 ## ----analysis.model.selection-------------------------------------------------
-model_names <- c(
-  eqmdl_fit@model_type_string,
-  bsmdl_fit@model_type_string, damdl_fit@model_type_string
-)
-model_obs <- c(nobs(eqmdl_fit), nobs(bsmdl_fit), nobs(damdl_fit))
-model_errors <- c(
-  comp_means["fierr"],
-  comp_means["bmerr"],
-  comp_means["daerr"]
-)
-seltbl <- AIC(eqmdl_fit, bsmdl_fit, damdl_fit) %>%
-  tibble::add_column(Model = model_names, .before = 1) %>%
-  tibble::add_column(Obs. = model_obs, `Mean Error` = model_errors) %>%
-  dplyr::rename(D.F. = df) %>%
+fits <- c(da_fit, bs_fit, eq_fit)
+model_names <- sapply(fits, function(m) m@model_type_string)
+model_obs <- sapply(fits, nobs)
+aic <- sapply(fits, AIC)
+df <- sapply(fits, function(m) attr(logLik(m), "df"))
+seltbl <- tibble::tibble(Model = model_names, AIC = aic,
+                         D.F = df, Obs. = model_obs,
+                         Abs.Error = model_errors) %>%
   dplyr::arrange(AIC)
 seltbl
 

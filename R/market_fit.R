@@ -208,46 +208,41 @@ setMethod(
       return(callNextMethod(object, method = method, ...))
     }
 
+    quantity_variable <- colnames(object@system@quantity_vector)
+    price_variable <- colnames(object@system@price_vector)
+    
     ## create fitted variable
-    fitted_column <- paste0(colnames(object@system@price_vector), "_FITTED")
+    fitted_column <- paste0(price_variable, "_FITTED")
 
     ## estimate first stage
-    first_stage_controls <- unique(c(
-      control_variables(object@system@demand),
-      control_variables(object@system@supply)
-    ))
+    first_stage_controls <- all.vars(terms(object@system@formula, lhs = 0))
     first_stage_controls <- first_stage_controls[
-      first_stage_controls != "CONST"
+      first_stage_controls != price_variable
     ]
     first_stage_formula <- paste0(
-      colnames(object@system@price_vector),
-      " ~ ", paste0(first_stage_controls, collapse = " + ")
+      price_variable, " ~ ", paste0(first_stage_controls, collapse = " + ")
     )
 
     first_stage_model <- lm(first_stage_formula, object@model_tibble)
     object@model_tibble[, fitted_column] <- first_stage_model$fitted.values
 
     ## create demand formula
-    independent <- independent_variables(object@system@demand)
-    independent <- independent[independent != "CONST"]
+    independent <- all.vars(terms(object@system@formula, lhs = 0, rhs = 1))
     demand_formula <- formula(paste0(
-      colnames(object@system@quantity_vector),
-      " ~ ", paste0(independent, collapse = " + ")
+      quantity_variable, " ~ ", paste0(independent, collapse = " + ")
     ))
 
     ## create supply formula
-    independent <- independent_variables(object@system@supply)
+    independent <- all.vars(terms(object@system@formula, lhs = 0, rhs = 2))
     independent <- independent[independent != "CONST"]
     supply_formula <- formula(paste0(
-      colnames(object@system@quantity_vector),
-      " ~ ", paste0(independent, collapse = " + ")
+      quantity_variable, " ~ ", paste0(independent, collapse = " + ")
     ))
 
     inst <- formula(paste0(" ~ ", paste0(first_stage_controls, collapse = " + ")))
     system_model <- systemfit::systemfit(
       list(demand = demand_formula, supply = supply_formula),
-      method = "2SLS", inst = inst, data = object@model_tibble,
-      ...
+      method = "2SLS", inst = inst, data = object@model_tibble
     )
 
     new(
@@ -284,7 +279,31 @@ setMethod(
     if (class(object@fit[[1]]) == "mle2") {
       object@fit[[1]]@coef
     } else {
-      object@fit[[1]]$system_model$coefficients
+      demand <- object@fit[[1]]$system_model$coefficients[
+        grep("demand_", names(object@fit[[1]]$system_model$coefficients))]
+      demand <- c(demand[2], demand[1], demand[-c(1, 2)])
+      names(demand) <- gsub("demand_", "D_", names(demand))
+
+      supply <- object@fit[[1]]$system_model$coefficients[
+        grep("supply_", names(object@fit[[1]]$system_model$coefficients))]
+      supply <- c(supply[2], supply[1], supply[-c(1, 2)])
+      names(supply) <- gsub("supply_", "S_", names(supply))
+
+      var_d <- object@fit[[1]]$system_model$residCov[[1, 1]]
+      names(var_d) <- prefixed_variance_variable(object@system@demand)
+
+      var_s <- object@fit[[1]]$system_model$residCov[[2, 2]]
+      names(var_s) <- prefixed_variance_variable(object@system@supply)
+
+      coefs <- c(demand, supply, var_d, var_s)
+      if (object@system@correlated_shocks) {
+        rho <- object@fit[[1]]$system_model$residCov[1, 2] / sqrt(var_d * var_s)
+        names(rho) <- correlation_variable(object@system)
+        coefs <- c(coefs, rho)
+      }
+      names(coefs) <- gsub("\\(Intercept\\)", "CONST", names(coefs))
+ 
+      coefs
     }
   }
 )
@@ -577,12 +596,12 @@ setMethod(
 setMethod("plot", signature(x = "market_fit"), function(x, subject, time, ...) {
   if (missing(subject)) {
     subject <- x@model_tibble %>%
-      dplyr::distinct(!!as.symbol(x@key_columns[1])) %>%
+      dplyr::distinct(!!as.symbol(x@subject_column)) %>%
       dplyr::pull()
   }
   if (missing(time)) {
     time <- x@model_tibble %>%
-      dplyr::distinct(!!as.symbol(x@key_columns[2])) %>%
+      dplyr::distinct(!!as.symbol(x@time_column)) %>%
       dplyr::pull()
   }
   va_args <- list(...)
@@ -598,8 +617,8 @@ setMethod("plot", signature(x = "market_fit"), function(x, subject, time, ...) {
   x@system <- set_parameters(x@system, coef(x))
   indices <- x@model_tibble %>%
     dplyr::mutate(row = row_number()) %>%
-    dplyr::filter(!!as.symbol(x@key_columns[1]) %in% subject &
-      !!as.symbol(x@key_columns[2]) %in% time) %>%
+    dplyr::filter(!!as.symbol(x@subject_column) %in% subject &
+      !!as.symbol(x@time_column) %in% time) %>%
     dplyr::pull(row)
   a <- x@system@demand@control_matrix[indices, ] %*% x@system@demand@beta
   d <- function(p) mean(c(a) + x@system@demand@alpha * p)

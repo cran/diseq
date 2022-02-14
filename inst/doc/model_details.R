@@ -16,7 +16,7 @@ beta_d <- c(0.3, -0.02)
 eta_d <- c(0.6, -0.1)
 
 alpha_s <- 0.6
-beta_s0 <- 2.1
+beta_s0 <- 4.1
 beta_s <- c(0.9)
 eta_s <- c(-0.5, 0.2)
 
@@ -50,7 +50,7 @@ verbose <- 2
 correlated_shocks <- TRUE
 
 ## ----model.constructor--------------------------------------------------------
-eqmdl <- new(
+eq <- new(
   "equilibrium_model",
   quantity = Q, price = P,
   demand = P + Xd1 + Xd2 + X1 + X2,
@@ -59,7 +59,7 @@ eqmdl <- new(
   data = stochastic_adjustment_data,
   correlated_shocks = correlated_shocks, verbose = verbose
 )
-bsmdl <- new(
+bs <- new(
   "diseq_basic",
   quantity = Q, price = P,
   demand = P + Xd1 + Xd2 + X1 + X2,
@@ -68,7 +68,7 @@ bsmdl <- new(
   data = stochastic_adjustment_data,
   correlated_shocks = correlated_shocks, verbose = verbose
 )
-drmdl <- new(
+dr <- new(
   "diseq_directional",
   quantity = Q, price = P,
   demand = P + Xd1 + Xd2 + X1 + X2,
@@ -77,7 +77,7 @@ drmdl <- new(
   data = stochastic_adjustment_data,
   correlated_shocks = correlated_shocks, verbose = verbose
 )
-damdl <- new(
+da <- new(
   "diseq_deterministic_adjustment",
   quantity = Q, price = P,
   demand = P + Xd1 + Xd2 + X1 + X2,
@@ -86,7 +86,7 @@ damdl <- new(
   data = stochastic_adjustment_data,
   correlated_shocks = correlated_shocks, verbose = verbose
 )
-samdl <- new(
+sa <- new(
   "diseq_stochastic_adjustment",
   quantity = Q, price = P,
   demand = P + Xd1 + Xd2 + X1 + X2,
@@ -102,28 +102,28 @@ optimization_method <- "BFGS"
 optimization_options <- list(REPORT = 10, maxit = 10000, reltol = 1e-6)
 
 ## ----estimation.execution-----------------------------------------------------
-estimate(eqmdl, method = "2SLS")
-estimate(eqmdl,
+estimate(eq, method = "2SLS")
+estimate(eq,
   control = optimization_options, method = optimization_method,
   standard_errors = c("id")
 )
-estimate(bsmdl,
+estimate(bs,
   control = optimization_options, method = optimization_method,
   standard_errors = "heteroscedastic"
 )
-estimate(bsmdl,
+estimate(bs,
   control = optimization_options, method = "Nelder-Mead",
   standard_errors = "heteroscedastic"
 )
-estimate(drmdl,
+estimate(dr,
   control = optimization_options, method = optimization_method,
   standard_errors = "heteroscedastic"
 )
-estimate(damdl,
+estimate(da,
   control = optimization_options, method = optimization_method,
   standard_errors = c("id")
 )
-estimate(samdl,
+estimate(sa,
   control = optimization_options, method = optimization_method
 )
 
