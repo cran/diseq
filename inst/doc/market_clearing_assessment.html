@@ -396,7 +396,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb5-31" title="31">  )</a>
 <a class="sourceLine" id="cb5-32" title="32">)</a>
 <a class="sourceLine" id="cb5-33" title="33"><span class="co">#&gt; Info: This is &#39;Deterministic Adjustment with correlated shocks&#39; model</span></a>
-<a class="sourceLine" id="cb5-34" title="34"><span class="co">#&gt; Info: Dropping 1000 rows by generating &#39;LAGGED_P&#39;.</span></a>
+<a class="sourceLine" id="cb5-34" title="34"><span class="co">#&gt; Info: Dropping 1000 rows to generate &#39;LAGGED_P&#39;.</span></a>
 <a class="sourceLine" id="cb5-35" title="35"><span class="co">#&gt; Info: Sample separated with 2000 rows in excess supply and 2000 in excess demand state.</span></a></code></pre></div>
 </div>
 <div id="post-estimation-analysis" class="section level2">
@@ -463,9 +463,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb6-57" title="57"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-58" title="58"><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></a>
 <a class="sourceLine" id="cb6-59" title="59"><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></a>
-<a class="sourceLine" id="cb6-60" title="60"><span class="co">#&gt; &lt;environment: 0x55768da32cd0&gt;</span></a>
+<a class="sourceLine" id="cb6-60" title="60"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
 <a class="sourceLine" id="cb6-61" title="61"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
-<a class="sourceLine" id="cb6-62" title="62"><span class="co">#&gt; &lt;environment: 0x55768da32cd0&gt;</span></a>
+<a class="sourceLine" id="cb6-62" title="62"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
 <a class="sourceLine" id="cb6-63" title="63"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-64" title="64"><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></a>
 <a class="sourceLine" id="cb6-65" title="65"><span class="co">#&gt; (Intercept) 28.8908936  0.0182726 1581.108 &lt; 2.22e-16 ***</span></a>
@@ -485,9 +485,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb6-79" title="79"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-80" title="80"><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></a>
 <a class="sourceLine" id="cb6-81" title="81"><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></a>
-<a class="sourceLine" id="cb6-82" title="82"><span class="co">#&gt; &lt;environment: 0x55768da32cd0&gt;</span></a>
+<a class="sourceLine" id="cb6-82" title="82"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
 <a class="sourceLine" id="cb6-83" title="83"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
-<a class="sourceLine" id="cb6-84" title="84"><span class="co">#&gt; &lt;environment: 0x55768da32cd0&gt;</span></a>
+<a class="sourceLine" id="cb6-84" title="84"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
 <a class="sourceLine" id="cb6-85" title="85"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-86" title="86"><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></a>
 <a class="sourceLine" id="cb6-87" title="87"><span class="co">#&gt; (Intercept) 26.1862350  0.0279220 937.8368 &lt; 2.22e-16 ***</span></a>

@@ -1,7 +1,7 @@
 Package: diseq
 Title: Estimation Methods for Markets in Equilibrium and Disequilibrium
-Version: 0.4.2
-Date: 2022-02-14
+Version: 0.4.3
+Date: 2022-02-16
 Authors@R: 
     person(given = "Pantelis",
            family = "Karapanagiotis",
@@ -58,9 +58,9 @@ Collate: 'data.R' 'diseq.R' 'equation_base.R' 'system_base.R'
 LinkingTo: Rcpp, RcppGSL
 SystemRequirements: C++11
 NeedsCompilation: yes
-Packaged: 2022-02-14 13:43:28 UTC; ntelispak
+Packaged: 2022-02-16 11:10:10 UTC; ntelispak
 Author: Pantelis Karapanagiotis [aut, cre]
     (<https://orcid.org/0000-0001-9871-1908>)
 Maintainer: Pantelis Karapanagiotis <pikappa.devel@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-02-14 14:50:02 UTC
+Date/Publication: 2022-02-16 13:10:02 UTC
