@@ -25,6 +25,7 @@
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -318,7 +319,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
+<div id="package-diseq-is-deprecated.-please-use-package-markets-instead." class="section level2">
+<h2>Package <em>diseq</em> is deprecated. Please use package <em>markets</em> instead.</h2>
 <p>This short tutorial gives an example of statistically assessing whether a market is in an equilibrium state. The tutorial assumes some familiarity with the concepts and the functionality of the package. The <a href="basic_usage.html">basic_usage</a> vignette can be helpful in acquiring this familiarity.</p>
+</div>
 <div id="setup-the-environment" class="section level2">
 <h2>Setup the environment</h2>
 <p>Load the required libraries.</p>
@@ -463,9 +467,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb6-57" title="57"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-58" title="58"><span class="co">#&gt; 2SLS estimates for &#39;demand&#39; (equation 1)</span></a>
 <a class="sourceLine" id="cb6-59" title="59"><span class="co">#&gt; Model Formula: Q ~ P + Xd1 + Xd2 + X1 + X2</span></a>
-<a class="sourceLine" id="cb6-60" title="60"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
+<a class="sourceLine" id="cb6-60" title="60"><span class="co">#&gt; &lt;environment: 0x557cd48e7d68&gt;</span></a>
 <a class="sourceLine" id="cb6-61" title="61"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
-<a class="sourceLine" id="cb6-62" title="62"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
+<a class="sourceLine" id="cb6-62" title="62"><span class="co">#&gt; &lt;environment: 0x557cd48e7d68&gt;</span></a>
 <a class="sourceLine" id="cb6-63" title="63"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-64" title="64"><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></a>
 <a class="sourceLine" id="cb6-65" title="65"><span class="co">#&gt; (Intercept) 28.8908936  0.0182726 1581.108 &lt; 2.22e-16 ***</span></a>
@@ -485,9 +489,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb6-79" title="79"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-80" title="80"><span class="co">#&gt; 2SLS estimates for &#39;supply&#39; (equation 2)</span></a>
 <a class="sourceLine" id="cb6-81" title="81"><span class="co">#&gt; Model Formula: Q ~ P + Xs1 + X1 + X2</span></a>
-<a class="sourceLine" id="cb6-82" title="82"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
+<a class="sourceLine" id="cb6-82" title="82"><span class="co">#&gt; &lt;environment: 0x557cd48e7d68&gt;</span></a>
 <a class="sourceLine" id="cb6-83" title="83"><span class="co">#&gt; Instruments: ~Xd1 + Xd2 + X1 + X2 + Xs1</span></a>
-<a class="sourceLine" id="cb6-84" title="84"><span class="co">#&gt; &lt;environment: 0x55f54e57b118&gt;</span></a>
+<a class="sourceLine" id="cb6-84" title="84"><span class="co">#&gt; &lt;environment: 0x557cd48e7d68&gt;</span></a>
 <a class="sourceLine" id="cb6-85" title="85"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-86" title="86"><span class="co">#&gt;               Estimate Std. Error  t value   Pr(&gt;|t|)    </span></a>
 <a class="sourceLine" id="cb6-87" title="87"><span class="co">#&gt; (Intercept) 26.1862350  0.0279220 937.8368 &lt; 2.22e-16 ***</span></a>

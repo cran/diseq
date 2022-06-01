@@ -1,3 +1,16 @@
+# diseq 0.4.6
+
+* Moved deprecation warning emission from `.onLoad` to `.onAttach`.
+
+# diseq 0.4.5
+
+* Switched from warning to message to inform about deprecation during package loading.
+
+# diseq 0.4.4
+
+* Added deprecation warning when loading package.
+* Added deprecation messages in documentation.
+
 # diseq 0.4.3
 
 * Adjusted unit test gradient tolerance for m1 machines.
